@@ -1,0 +1,210 @@
+[
+  {
+    "id": "maggi-2min-noodles",
+    "barcode": "8901058852370",
+    "name": "Maggi 2-Minute Masala Instant Noodles",
+    "nameHindi": "मैगी 2-मिनट मसाला नूडल्स",
+    "brand": "Nestlé India",
+    "category": "Noodles & Instant Food",
+    "imageUrl": "https://images.unsplash.com/photo-1612927601601-6638404737ce?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 24,
+    "verdict": "Avoid Karein",
+    "verdictHindi": "बचने की सलाह",
+    "verdictType": "red",
+    "summary": "Dominated by 82% refined wheat flour (maida), ultra-processed palm oil, and high sodium (over 52% of daily limit per pack).",
+    "warnings": [
+      {
+        "title": "Refined Palm Oil",
+        "severity": "high",
+        "desc": "High saturated fats harmful for cardiovascular health."
+      },
+      {
+        "title": "82% Maida (Refined Flour)",
+        "severity": "high",
+        "desc": "Stripped of natural bran fiber; causes steep glucose spikes."
+      },
+      {
+        "title": "INS 635 Flavour Boosters",
+        "severity": "medium",
+        "desc": "Synthetic disodium 5-ribonucleotides."
+      }
+    ],
+    "cleanerAlternative": {
+      "name": "Slurrp Farm Foxtail Millet Noodles",
+      "brand": "Slurrp Farm",
+      "score": 93,
+      "reason": "100% Sun-dried (Not Fried in Palm Oil), 0% Maida, pure millet grains."
+    }
+  },
+  {
+    "id": "kurkure-masala-munch",
+    "barcode": "8901491101837",
+    "name": "Kurkure Masala Munch Crispy Namkeen",
+    "nameHindi": "कुरकुरे मसाला मंच नमकीन",
+    "brand": "PepsiCo India",
+    "category": "Snacks & Namkeen",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 28,
+    "verdict": "Avoid Karein",
+    "verdictHindi": "बचने की सलाह",
+    "verdictType": "red",
+    "summary": "Deep fried in palmolein oil, containing 34% industrial fat, INS 627/631 flavor enhancers and high sodium.",
+    "warnings": [
+      {
+        "title": "Refined Palmolein Oil",
+        "severity": "high",
+        "desc": "High in saturated fat and trans-fat precursors."
+      },
+      {
+        "title": "High Sodium Load",
+        "severity": "high",
+        "desc": "920mg Sodium per 100g serving."
+      }
+    ],
+    "cleanerAlternative": {
+      "name": "The Whole Truth Roasted Makhana & Nuts",
+      "brand": "The Whole Truth",
+      "score": 94,
+      "reason": "100% Roasted in cold-pressed oil, 0 additives, 0 palm oil."
+    }
+  },
+  {
+    "id": "parle-g-biscuits",
+    "barcode": "8901719101037",
+    "name": "Parle-G Original Glucose Biscuits",
+    "nameHindi": "पारले-जी ग्लूकोज बिस्कुट",
+    "brand": "Parle Products",
+    "category": "Biscuits & Bakery",
+    "imageUrl": "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 32,
+    "verdict": "Avoid Karein",
+    "verdictHindi": "बचने की सलाह",
+    "verdictType": "red",
+    "summary": "Contains 26% pure refined white sugar and 65% Maida baked in refined palm shortening with invert sugar syrup.",
+    "warnings": [
+      {
+        "title": "26% Added Sugar",
+        "severity": "high",
+        "desc": "Spikes insulin and promotes dental caries."
+      },
+      {
+        "title": "Palm Shortening",
+        "severity": "high",
+        "desc": "Cheap saturated fat for biscuit crunch."
+      }
+    ],
+    "cleanerAlternative": {
+      "name": "Early Foods Organic Ragi & Jaggery Cookies",
+      "brand": "Early Foods",
+      "score": 95,
+      "reason": "Sprouted Ragi, pure Desi Cow Butter, sweetened with Organic Jaggery."
+    }
+  },
+  {
+    "id": "amul-pure-ghee",
+    "barcode": "8901262010054",
+    "name": "Amul Pure Cow Ghee (Special Grade)",
+    "nameHindi": "अमूल शुद्ध गाय का घी",
+    "brand": "Amul (GCMMF)",
+    "category": "Dairy & Oils",
+    "imageUrl": "https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 88,
+    "verdict": "Achha Option",
+    "verdictHindi": "अच्छा विकल्प",
+    "verdictType": "green",
+    "summary": "100% pure milk fat with zero trans fats, zero palm oil, and zero synthetic preservatives. Rich in vitamins A, D, and E.",
+    "warnings": [],
+    "cleanerAlternative": null
+  },
+  {
+    "id": "aashirvaad-shudh-chakki-atta",
+    "barcode": "8901725131011",
+    "name": "ITC Aashirvaad Shudh Chakki Whole Wheat Atta",
+    "nameHindi": "आईटीसी आशीर्वाद शुद्ध चक्की आटा",
+    "brand": "ITC Limited",
+    "category": "Grains & Staples",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 92,
+    "verdict": "Achha Option",
+    "verdictHindi": "अच्छा विकल्प",
+    "verdictType": "green",
+    "summary": "100% Whole Wheat grain flour ground in traditional stone chakkis retaining natural wheat bran (chokar) and fiber.",
+    "warnings": [],
+    "cleanerAlternative": null
+  },
+  {
+    "id": "tata-sampann-unpolished-toor-dal",
+    "barcode": "8901499008121",
+    "name": "Tata Sampann Unpolished Tur Dal",
+    "nameHindi": "टाटा सम्पन्न अनपॉलिश तुअर दाल",
+    "brand": "Tata Consumer Products",
+    "category": "Pulses & Dal",
+    "imageUrl": "https://images.unsplash.com/photo-1585996746979-3738012674e1?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 96,
+    "verdict": "Achha Option",
+    "verdictHindi": "अच्छा विकल्प",
+    "verdictType": "green",
+    "summary": "Unpolished, unadulterated high-protein dal. Free from artificial color dyes (Metanil Yellow) or marble powder polishing.",
+    "warnings": [],
+    "cleanerAlternative": null
+  },
+  {
+    "id": "bournvita-chocolate-cadbury",
+    "barcode": "8901233024019",
+    "name": "Cadbury Bournvita Chocolate Health Drink",
+    "nameHindi": "कैडबरी बॉर्नविटा चॉकलेट पाउडर",
+    "brand": "Mondelez India",
+    "category": "Health Drinks",
+    "imageUrl": "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 35,
+    "verdict": "Avoid Karein",
+    "verdictHindi": "बचने की सलाह",
+    "verdictType": "red",
+    "summary": "Nearly 50% sugar by weight (32g added sugar + maltodextrin/liquid glucose) marketed as health drink.",
+    "warnings": [
+      {
+        "title": "Nearly 50% Sugar",
+        "severity": "high",
+        "desc": "Promotes childhood obesity and insulin spikes."
+      },
+      {
+        "title": "INS 150c Caramel Colour",
+        "severity": "medium",
+        "desc": "Synthetically processed caramel color."
+      }
+    ],
+    "cleanerAlternative": {
+      "name": "Slurrp Farm Sprouted Ragi Cocoa Drink",
+      "brand": "Slurrp Farm",
+      "score": 91,
+      "reason": "Sweetened only with raw jaggery, 0 refined white sugar, real almonds."
+    }
+  },
+  {
+    "id": "dabur-honey-100-pure",
+    "barcode": "8901207010254",
+    "name": "Dabur 100% Pure Honey",
+    "nameHindi": "डाबर 100% शुद्ध शहद",
+    "brand": "Dabur India Ltd",
+    "category": "Sweeteners & Honey",
+    "imageUrl": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&auto=format&fit=crop&q=80",
+    "healthScore": 74,
+    "verdict": "Soch Samajh Kar",
+    "verdictHindi": "सोच समझ कर",
+    "verdictType": "yellow",
+    "summary": "FSSAI NMR compliant commercial honey. Processing heat reduces natural live floral pollen enzymes.",
+    "warnings": [
+      {
+        "title": "High Natural Sugars",
+        "severity": "medium",
+        "desc": "78g Sugars / 100g - consume in moderation."
+      }
+    ],
+    "cleanerAlternative": {
+      "name": "Indigenous Raw Forest Wild Honey",
+      "brand": "Indigenous Honey",
+      "score": 96,
+      "reason": "Raw unpasteurized honey straight from wild hives with live bee pollen."
+    }
+  }
+]

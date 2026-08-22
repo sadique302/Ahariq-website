@@ -1,0 +1,6 @@
+{
+  "name": "AharIQ",
+  "description": "Indian packaged food scanner for adulteration, palm oil, refined flour, preservatives & cleaner alternatives.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

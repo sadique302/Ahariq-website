@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profiles",
+      "description": "Registered and guest users with preferences and metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "isPureVeg": { "type": "boolean" },
+        "isDiabeticConscious": { "type": "boolean" },
+        "strictNoPalmOil": { "type": "boolean" },
+        "strictNoMaida": { "type": "boolean" },
+        "languagePreference": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
+      },
+      "required": ["id", "createdAt"]
+    },
+    "scans": {
+      "title": "User Scan Events",
+      "description": "Log of scanned products per user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "barcode": { "type": "string" },
+        "productName": { "type": "string" },
+        "brand": { "type": "string" },
+        "healthScore": { "type": "number" },
+        "verdict": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "scannedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "barcode", "productName", "scannedAt"]
+    },
+    "saved_items": {
+      "title": "Saved Products",
+      "description": "User bookmarked cleaner foods and items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "barcode": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "healthScore": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "savedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "productId", "name"]
+    },
+    "custom_products": {
+      "title": "Community Contributed Products",
+      "description": "User submitted products not found in standard database",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "barcode": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "healthScore": { "type": "number" },
+        "verdict": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "submittedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "barcode", "name"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "#/entities/users",
+      "description": "User account document"
+    },
+    "/scans/{scanId}": {
+      "schema": "#/entities/scans",
+      "description": "Scan history record"
+    },
+    "/saved_items/{savedId}": {
+      "schema": "#/entities/saved_items",
+      "description": "Saved product record"
+    },
+    "/custom_products/{productId}": {
+      "schema": "#/entities/custom_products",
+      "description": "Community product catalog"
+    }
+  }
+}

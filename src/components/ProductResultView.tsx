@@ -1,0 +1,716 @@
+import React, { useState } from "react";
+import { FoodProduct, Language } from "../types";
+import {
+  ArrowLeft,
+  Bookmark,
+  BookmarkCheck,
+  Share2,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  Sparkles,
+  ShieldCheck,
+  Flame,
+  Wheat,
+  Scale,
+  ExternalLink,
+  ChevronRight,
+  Info,
+  Droplet,
+  Zap,
+  Activity,
+  HeartCrack
+} from "lucide-react";
+import confetti from "canvas-confetti";
+import { WhatsAppShareModal } from "./WhatsAppShareModal";
+import { ContactSupport } from "./ContactSupport";
+
+interface ProductResultViewProps {
+  product: FoodProduct;
+  onBack: () => void;
+  language: Language;
+  isDark: boolean;
+  isSaved: boolean;
+  onToggleSave: (product: FoodProduct) => void;
+  onSelectAlternative: (product: FoodProduct) => void;
+}
+
+export const ProductResultView: React.FC<ProductResultViewProps> = ({
+  product,
+  onBack,
+  language,
+  isDark,
+  isSaved,
+  onToggleSave,
+  onSelectAlternative,
+}) => {
+  const isHindi = language === "hi";
+  const [activeTab, setActiveTab] = useState<"overview" | "ingredients" | "nutrition" | "alternatives">("overview");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const handleSaveClick = () => {
+    if (!isSaved) {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.8 },
+      });
+    }
+    onToggleSave(product);
+  };
+
+  // Color helpers
+  const getScoreTheme = () => {
+    if (product.healthScore >= 70) {
+      return {
+        ring: "text-[#10B981]",
+        border: "border-emerald-200 dark:border-emerald-800/60",
+        bg: "bg-emerald-50 dark:bg-emerald-950/40",
+        badge: "bg-emerald-50 text-[#059669] dark:bg-emerald-950/60 dark:text-[#34D399] border border-emerald-200 dark:border-emerald-800/60",
+        gradient: "from-[#059669] via-[#10B981] to-[#34D399]",
+        pillText: isHindi ? "✅ अच्छा विकल्प (Clean Choice)" : "✅ Clean Choice (Safe Ingredients)",
+      };
+    }
+    if (product.healthScore >= 40) {
+      return {
+        ring: "text-amber-500",
+        border: "border-amber-200 dark:border-amber-800/60",
+        bg: "bg-amber-50 dark:bg-amber-950/40",
+        badge: "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60",
+        gradient: "from-amber-500 to-yellow-600",
+        pillText: isHindi ? "⚠️ सोच समझ कर (Moderate)" : "⚠️ Moderate (Consume in Moderation)",
+      };
+    }
+    return {
+      ring: "text-red-500",
+      border: "border-red-200 dark:border-red-800/60",
+      bg: "bg-red-50 dark:bg-red-950/40",
+      badge: "bg-red-50 text-red-800 dark:bg-red-950/60 dark:text-red-300 border border-red-200 dark:border-red-800/60",
+      gradient: "from-red-600 to-rose-700",
+      pillText: isHindi ? "❌ बचने की सलाह (Avoid Karein)" : "❌ Avoid (Harmful / Ultra-Processed)",
+    };
+  };
+
+  const theme = getScoreTheme();
+
+  return (
+    <div
+      id="product-result-screen"
+      className={`min-h-screen pb-24 transition-colors ${
+        isDark ? "bg-[#09090B] text-zinc-100" : "bg-[#F8FAFC] text-[#111827]"
+      }`}
+    >
+      {/* Top Sticky Header */}
+      <div
+        className={`sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between backdrop-blur-md ${
+          isDark ? "bg-[#09090B]/90 border-zinc-800" : "bg-white/90 border-gray-200"
+        }`}
+      >
+        <button
+          id="result-back-btn"
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-[#111827] dark:text-zinc-100"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>{isHindi ? "वापस" : "Back"}</span>
+        </button>
+
+        <span className="text-xs font-bold font-mono tracking-wider text-gray-400 uppercase">
+          {product.category}
+        </span>
+
+        <div className="flex items-center gap-2">
+          {/* Share Button */}
+          <button
+            id="result-share-top-btn"
+            onClick={() => setIsShareModalOpen(true)}
+            className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+              isDark
+                ? "bg-zinc-800 border-zinc-700 text-zinc-200 hover:bg-zinc-700"
+                : "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Share on WhatsApp"
+          >
+            <Share2 className="w-4 h-4 text-[#10B981]" />
+          </button>
+
+          {/* Bookmark Button */}
+          <button
+            id="result-save-top-btn"
+            onClick={handleSaveClick}
+            className={`p-2 rounded-xl border transition-all cursor-pointer ${
+              isSaved
+                ? "bg-[#10B981] text-white border-[#10B981] shadow"
+                : isDark
+                ? "bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700"
+                : "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Save to My List"
+          >
+            {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 pt-4 space-y-4">
+        {/* Main Product Hero Card */}
+        <div
+          className={`rounded-3xl p-5 border shadow-sm transition-all ${
+            isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200"
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            {/* Product Image & Veg Mark */}
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 flex-shrink-0 flex items-center justify-center">
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              {/* Veg / Non-Veg Indian Green/Brown Dot */}
+              <div
+                className="absolute top-2 left-2 w-5 h-5 bg-white rounded border border-gray-300 flex items-center justify-center shadow-sm"
+                title={product.isVegetarian ? "100% Vegetarian (शाकाहारी)" : "Non-Vegetarian"}
+              >
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${
+                    product.isVegetarian ? "bg-[#10B981]" : "bg-amber-800"
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Product Meta & Big Health Score */}
+            <div className="flex-1 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                  {product.brand}
+                </span>
+                {product.fssaiNumber && (
+                  <span className="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">
+                    FSSAI #{product.fssaiNumber.slice(0, 7)}...
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-xl sm:text-2xl font-black mt-1.5 leading-tight tracking-tight text-[#000000] dark:text-white">
+                {isHindi ? product.nameHindi || product.name : product.name}
+              </h1>
+
+              {/* Verdict Pill */}
+              <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-bold border ${theme.badge} shadow-xs`}
+                >
+                  {theme.pillText}
+                </span>
+                {product.packagingSize && (
+                  <span className="text-[11px] text-gray-500 dark:text-zinc-400 font-medium">
+                    ({product.packagingSize})
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Radial Score Gauge Badge */}
+            <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 flex-shrink-0 w-28">
+              <div className="relative w-18 h-18 flex items-center justify-center">
+                {/* SVG Progress Circle */}
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    className="text-gray-200 dark:text-zinc-800"
+                    strokeWidth="3.5"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className={theme.ring}
+                    strokeDasharray={`${product.healthScore}, 100`}
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-black tracking-tighter leading-none text-[#000000] dark:text-white">
+                    {product.healthScore}
+                  </span>
+                  <span className="text-[9px] font-black text-gray-500 dark:text-zinc-400 uppercase tracking-tight">/100</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 mt-1">
+                {product.healthScore >= 70
+                  ? isHindi ? "सुरक्षित एवं शुद्ध" : "Clean Grade"
+                  : product.healthScore >= 40
+                  ? isHindi ? "सीमित सेवन" : "Moderate"
+                  : isHindi ? "हानिकारक तत्व" : "Ultra Processed"}
+              </span>
+            </div>
+          </div>
+
+          {/* AI Summary Alert Box */}
+          <div
+            className={`mt-4 p-3.5 rounded-2xl border text-xs leading-relaxed ${
+              product.verdictType === "green"
+                ? "bg-emerald-50 border-emerald-200 text-[#059669] dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-[#34D399]"
+                : product.verdictType === "yellow"
+                ? "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200"
+                : "bg-red-50 border-red-200 text-red-900 dark:bg-red-950/40 dark:border-red-800 dark:text-red-200"
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-[#111827] dark:text-zinc-100">
+                  {isHindi ? product.summaryHi : product.summaryEn}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs (Overview, Ingredients Decoder, Nutrition, Clean Alternatives) */}
+        <div
+          className={`flex border-b text-xs font-bold overflow-x-auto no-scrollbar gap-1 p-1 rounded-2xl ${
+            isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
+          }`}
+        >
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "overview"
+                ? "bg-[#09090B] text-white dark:bg-[#10B981] shadow-sm font-bold"
+                : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
+            }`}
+          >
+            {isHindi ? "खतरे व समीक्षा" : "Indian Hazards"} ({product.warnings.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("ingredients")}
+            className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "ingredients"
+                ? "bg-[#09090B] text-white dark:bg-[#10B981] shadow-sm font-bold"
+                : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
+            }`}
+          >
+            {isHindi ? "सामग्री डिकोडर (INS)" : "Ingredients Decode"}
+          </button>
+          <button
+            onClick={() => setActiveTab("nutrition")}
+            className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "nutrition"
+                ? "bg-[#09090B] text-white dark:bg-[#10B981] shadow-sm font-bold"
+                : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
+            }`}
+          >
+            {isHindi ? "पोषण (Nutrition)" : "Nutrition Facts"}
+          </button>
+          <button
+            onClick={() => setActiveTab("alternatives")}
+            className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "alternatives"
+                ? "bg-[#09090B] text-white dark:bg-[#10B981] shadow-sm font-bold"
+                : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
+            }`}
+          >
+            {isHindi ? "बेहतर विकल्प" : "Alternatives"} ({product.cleanerAlternatives.length})
+          </button>
+        </div>
+
+        {/* TAB 1: OVERVIEW & INDIAN HAZARDS */}
+        {activeTab === "overview" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            {/* Key Indian Specific Hazard Cards */}
+            <div className="space-y-2.5">
+              <h3 className="text-xs font-black uppercase tracking-wider text-gray-600 dark:text-zinc-400 px-1 flex items-center justify-between">
+                <span>{isHindi ? "भारतीय स्वास्थ्य जांच (Indian Food Hazards)" : "Key Indian Health Watchouts"}</span>
+                <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                  {product.warnings.length === 0 ? (isHindi ? "सभी पैरामीटर सुरक्षित" : "0 Major Hazards Detected") : `${product.warnings.length} Alerts`}
+                </span>
+              </h3>
+
+              {product.warnings.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-[#059669] dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-[#34D399] flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-[#10B981] flex-shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-sm text-[#000000] dark:text-white">
+                      {isHindi ? "कोई हानिकारक तत्व नहीं मिला" : "Clean Label Product"}
+                    </h4>
+                    <p className="text-xs text-gray-700 dark:text-zinc-300 mt-0.5">
+                      {isHindi
+                        ? "यह उत्पाद पाम ऑयल, अतिरिक्त मैदा और सिंथेटिक रंगों से मुक्त है।"
+                        : "No Palm Oil, No refined Maida overload, and No artificial azo dyes found."}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                product.warnings.map((warning, index) => (
+                  <div
+                    key={index}
+                    className={`p-4 rounded-2xl border transition-all ${
+                      warning.severity === "high"
+                        ? isDark
+                          ? "bg-red-950/20 border-red-800/40"
+                          : "bg-red-50/80 border-red-200"
+                        : isDark
+                        ? "bg-amber-950/20 border-amber-800/40"
+                        : "bg-amber-50/80 border-amber-200"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        {warning.type === "palm_oil" ? (
+                          <Droplet className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        ) : warning.type === "maida" ? (
+                          <Wheat className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                        ) : warning.type === "added_sugar" ? (
+                          <Zap className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        ) : (
+                          <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                        )}
+                        <div>
+                          <h4 className="font-bold text-sm text-[#000000] dark:text-white">
+                            {isHindi ? warning.titleHi : warning.titleEn}
+                          </h4>
+                          {warning.tagValue && (
+                            <span className="inline-block mt-0.5 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/10 dark:bg-white/10 text-gray-800 dark:text-zinc-200">
+                              {warning.tagValue}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                          warning.severity === "high"
+                            ? "bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300"
+                            : "bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300"
+                        }`}
+                      >
+                        {warning.severity === "high" ? (isHindi ? "उच्च जोखिम" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
+                      </span>
+                    </div>
+                    <p className="text-xs mt-2 text-[#111827] dark:text-zinc-300 leading-relaxed font-medium">
+                      {isHindi ? warning.descriptionHi : warning.descriptionEn}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Adulteration Risk & FSSAI Notes */}
+            <div
+              className={`p-4 rounded-2xl border ${
+                isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
+              }`}
+            >
+              <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399] mb-2">
+                <ShieldCheck className="w-5 h-5 text-[#10B981]" />
+                <h4 className="font-bold text-sm text-[#000000] dark:text-white">
+                  {isHindi ? "मिलावट एवं एफएसएसएआई सुरक्षा जांच" : "Adulteration & FSSAI Safety Audit"}
+                </h4>
+              </div>
+              <p className="text-xs text-[#111827] dark:text-zinc-300 leading-relaxed font-medium">
+                {isHindi ? product.adulterationCheck.detailsHi : product.adulterationCheck.detailsEn}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: INGREDIENTS DECODER */}
+        {activeTab === "ingredients" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div
+              className={`p-4 rounded-2xl border ${
+                isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-sm flex items-center gap-2 text-[#000000] dark:text-white">
+                  <Wheat className="w-4 h-4 text-[#10B981]" />
+                  <span>{isHindi ? "सामग्री सूची डिकोडर" : "Ingredients & E-Code Decoder"}</span>
+                </h3>
+                <span className="text-xs text-gray-500 font-bold">
+                  {product.ingredientsExplanation.length} {isHindi ? "तत्व" : "Items"}
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {product.ingredientsExplanation.map((ing, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
+                      ing.safety === "hazard"
+                        ? "bg-red-50 border-red-200 text-red-900 dark:bg-red-950/40 dark:border-red-800 dark:text-red-200"
+                        : ing.safety === "caution"
+                        ? "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200"
+                        : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-[#111827] dark:text-zinc-200"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#000000] dark:text-white">
+                          {isHindi ? ing.nameHi || ing.name : ing.name}
+                        </span>
+                        {isHindi && ing.nameHi && (
+                          <span className="text-[10px] text-gray-500 dark:text-zinc-400">
+                            ({ing.name})
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-600 dark:text-zinc-400 mt-0.5 font-medium">
+                        {ing.purpose}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase flex-shrink-0 ${
+                        ing.safety === "hazard"
+                          ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
+                          : ing.safety === "caution"
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                          : "bg-emerald-100 text-[#059669] dark:bg-emerald-950 dark:text-[#34D399]"
+                      }`}
+                    >
+                      {ing.safety === "hazard" ? (isHindi ? "हानिकारक" : "Hazard") : ing.safety === "caution" ? (isHindi ? "सावधानी" : "Caution") : (isHindi ? "सुरक्षित" : "Safe")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: NUTRITION FACTS */}
+        {activeTab === "nutrition" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div
+              className={`p-4 rounded-2xl border ${
+                isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-bold text-sm text-[#000000] dark:text-white">
+                    {isHindi ? "पोषण संबंधी जानकारी (प्रति 100 ग्राम)" : "Nutrition Facts (Per 100g)"}
+                  </h3>
+                  <p className="text-[11px] text-gray-500 font-medium">
+                    {isHindi ? "भारतीय आईसीएमआर (ICMR) दिशानिर्देशों पर आधारित" : "Benchmark against Indian daily limits"}
+                  </p>
+                </div>
+                <Scale className="w-5 h-5 text-[#10B981]" />
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                <div className="p-3 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Energy</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.calories}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Protein</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.protein}
+                  </p>
+                </div>
+
+                <div
+                  className={`p-3 rounded-xl border ${
+                    parseFloat(product.nutritionPer100g.sugar) > 15
+                      ? "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800"
+                      : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
+                  }`}
+                >
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Total Sugar</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.sugar}
+                  </p>
+                  {product.nutritionPer100g.addedSugar && (
+                    <span className="text-[10px] text-red-500 font-bold block">
+                      ({product.nutritionPer100g.addedSugar} Added)
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  className={`p-3 rounded-xl border ${
+                    parseFloat(product.nutritionPer100g.totalFat) > 20
+                      ? "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800"
+                      : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
+                  }`}
+                >
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Total Fat</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.totalFat}
+                  </p>
+                  {product.nutritionPer100g.saturatedFat && (
+                    <span className="text-[10px] text-amber-500 font-bold block">
+                      ({product.nutritionPer100g.saturatedFat} Sat. Fat)
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  className={`p-3 rounded-xl border ${
+                    parseInt(product.nutritionPer100g.sodium) > 600
+                      ? "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800"
+                      : "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800"
+                  }`}
+                >
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Sodium</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.sodium}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
+                  <span className="text-[10px] text-gray-500 uppercase font-bold">Carbohydrates</span>
+                  <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                    {product.nutritionPer100g.carbohydrates}
+                  </p>
+                </div>
+
+                {product.nutritionPer100g.transFat && (
+                  <div className="p-3 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
+                    <span className="text-[10px] text-gray-500 uppercase font-bold">Trans Fat</span>
+                    <p className="text-lg font-black mt-0.5 text-[#000000] dark:text-white">
+                      {product.nutritionPer100g.transFat}
+                    </p>
+                  </div>
+                )}
+
+                {product.nutritionPer100g.fiber && (
+                  <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+                    <span className="text-[10px] text-[#059669] uppercase font-bold">Fiber</span>
+                    <p className="text-lg font-black mt-0.5 text-[#059669] dark:text-[#34D399]">
+                      {product.nutritionPer100g.fiber}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: CLEANER INDIAN ALTERNATIVES */}
+        {activeTab === "alternatives" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#059669] dark:text-[#34D399] flex items-center gap-1.5">
+                  <span className="text-sm leading-none">🌾</span>
+                  <span>{isHindi ? "स्वस्थ एवं शुद्ध भारतीय विकल्प" : "Cleaner Indian Alternatives"}</span>
+                </h3>
+                <span className="text-xs text-gray-500 font-medium">
+                  {isHindi ? "किराना सुपरमार्केट्स पर उपलब्ध" : "Blinkit / Zepto / Supermarkets"}
+                </span>
+              </div>
+
+              {product.cleanerAlternatives.length === 0 ? (
+                <div className="p-6 rounded-2xl bg-zinc-900 text-center text-zinc-300 border border-zinc-800">
+                  <p className="text-xs font-medium">
+                    {isHindi ? "यह उत्पाद पहले से ही श्रेणी में सर्वोत्तम है!" : "This product already has a top-tier health score!"}
+                  </p>
+                </div>
+              ) : (
+                product.cleanerAlternatives.map((alt, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-2xl border transition-all ${
+                      isDark ? "bg-[#18181B] border-zinc-800 hover:border-emerald-700/60" : "bg-white border-gray-200 hover:border-emerald-300 shadow-sm"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                            {alt.brand}
+                          </span>
+                          {alt.priceEst && (
+                            <span className="text-xs text-gray-500 font-semibold">{alt.priceEst}</span>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-sm text-[#000000] dark:text-white mt-1">
+                          {alt.name}
+                        </h4>
+                        <p className="text-xs text-[#111827] dark:text-zinc-300 mt-1.5 leading-relaxed font-medium">
+                          {isHindi ? alt.reasonHi : alt.reasonEn}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <div className="px-2.5 py-1 rounded-xl bg-[#10B981] text-white font-black text-xs shadow-sm">
+                          {alt.score}/100
+                        </div>
+                        <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399]">
+                          +{alt.score - product.healthScore} Pts
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Primary Action Buttons Bar */}
+        <div className="pt-2 space-y-3">
+          {/* Add to List Button */}
+          <button
+            id="result-save-toggle-btn"
+            onClick={handleSaveClick}
+            className={`w-full py-3.5 rounded-full font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.99] cursor-pointer ${
+              isSaved
+                ? "bg-zinc-900 text-[#10B981] border border-[#10B981]/40"
+                : "bg-gradient-to-r from-[#059669] via-[#10B981] to-[#34D399] hover:brightness-105 text-white shadow-[#10B981]/25"
+            }`}
+          >
+            {isSaved ? (
+              <>
+                <BookmarkCheck className="w-5 h-5 text-[#10B981]" />
+                <span>{isHindi ? "मेरी लिस्ट में सहेजा गया (Saved to List)" : "Saved in My Grocery List"}</span>
+              </>
+            ) : (
+              <>
+                <Bookmark className="w-5 h-5" />
+                <span>{isHindi ? "मेरे लिस्ट में डालो (Save to List)" : "Mere List Mein Daalo"}</span>
+              </>
+            )}
+          </button>
+
+          {/* Share on WhatsApp Button */}
+          <button
+            id="result-whatsapp-share-btn"
+            onClick={() => setIsShareModalOpen(true)}
+            className={`w-full py-3 rounded-full font-bold text-xs flex items-center justify-center gap-2 border transition-all cursor-pointer ${
+              isDark
+                ? "bg-[#18181B] border-zinc-800 text-zinc-200 hover:bg-zinc-800"
+                : "bg-white border-gray-200 text-[#111827] hover:bg-gray-50 shadow-xs"
+            }`}
+          >
+            <Share2 className="w-4 h-4 text-[#10B981]" />
+            <span>{isHindi ? "व्हाट्सएप पर शेयर करें (WhatsApp Share)" : "Share Score Card on WhatsApp"}</span>
+          </button>
+        </div>
+
+        {/* Contact Support Section */}
+        <ContactSupport language={language} isDark={isDark} />
+      </div>
+
+      {/* WhatsApp Share Card Modal */}
+      <WhatsAppShareModal
+        product={product}
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        language={language}
+      />
+    </div>
+  );
+};
