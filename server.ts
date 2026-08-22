@@ -39,7 +39,66 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// API: Open Food Facts Real-time Proxy with Fallbacks
+// API: Open Food Facts Product Search Proxy
+app.get("/api/openfoodfacts/search", async (req, res) => {
+  const query = (req.query.q as string || "").trim();
+  const page = req.query.page || "1";
+  const pageSize = req.query.pageSize || "24";
+
+  if (!query) {
+    return res.json({ success: true, count: 0, products: [] });
+  }
+
+  try {
+    const searchUrls = [
+      // 1. Direct India Open Food Facts search
+      `https://in.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`,
+      // 2. India tagged country search in Open Food Facts
+      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&tagtype_0=countries&tag_contains_0=contains&tag_0=india&action=process&json=1&page_size=${pageSize}&page=${page}`,
+      // 3. Fallback generic search
+      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`,
+    ];
+
+    for (const url of searchUrls) {
+      try {
+        const fetchRes = await fetch(url, {
+          headers: {
+            "User-Agent": "AharIQ-IndianFoodSafety/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
+            "Accept": "application/json",
+          },
+          signal: AbortSignal.timeout(4500),
+        });
+
+        if (fetchRes.ok) {
+          const data = (await fetchRes.json()) as any;
+          if (data && Array.isArray(data.products) && data.products.length > 0) {
+            return res.json({
+              success: true,
+              source: "open_food_facts",
+              count: data.count || data.products.length,
+              page: data.page || 1,
+              products: data.products,
+            });
+          }
+        }
+      } catch (err) {
+        // try next search mirror
+      }
+    }
+
+    return res.json({
+      success: true,
+      count: 0,
+      products: [],
+      message: "No products found in Open Food Facts matching query",
+    });
+  } catch (error: any) {
+    console.error("Open Food Facts search proxy error:", error);
+    return res.status(500).json({ success: false, error: error.message, products: [] });
+  }
+});
+
+// API: Open Food Facts Real-time Proxy with Fallbacks (by barcode)
 app.get("/api/openfoodfacts/:barcode", async (req, res) => {
   const barcode = req.params.barcode;
   if (!barcode) {

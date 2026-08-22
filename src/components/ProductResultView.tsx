@@ -97,30 +97,30 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   return (
     <div
       id="product-result-screen"
-      className={`min-h-screen pb-24 transition-colors ${
+      className={`min-h-screen pb-24 transition-colors w-full max-w-full overflow-x-hidden ${
         isDark ? "bg-[#09090B] text-zinc-100" : "bg-[#F8FAFC] text-[#111827]"
       }`}
     >
       {/* Top Sticky Header */}
       <div
-        className={`sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between backdrop-blur-md ${
+        className={`sticky top-0 z-30 px-3 sm:px-4 py-2.5 sm:py-3 border-b flex items-center justify-between backdrop-blur-md w-full max-w-full overflow-hidden ${
           isDark ? "bg-[#09090B]/90 border-zinc-800" : "bg-white/90 border-gray-200"
         }`}
       >
         <button
           id="result-back-btn"
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-[#111827] dark:text-zinc-100"
+          className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-[#111827] dark:text-zinc-100 flex-shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{isHindi ? "वापस" : "Back"}</span>
         </button>
 
-        <span className="text-xs font-bold font-mono tracking-wider text-gray-400 uppercase">
+        <span className="text-[11px] sm:text-xs font-bold font-mono tracking-wider text-gray-400 uppercase truncate px-2">
           {product.category}
         </span>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {/* Share Button */}
           <button
             id="result-share-top-btn"
@@ -153,7 +153,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 pt-4 space-y-4">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 pt-3 sm:pt-4 space-y-4 w-full">
         {/* Main Product Hero Card */}
         <div
           className={`rounded-3xl p-5 border shadow-sm transition-all ${

@@ -30,6 +30,7 @@ import {
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { decodeBarcodeFromCanvas } from "../utils/barcodeScanner";
 import { fetchProductFromOpenFoodFacts, calculateScoreFromManualNutrition } from "../services/openFoodFacts";
+import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import { ContributeProductModal } from "./ContributeProductModal";
 import { HeartHandshake } from "lucide-react";
 
@@ -772,17 +773,10 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           sodium: "450mg",
           fiber: hasMaida ? "0.8g" : "3.5g",
         },
-        cleanerAlternatives: [
-          INDIAN_PRODUCTS_DB[3], // Slurrp Farm
-          INDIAN_PRODUCTS_DB[4], // The Whole Truth
-        ].map((p) => ({
-          name: p.name,
-          brand: p.brand,
-          score: p.healthScore,
-          priceEst: "₹120 - ₹180",
-          reasonEn: "100% Whole grain, zero palm oil, zero chemical INS preservatives.",
-          reasonHi: "शून्य पाम ऑयल, साबुत अनाज और बिना किसी हानिकारक रसायन के बना।",
-        })),
+        cleanerAlternatives: getSmartCleanerAlternatives({
+          name: isHindi ? "कस्टम सामग्री लेबल ऑडिट" : "Custom Ingredient Label Audit",
+          ingredientsText: ingredientText,
+        }),
       };
 
       stopCamera();

@@ -12,6 +12,7 @@ import { AdulterationGuideScreen } from "./components/AdulterationGuideScreen";
 import { AuthModal } from "./components/AuthModal";
 import { AboutAndPrivacyModal } from "./components/AboutAndPrivacyModal";
 import { AdminDashboard } from "./components/AdminDashboard";
+import { InstallPwaPrompt } from "./components/InstallPwaPrompt";
 import {
   auth,
   recordScanToCloud,
@@ -57,6 +58,7 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState<boolean>(false);
   const [isAboutPrivacyOpen, setIsAboutPrivacyOpen] = useState<boolean>(false);
+  const [isInstallPwaOpen, setIsInstallPwaOpen] = useState<boolean>(false);
   const [aboutPrivacyTab, setAboutPrivacyTab] = useState<"about" | "privacy">(
     "about"
   );
@@ -245,7 +247,7 @@ export default function App() {
   return (
     <div
       id="ahariq-app-root"
-      className={`min-h-screen font-sans antialiased selection:bg-[#10B981] selection:text-white ${
+      className={`min-h-screen w-full max-w-full overflow-x-hidden font-sans antialiased selection:bg-[#10B981] selection:text-white ${
         isDark
           ? "dark bg-[#09090B] text-zinc-100"
           : "bg-[#F8FAFC] text-[#111827]"
@@ -269,11 +271,12 @@ export default function App() {
           onOpenAbout={handleOpenAbout}
           onOpenPrivacy={handleOpenPrivacy}
           onOpenAdmin={() => setIsAdminDashboardOpen(true)}
+          onOpenInstallPwa={() => setIsInstallPwaOpen(true)}
         />
       )}
 
       {/* Main Screen Views */}
-      <main id="main-content-viewport">
+      <main id="main-content-viewport" className="w-full max-w-full overflow-x-hidden">
         {selectedProduct ? (
           <ProductResultView
             product={selectedProduct}
@@ -294,6 +297,7 @@ export default function App() {
             onNavigateCategory={(cat) => {}}
             user={user}
             onOpenAuth={() => setIsAuthOpen(true)}
+            onOpenInstallPwa={() => setIsInstallPwaOpen(true)}
           />
         ) : currentTab === "saved" ? (
           <SavedListScreen
@@ -341,6 +345,14 @@ export default function App() {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onProductScanned={handleProductScanned}
+        language={language}
+        isDark={isDark}
+      />
+
+      {/* PWA Install App Modal */}
+      <InstallPwaPrompt
+        isOpen={isInstallPwaOpen}
+        onClose={() => setIsInstallPwaOpen(false)}
         language={language}
         isDark={isDark}
       />

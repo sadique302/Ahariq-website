@@ -45,11 +45,11 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
   return (
     <div
       id="history-screen-view"
-      className={`min-h-screen pb-24 transition-colors ${
+      className={`min-h-screen pb-24 transition-colors w-full max-w-full overflow-x-hidden ${
         isDark ? "bg-stone-950 text-stone-100" : "bg-stone-100/90 text-stone-900"
       }`}
     >
-      <div className="max-w-3xl mx-auto p-4 space-y-4">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-4 w-full">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

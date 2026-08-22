@@ -1456,5 +1456,220 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       }
     ],
     novaGroup: 4
+  },
+  {
+    id: "harvest-gold-white-bread",
+    barcode: "8906001020012",
+    name: "Harvest Gold White Bread (Sandwich Bread)",
+    nameHindi: "हार्वेस्ट गोल्ड व्हाइट ब्रेड (सैंडविच ब्रेड)",
+    brand: "Harvest Gold (Grupo Bimbo)",
+    category: "Bread & Bakery",
+    categoryHindi: "ब्रेड और बेकरी",
+    imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
+    healthScore: 28,
+    verdict: "Avoid Karein",
+    verdictHindi: "बचने की सलाह",
+    verdictType: "red",
+    summaryEn: "Formulated with 76% Refined Wheat Flour (Maida), Palm Oil, Class II Preservatives (INS 282), and chemical dough conditioners (INS 471/481). High glycemic index triggers rapid blood sugar and insulin spikes.",
+    summaryHi: "76% मैदा, पाम ऑयल, केमिकल प्रिजर्वेटिव (INS 282) और इमल्सीफायर से तैयार। फाइबर की कमी के कारण ब्लड शुगर और इंसुलिन तेजी से बढ़ता है।",
+    isVegetarian: true,
+    fssaiNumber: "10012011000109",
+    packagingSize: "400g / 700g",
+    warnings: [
+      {
+        type: "maida",
+        titleEn: "76% Refined Wheat Flour (Maida)",
+        titleHi: "76% मैदा (रिफाइंड आटा)",
+        severity: "high",
+        tagValue: "76% Maida Base",
+        descriptionEn: "Stripped of whole wheat bran and germ, leaving only pure starch that converts rapidly to glucose.",
+        descriptionHi: "बिना चोकर का रिफाइंड आटा जो आंतों में चिपकता है और पाचन को सुस्त बनाता है।"
+      },
+      {
+        type: "palm_oil",
+        titleEn: "Refined Palm Oil Shortening",
+        titleHi: "रिफाइंड पाम ऑयल",
+        severity: "high",
+        tagValue: "Palm Fat Shortening",
+        descriptionEn: "Used to soften bread crumb and reduce production cost. High in saturated palmitic acid.",
+        descriptionHi: "ब्रेड को मुलायम रखने के लिए पाम फैट का उपयोग जो बैड कोलेस्ट्रॉल बढ़ाता है।"
+      },
+      {
+        type: "preservatives",
+        titleEn: "INS 282 Calcium Propionate & INS 481",
+        titleHi: "केमिकल प्रिजर्वेटिव INS 282 और इमल्सीफायर",
+        severity: "medium",
+        tagValue: "INS 282 / 471 / 481",
+        descriptionEn: "Chemical mould inhibitors and crumb softeners that may trigger gut microbiome imbalances.",
+        descriptionHi: "फफूंद रोकने के लिए डाले जाने वाले केमिकल एडिटिव्स।"
+      }
+    ],
+    nutritionPer100g: {
+      calories: "258 kcal",
+      protein: "7.8g",
+      carbohydrates: "51.2g",
+      sugar: "4.5g",
+      addedSugar: "3.5g",
+      totalFat: "2.4g",
+      saturatedFat: "1.1g",
+      transFat: "0.0g",
+      sodium: "490mg",
+      fiber: "1.2g"
+    },
+    ingredientsList: [
+      "Refined Wheat Flour (Maida 76%)",
+      "Water",
+      "Sugar",
+      "Yeast",
+      "Edible Vegetable Fat (Palm Oil)",
+      "Iodised Salt",
+      "Soya Flour",
+      "Emulsifiers (INS 471, INS 481(i))",
+      "Preservative (INS 282)",
+      "Acidity Regulator (INS 260)",
+      "Flour Treatment Agent (INS 1100(i))"
+    ],
+    ingredientsExplanation: [
+      { name: "Maida (76%)", nameHi: "मैदा", purpose: "Cheap bulk refined flour with zero wheat bran", safety: "hazard" },
+      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Crumb softness and shelf stabilization", safety: "hazard" },
+      { name: "INS 282 (Calcium Propionate)", nameHi: "कैल्शियम प्रोपियोनेट", purpose: "Anti-fungal preservative", safety: "caution" },
+      { name: "INS 481 (Sodium Stearoyl Lactylate)", nameHi: "डफ कंडीशनर", purpose: "Synthetic texture enhancer", safety: "caution" },
+      { name: "Yeast & Salt", nameHi: "यीस्ट व नमक", purpose: "Natural fermentation & seasoning", safety: "safe" }
+    ],
+    adulterationCheck: {
+      riskLevel: "Low",
+      detailsEn: "Manufactured under industrial hygiene norms, but chemically preserved refined maida profile.",
+      detailsHi: "औद्योगिक रूप से तैयार, लेकिन मैदा और प्रिजर्वेटिव्स से भरपूर।"
+    },
+    cleanerAlternatives: [
+      {
+        id: "the-health-factory-zero-maida-bread",
+        name: "The Health Factory Zero Maida Whole Wheat Bread",
+        brand: "The Health Factory",
+        score: 94,
+        priceEst: "₹55",
+        reasonEn: "100% Whole Wheat Flour, 0% Maida, 0% Palm Oil, zero chemical bleaching or caramel color INS 150d.",
+        reasonHi: "100% साबुत गेहूं का आटा, शून्य मैदा, शून्य पाम ऑयल, बिना हानिकारक ब्लीच या कैरेमल कलर के तैयार।",
+        tags: ["Zero Maida", "100% Whole Wheat", "No Palm Oil"]
+      },
+      {
+        id: "the-bakers-dozen-wholewheat-sourdough",
+        name: "The Baker's Dozen 100% Wholewheat Sourdough Loaf",
+        brand: "The Baker's Dozen",
+        score: 96,
+        priceEst: "₹79",
+        reasonEn: "Naturally slow-fermented with wild sourdough starter. No chemical emulsifiers (INS 471/481) or artificial preservatives.",
+        reasonHi: "प्राकृतिक खमीर (Sourdough) से फर्मेंटेड। केमिकल इमल्सीफायर और प्रिजर्वेटिव्स से पूरी तरह मुक्त।",
+        tags: ["Natural Sourdough", "Gut Friendly", "Chemical Free"]
+      },
+      {
+        id: "english-oven-atta-bread",
+        name: "English Oven 100% Atta Bread",
+        brand: "English Oven",
+        score: 86,
+        priceEst: "₹50",
+        reasonEn: "Made with genuine whole wheat flour; higher dietary fiber compared to commercial white maida bread.",
+        reasonHi: "साबुत गेहूं के आटे से निर्मित, सामान्य सफेद ब्रेड की तुलना में अधिक पाचक फाइबर।",
+        tags: ["High Fiber", "Whole Wheat", "Clean Toasting"]
+      }
+    ],
+    novaGroup: 4
+  },
+  {
+    id: "britannia-100-whole-wheat-bread",
+    barcode: "8901063141128",
+    name: "Britannia 100% Whole Wheat Bread (Brown Bread)",
+    nameHindi: "ब्रिटानिया 100% होल व्हीट ब्रेड (ब्राउन ब्रेड)",
+    brand: "Britannia Industries",
+    category: "Bread & Bakery",
+    categoryHindi: "ब्रेड और बेकरी",
+    imageUrl: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=600&auto=format&fit=crop&q=80",
+    healthScore: 64,
+    verdict: "Soch Samajh Kar",
+    verdictHindi: "सोच समझ कर",
+    verdictType: "yellow",
+    summaryEn: "Better than white bread because it uses whole wheat flour, but contains added refined Palm Oil, INS 150d Caramel color (to darken the brown shade), and class II chemical preservatives.",
+    summaryHi: "सफेद ब्रेड से बेहतर क्योंकि इसमें गेहूं का आटा है, लेकिन ब्रेड को गहरा भूरा दिखाने के लिए कैरेमल रंग (INS 150d), पाम ऑयल और प्रिजर्वेटिव्स मिलाए गए हैं।",
+    isVegetarian: true,
+    fssaiNumber: "10015043001129",
+    packagingSize: "400g",
+    warnings: [
+      {
+        type: "palm_oil",
+        titleEn: "Contains Refined Palm Oil",
+        titleHi: "रिफाइंड पाम ऑयल",
+        severity: "medium",
+        tagValue: "Refined Palm Fat",
+        descriptionEn: "Added vegetable fat shortening for moisture retention and longer commercial shelf life.",
+        descriptionHi: "नमी और शेल्फ लाइफ बढ़ाने के लिए पाम फैट का उपयोग।"
+      },
+      {
+        type: "preservatives",
+        titleEn: "Caramel IV (INS 150d) & Preservatives",
+        titleHi: "कैरेमल रंग (INS 150d) व प्रिजर्वेटिव्स",
+        severity: "medium",
+        tagValue: "INS 150d Color",
+        descriptionEn: "Synthetic dark caramel dye added to create a deep wholesome brown appearance.",
+        descriptionHi: "ब्रेड को 'ब्राउन' रंग देने के लिए कैरेमल कलर का इस्तेमाल।"
+      }
+    ],
+    nutritionPer100g: {
+      calories: "245 kcal",
+      protein: "8.5g",
+      carbohydrates: "46.0g",
+      sugar: "3.8g",
+      addedSugar: "2.8g",
+      totalFat: "2.8g",
+      saturatedFat: "1.2g",
+      transFat: "0.0g",
+      sodium: "460mg",
+      fiber: "5.5g"
+    },
+    ingredientsList: [
+      "Whole Wheat Flour (Atta 55%)",
+      "Water",
+      "Sugar",
+      "Yeast",
+      "Edible Vegetable Oil (Palmolein)",
+      "Iodised Salt",
+      "Caramel Color (INS 150d)",
+      "Emulsifiers (INS 471, INS 481(i))",
+      "Preservative (INS 282)",
+      "Acidity Regulator (INS 270)"
+    ],
+    ingredientsExplanation: [
+      { name: "Whole Wheat Flour (Atta)", nameHi: "साबुत गेहूं आटा", purpose: "Grain base with dietary fiber", safety: "safe" },
+      { name: "INS 150d (Caramel IV)", nameHi: "कैरेमल रंग", purpose: "Synthetic brown coloring", safety: "caution" },
+      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Shortening agent", safety: "caution" },
+      { name: "INS 282", nameHi: "प्रिजर्वेटिव", purpose: "Mould inhibitor", safety: "caution" }
+    ],
+    adulterationCheck: {
+      riskLevel: "Low",
+      detailsEn: "Complies with FSSAI whole wheat naming regulations.",
+      detailsHi: "एफएसएसएआई मानकों पर आधारित।"
+    },
+    cleanerAlternatives: [
+      {
+        id: "the-health-factory-zero-maida-bread",
+        name: "The Health Factory Zero Maida Whole Wheat Bread",
+        brand: "The Health Factory",
+        score: 94,
+        priceEst: "₹55",
+        reasonEn: "100% Whole Wheat Flour, 0% Maida, 0% Palm Oil, zero chemical bleach or caramel color INS 150d.",
+        reasonHi: "100% साबुत गेहूं का आटा, शून्य मैदा, शून्य पाम ऑयल, बिना हानिकारक ब्लीच या कैरेमल कलर के तैयार।",
+        tags: ["Zero Maida", "100% Whole Wheat", "No Palm Oil"]
+      },
+      {
+        id: "the-bakers-dozen-wholewheat-sourdough",
+        name: "The Baker's Dozen 100% Wholewheat Sourdough Loaf",
+        brand: "The Baker's Dozen",
+        score: 96,
+        priceEst: "₹79",
+        reasonEn: "Naturally slow-fermented with wild sourdough starter. No chemical emulsifiers (INS 471/481) or artificial preservatives.",
+        reasonHi: "प्राकृतिक खमीर (Sourdough) से फर्मेंटेड। केमिकल इमल्सीफायर और प्रिजर्वेटिव्स से पूरी तरह मुक्त।",
+        tags: ["Natural Sourdough", "Gut Friendly", "Chemical Free"]
+      }
+    ],
+    novaGroup: 3
   }
 ];
