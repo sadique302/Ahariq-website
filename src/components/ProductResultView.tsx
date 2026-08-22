@@ -418,6 +418,55 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 {isHindi ? product.adulterationCheck.detailsHi : product.adulterationCheck.detailsEn}
               </p>
             </div>
+
+            {/* DIRECT HIGHLIGHT: Recommended Healthy Switch / Alternatives Preview */}
+            {product.cleanerAlternatives && product.cleanerAlternatives.length > 0 && (
+              <div className="p-4 rounded-2xl border bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399]">
+                    <span className="text-base">💡</span>
+                    <h4 className="font-bold text-sm text-[#000000] dark:text-white">
+                      {isHindi ? "इसके बदले क्या लें? (स्वस्थ विकल्प)" : "What to drink/eat instead? (Healthy Switch)"}
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab("alternatives")}
+                    className="text-xs font-bold text-[#059669] dark:text-[#34D399] hover:underline cursor-pointer"
+                  >
+                    {isHindi ? "सभी देखें →" : "View all →"}
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {product.cleanerAlternatives.slice(0, 2).map((alt, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveTab("alternatives")}
+                      className={`p-3 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
+                        isDark ? "bg-zinc-900/90 border-zinc-800 hover:border-emerald-500/50" : "bg-white border-emerald-100 hover:border-emerald-300 shadow-2xs"
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
+                            {alt.brand}
+                          </span>
+                          <h5 className="font-bold text-xs text-[#000000] dark:text-white">
+                            {alt.name}
+                          </h5>
+                        </div>
+                        <p className="text-[11px] text-[#111827] dark:text-zinc-300 mt-1 leading-snug font-medium">
+                          {isHindi ? alt.reasonHi : alt.reasonEn}
+                        </p>
+                      </div>
+                      <div className="px-2 py-0.5 rounded-lg bg-[#10B981] text-white font-black text-[11px] flex-shrink-0">
+                        {alt.score}/100
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

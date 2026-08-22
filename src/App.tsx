@@ -164,15 +164,35 @@ export default function App() {
   };
 
   const handleProductScanned = (product: FoodProduct) => {
-    setScanHistory((prev) => {
-      const filtered = prev.filter((p) => p.barcode !== product.barcode);
-      return [{ ...product, scannedAt: new Date().toISOString() }, ...filtered];
-    });
-    setSelectedProduct(product);
+    setIsScannerOpen(false);
 
-    // Sync scan to Firebase Cloud
+    // Create lightweight history item without heavy base64 to keep localStorage blazing fast
+    const isBase64 = product.imageUrl?.startsWith("data:");
+    const sanitizedProduct: FoodProduct = {
+      ...product,
+      imageUrl: isBase64
+        ? product.imageUrl
+        : (product.imageUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80"),
+    };
+
+    setScanHistory((prev) => {
+      const filtered = prev.filter((p) => p.barcode !== sanitizedProduct.barcode && p.id !== sanitizedProduct.id);
+      // For local storage, if image is a massive base64, save with default image so memory stays 0ms fast
+      const historyItem: FoodProduct = {
+        ...sanitizedProduct,
+        imageUrl: isBase64
+          ? "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80"
+          : sanitizedProduct.imageUrl,
+        scannedAt: new Date().toISOString(),
+      };
+      return [historyItem, ...filtered.slice(0, 40)];
+    });
+
+    setSelectedProduct(sanitizedProduct);
+
+    // Sync scan to Firebase Cloud in background
     const uid = user.id || "guest_device";
-    recordScanToCloud(uid, product);
+    recordScanToCloud(uid, sanitizedProduct);
   };
 
   const handleToggleSave = (product: FoodProduct) => {

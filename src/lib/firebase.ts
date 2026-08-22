@@ -24,7 +24,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import firebaseConfigData from "../../firebase-applet-config.json";
-import { FoodProduct, UserProfile } from "../types";
+import { FoodProduct, UserProfile, CommunityContribution } from "../types";
 
 // Firebase Configuration (supports Vercel Environment Variables with automatic fallback)
 const env = (import.meta as any).env || {};
@@ -178,6 +178,80 @@ export async function syncSavedItemToCloud(
 }
 
 /**
+ * Submit community product (with 3 photos) to Firestore
+ */
+export async function submitCommunityContribution(
+  data: CommunityContribution
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  try {
+    const coll = collection(db, "community_contributions");
+    const docRef = await addDoc(coll, {
+      ...data,
+      createdAt: data.createdAt || new Date().toISOString(),
+      status: "pending_review",
+    });
+
+    // Also register in custom_products so it is discoverable
+    try {
+      const customCol = collection(db, "custom_products");
+      await addDoc(customCol, {
+        barcode: data.barcode,
+        name: data.productName,
+        brand: data.brand || "Community Product",
+        imageUrl: data.frontPhotoUrl || "",
+        frontPhotoUrl: data.frontPhotoUrl || "",
+        ingredientsPhotoUrl: data.ingredientsPhotoUrl || "",
+        nutritionPhotoUrl: data.nutritionPhotoUrl || "",
+        submittedBy: data.submittedBy || "AharIQ Contributor",
+        submittedByEmail: data.submittedByEmail || "",
+        createdAt: new Date().toISOString(),
+        status: "verified",
+        healthScore: data.healthScore || 70,
+        verdict: "Soch Samajh Kar",
+        category: data.category || "Community Product",
+      });
+    } catch (e) {
+      console.warn("custom_products sync warn:", e);
+    }
+
+    return { success: true, id: docRef.id };
+  } catch (err: any) {
+    console.error("Community contribution error:", err);
+    return { success: false, error: err?.message || String(err) };
+  }
+}
+
+/**
+ * Fetch all community contributions for Admin Panel
+ */
+export async function fetchAllCommunityContributions(): Promise<CommunityContribution[]> {
+  try {
+    const coll = collection(db, "community_contributions");
+    const q = query(coll, orderBy("createdAt", "desc"), limit(100));
+    const snap = await getDocs(q);
+    const results: CommunityContribution[] = [];
+    snap.forEach((docSnap) => {
+      results.push({ id: docSnap.id, ...(docSnap.data() as any) });
+    });
+    return results;
+  } catch (err) {
+    // fallback if no orderBy index yet
+    try {
+      const coll = collection(db, "community_contributions");
+      const snap = await getDocs(coll);
+      const results: CommunityContribution[] = [];
+      snap.forEach((docSnap) => {
+        results.push({ id: docSnap.id, ...(docSnap.data() as any) });
+      });
+      return results;
+    } catch (e) {
+      console.warn("Fetch contributions error:", e);
+      return [];
+    }
+  }
+}
+
+/**
  * Submit community product to Firestore
  */
 export async function submitCrowdsourcedProductToCloud(
@@ -239,6 +313,9 @@ export async function fetchRealAdminStatsFromCloud() {
     const savedList: any[] = [];
     savedSnap.forEach((d) => savedList.push({ id: d.id, ...d.data() }));
 
+    // 4. Fetch Community Contributions
+    const contribs = await fetchAllCommunityContributions();
+
     return {
       totalUsers: usersList.length,
       users: usersList,
@@ -248,6 +325,8 @@ export async function fetchRealAdminStatsFromCloud() {
       ),
       totalSaved: savedList.filter((item) => !item.deleted).length,
       savedItems: savedList,
+      totalContributions: contribs.length,
+      contributions: contribs,
       error: undefined,
     };
   } catch (err: any) {
@@ -259,6 +338,8 @@ export async function fetchRealAdminStatsFromCloud() {
       recentScans: [],
       totalSaved: 0,
       savedItems: [],
+      totalContributions: 0,
+      contributions: [],
       error: err?.message || String(err),
     };
   }

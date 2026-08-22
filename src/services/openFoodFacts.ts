@@ -12,7 +12,8 @@ const ADDITIVE_DATABASE: Record<
   "e122": { nameEn: "Carmoisine (INS 122)", nameHi: "कारमोइसिन (लाल रंग)", purpose: "Synthetic red food dye", safety: "hazard", note: "Synthetic coal-tar dye with allergic potential." },
   "e124": { nameEn: "Ponceau 4R (INS 124)", nameHi: "पोनसो 4R (लाल रंग)", purpose: "Synthetic red dye", safety: "hazard", note: "Artificial color linked to allergic reactions." },
   "e129": { nameEn: "Allura Red (INS 129)", nameHi: "एलूरा रेड", purpose: "Synthetic red dye", safety: "hazard", note: "Azo dye triggering gut inflammation in high doses." },
-  "e150d": { nameEn: "Caramel IV (INS 150d)", nameHi: "कैरामेलाइज़्ड रंग IV", purpose: "Sulfite ammonia caramel color", safety: "caution", note: "Contains trace 4-MEI by-product." },
+  "e150d": { nameEn: "Caramel IV (INS 150d)", nameHi: "कैरामेलाइज़्ड रंग IV", purpose: "Sulfite ammonia caramel color", safety: "hazard", note: "Contains trace 4-MEI (4-Methylimidazole), flagged as possible carcinogen." },
+  "e338": { nameEn: "Phosphoric Acid (INS 338)", nameHi: "फॉस्फोरिक एसिड", purpose: "Acidulant in colas", safety: "hazard", note: "Erodes dental enamel and depletes bone calcium." },
   "e211": { nameEn: "Sodium Benzoate (INS 211)", nameHi: "सोडियम बेंजोएट", purpose: "Chemical preservative", safety: "caution", note: "Forms benzene when combined with vitamin C." },
   "e202": { nameEn: "Potassium Sorbate (INS 202)", nameHi: "पोटेशियम सोरबेट", purpose: "Antimicrobial preservative", safety: "safe", note: "Generally safe food preservative in low amounts." },
   "e223": { nameEn: "Sodium Metabisulfite (INS 223)", nameHi: "सोडियम मेटाबाइसल्फाइट", purpose: "Bleaching & preservative agent", safety: "caution", note: "Can trigger breathing difficulties in asthmatics." },
@@ -95,16 +96,37 @@ export function calculateHealthScoreFromOFF(productData: any): {
     });
   }
 
-  // 3. Sugar & Added Sugars Check (ICMR Limit: <10g per 100g, high if >15g)
+  // 3. Sugar & Added Sugars Check (ICMR Limit: <10g per 100g, for beverages >5g is high, >10g is critical)
   const sugarVal = parseFloat(nutriments.sugars_100g || nutriments.sugars || "0");
+  const categoriesText = (productData.categories || "").toLowerCase();
+  const isBeverage =
+    categoriesText.includes("beverage") ||
+    categoriesText.includes("drink") ||
+    categoriesText.includes("soda") ||
+    categoriesText.includes("cola") ||
+    ingredientsText.includes("carbonated water") ||
+    ingredientsText.includes("phosphoric acid");
+
   const hasAddedSugarInText =
     ingredientsText.includes("sugar") ||
     ingredientsText.includes("glucose") ||
     ingredientsText.includes("invert syrup") ||
     ingredientsText.includes("maltodextrin") ||
-    ingredientsText.includes("corn syrup");
+    ingredientsText.includes("corn syrup") ||
+    ingredientsText.includes("liquid glucose");
 
-  if (sugarVal >= 25) {
+  if (isBeverage && sugarVal >= 9) {
+    score -= 32;
+    warnings.push({
+      type: "added_sugar",
+      severity: "high",
+      titleEn: `High Liquid Sugar (${sugarVal}g / 100ml)`,
+      titleHi: `अत्यधिक घुली हुई चीनी (${sugarVal}g प्रति 100ml)`,
+      descriptionEn: "Liquid sugars (fructose/sucrose) bypass satiety cues, overloading the liver directly and triggering insulin spikes.",
+      descriptionHi: "कोल्ड्रिंक में घुली हुई चीनी सीधे फैटी लिवर, मोटापा और डायबिटीज को तेजी से बढ़ाती है।",
+      tagValue: `${sugarVal}g Liquid Sugar`,
+    });
+  } else if (sugarVal >= 25) {
     score -= 22;
     warnings.push({
       type: "added_sugar",
@@ -115,19 +137,19 @@ export function calculateHealthScoreFromOFF(productData: any): {
       descriptionHi: `100 ग्राम में लगभग 5-6 चम्मच चीनी है, जो फैटी लिवर और डायबिटीज का खतरा बढ़ाती है।`,
       tagValue: `${sugarVal}g Sugar`,
     });
-  } else if (sugarVal >= 15) {
-    score -= 14;
+  } else if (sugarVal >= 15 || (isBeverage && sugarVal >= 5)) {
+    score -= 16;
     warnings.push({
       type: "added_sugar",
       severity: "high",
-      titleEn: `High Sugar Load (${sugarVal}g / 100g)`,
-      titleHi: `उच्च चीनी स्तर (${sugarVal}g प्रति 100g)`,
-      descriptionEn: "Above recommended threshold for processed snack foods.",
-      descriptionHi: "भारतीय स्वास्थ्य मानकों के अनुसार चीनी की मात्रा अधिक है।",
+      titleEn: `High Sugar Load (${sugarVal}g)`,
+      titleHi: `उच्च चीनी स्तर (${sugarVal}g)`,
+      descriptionEn: "Above recommended threshold for healthy dietary limits.",
+      descriptionHi: "स्वास्थ्य मानकों के अनुसार चीनी की मात्रा अत्यधिक है।",
       tagValue: `${sugarVal}g Sugar`,
     });
-  } else if (sugarVal >= 8 || (hasAddedSugarInText && sugarVal > 5)) {
-    score -= 6;
+  } else if (sugarVal >= 8 || (hasAddedSugarInText && sugarVal > 4)) {
+    score -= 8;
   }
 
   // 4. Sodium & Salt Check (ICMR Warning if >600mg/100g)
@@ -237,9 +259,9 @@ export function calculateHealthScoreFromOFF(productData: any): {
   const protein = parseFloat(nutriments.proteins_100g || "0");
 
   if (fiber >= 5) score += 5;
-  if (protein >= 12) score += 4;
-  if (!textHasPalm && !textHasMaida && sugarVal <= 5 && additives.length <= 1) {
-    score += 8; // Clean label bonus
+  if (protein >= 12 && !isBeverage) score += 4;
+  if (!textHasPalm && !textHasMaida && !isBeverage && sugarVal <= 5 && additives.length <= 1) {
+    score += 8; // Clean label bonus only for solid whole foods
   }
 
   // Clamp final score cleanly between 10 and 99
@@ -293,15 +315,26 @@ export function calculateHealthScoreFromOFF(productData: any): {
  */
 export function mapOpenFoodFactsToAhariq(productData: any, barcode: string): FoodProduct {
   const nutriments = productData.nutriments || {};
-  const { score, verdict, verdictHindi, verdictType, warnings, summaryEn, summaryHi } =
-    calculateHealthScoreFromOFF(productData);
-
-  // Ingredients text breakdown
+  const categoriesText = (productData.categories || "").toLowerCase();
   const rawIngText =
     productData.ingredients_text ||
     productData.ingredients_text_en ||
     productData.ingredients_text_hi ||
     "";
+  const rawIngLower = rawIngText.toLowerCase();
+
+  const isBeverage =
+    categoriesText.includes("beverage") ||
+    categoriesText.includes("drink") ||
+    categoriesText.includes("soda") ||
+    categoriesText.includes("cola") ||
+    rawIngLower.includes("carbonated water") ||
+    rawIngLower.includes("phosphoric acid");
+
+  const sugarVal = parseFloat(nutriments.sugars_100g || nutriments.sugars || "0");
+
+  const { score, verdict, verdictHindi, verdictType, warnings, summaryEn, summaryHi } =
+    calculateHealthScoreFromOFF(productData);
 
   const ingredientsList = rawIngText
     ? rawIngText
@@ -390,35 +423,82 @@ export function mapOpenFoodFactsToAhariq(productData: any, barcode: string): Foo
       { name: "Main Formulation", nameHi: "मुख्य संघटक", purpose: "Core ingredient", safety: "safe" }
     ],
     nutritionPer100g: {
-      calories: nutriments["energy-kcal_100g"] ? `${Math.round(nutriments["energy-kcal_100g"])} kcal` : "380 kcal",
-      protein: `${nutriments.proteins_100g || nutriments.proteins || "6.0"}g`,
-      carbohydrates: `${nutriments.carbohydrates_100g || nutriments.carbohydrates || "60.0"}g`,
-      sugar: `${nutriments.sugars_100g || nutriments.sugars || "12.0"}g`,
+      calories: nutriments["energy-kcal_100g"]
+        ? `${Math.round(nutriments["energy-kcal_100g"])} kcal`
+        : nutriments.energy_100g
+        ? `${Math.round(parseFloat(nutriments.energy_100g) / 4.184)} kcal`
+        : isBeverage
+        ? "42 kcal"
+        : "350 kcal",
+      protein: nutriments.proteins_100g !== undefined
+        ? `${nutriments.proteins_100g}g`
+        : isBeverage
+        ? "0.0g"
+        : "0.0g",
+      carbohydrates: nutriments.carbohydrates_100g !== undefined
+        ? `${nutriments.carbohydrates_100g}g`
+        : isBeverage
+        ? `${sugarVal || 10.6}g`
+        : "50.0g",
+      sugar: nutriments.sugars_100g !== undefined
+        ? `${nutriments.sugars_100g}g`
+        : isBeverage
+        ? "10.6g"
+        : "5.0g",
       addedSugar: nutriments["added-sugars_100g"] ? `${nutriments["added-sugars_100g"]}g` : undefined,
-      totalFat: `${nutriments.fat_100g || nutriments.fat || "14.0"}g`,
+      totalFat: nutriments.fat_100g !== undefined
+        ? `${nutriments.fat_100g}g`
+        : "0.0g",
       saturatedFat: nutriments["saturated-fat_100g"] ? `${nutriments["saturated-fat_100g"]}g` : undefined,
       transFat: nutriments["trans-fat_100g"] ? `${nutriments["trans-fat_100g"]}g` : undefined,
       sodium: sodiumStr,
       fiber: nutriments.fiber_100g ? `${nutriments.fiber_100g}g` : undefined,
     },
-    cleanerAlternatives: [
-      {
-        name: "Slurrp Farm 100% Millet & Real Grain Alternative",
-        brand: "Slurrp Farm",
-        score: 94,
-        priceEst: "₹120",
-        reasonEn: "Zero Palm Oil, 0 Maida, 100% Jowar & Ragi with cold pressed oil.",
-        reasonHi: "शून्य पाम ऑयल, शून्य मैदा, 100% साबुत मिलेट और शुद्ध सामग्री।",
-      },
-      {
-        name: "The Whole Truth Clean Label Snacks",
-        brand: "The Whole Truth",
-        score: 91,
-        priceEst: "₹140",
-        reasonEn: "No hidden chemicals, zero INS preservatives, 100% declared ingredients.",
-        reasonHi: "बिना किसी रासायनिक प्रिजर्वेटिव्स या फ्लेवर एन्हांसर के बना।",
-      },
-    ],
+    cleanerAlternatives: isBeverage
+      ? [
+          {
+            name: "RAW Pressery 100% Real Tender Coconut Water (ताज़ा नारियल पानी)",
+            brand: "RAW Pressery",
+            score: 95,
+            priceEst: "₹60",
+            reasonEn: "100% Pure coconut water, zero added sugar, natural electrolytes (Potassium & Magnesium), 0 chemicals.",
+            reasonHi: "100% शुद्ध ताज़ा नारियल पानी, शून्य अतिरिक्त चीनी, प्राकृतिक इलेक्ट्रोलाइट्स और बिना किसी केमिकल के।"
+          },
+          {
+            name: "Desi Shikanji / Nimbu Pani (बिना केमिकल नींबू शिकंजी)",
+            brand: "Fresh Home / Local Clean Choice",
+            score: 92,
+            priceEst: "₹20-40",
+            reasonEn: "Natural lemon juice with Vitamin C and rock salt (Kala Namak) instead of phosphoric acid (INS 338).",
+            reasonHi: "ताजा नींबू रस, विटामिन C और सेंधा नमक। दांतों और हड्डियों को नुकसान पहुँचाने वाले फॉस्फोरिक एसिड से पूरी तरह मुक्त।"
+          },
+          {
+            name: "Paper Boat Real Tender Coconut Water",
+            brand: "Paper Boat",
+            score: 90,
+            priceEst: "₹50",
+            reasonEn: "Zero synthetic dyes, zero phosphoric acid, natural refreshing hydration.",
+            reasonHi: "बिना किसी सिंथेटिक रंग या फॉस्फोरिक एसिड के प्राकृतिक ताजगी।"
+          }
+        ]
+      : [
+          {
+            name: "Slurrp Farm 100% Millet & Real Grain Alternative",
+            brand: "Slurrp Farm",
+            score: 94,
+            priceEst: "₹120",
+            reasonEn: "Zero Palm Oil, 0 Maida, 100% Jowar & Ragi with cold pressed oil.",
+            reasonHi: "शून्य पाम ऑयल, शून्य मैदा, 100% साबुत मिलेट और शुद्ध सामग्री।",
+          },
+          {
+            name: "The Whole Truth Clean Label Snacks",
+            brand: "The Whole Truth",
+            score: 91,
+            priceEst: "₹140",
+            reasonEn: "No hidden chemicals, zero INS preservatives, 100% declared ingredients.",
+            reasonHi: "बिना किसी रासायनिक प्रिजर्वेटिव्स या फ्लेवर एन्हांसर के बना।",
+          },
+        ],
   };
 }
 

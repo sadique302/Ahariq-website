@@ -66,10 +66,34 @@
         "healthScore": { "type": "number" },
         "verdict": { "type": "string" },
         "imageUrl": { "type": "string" },
+        "frontPhotoUrl": { "type": "string" },
+        "ingredientsPhotoUrl": { "type": "string" },
+        "nutritionPhotoUrl": { "type": "string" },
         "submittedBy": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "submittedByEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string" }
       },
       "required": ["id", "barcode", "name"]
+    },
+    "community_contributions": {
+      "title": "Community Product 3-Photo Submissions",
+      "description": "Crowdsourced 3-photo submissions for missing products",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "barcode": { "type": "string" },
+        "productName": { "type": "string" },
+        "brand": { "type": "string" },
+        "frontPhotoUrl": { "type": "string" },
+        "ingredientsPhotoUrl": { "type": "string" },
+        "nutritionPhotoUrl": { "type": "string" },
+        "submittedBy": { "type": "string" },
+        "submittedByEmail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "barcode", "productName", "createdAt"]
     }
   },
   "firestore": {
@@ -88,6 +112,10 @@
     "/custom_products/{productId}": {
       "schema": "#/entities/custom_products",
       "description": "Community product catalog"
+    },
+    "/community_contributions/{contributionId}": {
+      "schema": "#/entities/community_contributions",
+      "description": "Community 3-photo submissions"
     }
   }
 }

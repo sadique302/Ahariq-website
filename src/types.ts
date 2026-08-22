@@ -120,6 +120,23 @@ export interface DietaryPreferences {
   lowSugar: boolean;
 }
 
+export interface CommunityContribution {
+  id?: string;
+  barcode: string;
+  productName: string;
+  brand: string;
+  category?: string;
+  frontPhotoUrl?: string;
+  ingredientsPhotoUrl?: string;
+  nutritionPhotoUrl?: string;
+  submittedBy?: string;
+  submittedByEmail?: string;
+  createdAt: string;
+  status: "pending_review" | "approved" | "verified";
+  healthScore?: number;
+  notes?: string;
+}
+
 export interface UserProfile {
   id?: string;
   name: string;

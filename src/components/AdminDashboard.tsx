@@ -43,6 +43,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     recentScans: any[];
     totalSaved: number;
     savedItems: any[];
+    totalContributions?: number;
+    contributions?: any[];
     error?: string;
   }>({
     totalUsers: 0,
@@ -51,9 +53,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     recentScans: [],
     totalSaved: 0,
     savedItems: [],
+    totalContributions: 0,
+    contributions: [],
   });
 
-  const [activeSubTab, setActiveSubTab] = useState<"overview" | "users" | "scans">("overview");
+  const [activeSubTab, setActiveSubTab] = useState<"overview" | "users" | "scans" | "contributions">("overview");
   const [searchFilter, setSearchFilter] = useState("");
 
   const loadData = async () => {
@@ -163,6 +167,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             }`}
           >
             ⚡ {isHindi ? "स्कैन हिस्ट्री फीड" : "Live Scan Feed"} ({stats.totalScans})
+          </button>
+          <button
+            onClick={() => setActiveSubTab("contributions")}
+            className={`px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSubTab === "contributions"
+                ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
+                : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
+            }`}
+          >
+            📸 {isHindi ? "समुदाय योगदान (3 Photos)" : "Crowdsourced Items"} ({stats.totalContributions || 0})
           </button>
         </div>
 
@@ -430,7 +444,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               )}
             </div>
-          ) : (
+          ) : activeSubTab === "scans" ? (
             /* Scans Feed Tab */
             <div className="space-y-2">
               {stats.recentScans.length === 0 ? (
@@ -466,6 +480,112 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <span className="text-[10px] text-stone-400">
                         {scan.scannedAt ? new Date(scan.scannedAt).toLocaleDateString() : ""}
                       </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            /* Crowdsourced Contributions Tab (3 Photos) */
+            <div className="space-y-3">
+              {(!stats.contributions || stats.contributions.length === 0) ? (
+                <div className="p-8 text-center border rounded-2xl border-dashed border-zinc-300 dark:border-zinc-800 text-xs text-stone-500 space-y-1.5">
+                  <p className="font-bold">📸 {isHindi ? "अभी तक कोई कम्युनिटी प्रोडक्ट सबमिट नहीं हुआ।" : "No crowdsourced product contributions yet."}</p>
+                  <p className="text-[11px] text-zinc-400">
+                    {isHindi
+                      ? "जब भी कोई यूजर स्कैनर से मिसिंग प्रोडक्ट के 3 फोटो भेजेगा, वे यहां लाइव दिखाई देंगे।"
+                      : "When users contribute 3 photos for missing products in the scanner, they will appear here live."}
+                  </p>
+                </div>
+              ) : (
+                stats.contributions.map((c, i) => (
+                  <div
+                    key={c.id || i}
+                    className={`p-4 rounded-2xl border space-y-3 ${
+                      isDark ? "bg-zinc-800/50 border-zinc-700/50" : "bg-white border-stone-200 shadow-sm"
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-black text-sm text-stone-900 dark:text-white">
+                            {c.productName || "Product"}
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                            {c.status || "Verified"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-stone-500 dark:text-zinc-400 mt-0.5">
+                          Brand: <span className="font-semibold text-stone-700 dark:text-zinc-200">{c.brand || "Indian Brand"}</span> • Barcode: <span className="font-mono text-emerald-600">{c.barcode}</span>
+                        </p>
+                      </div>
+
+                      <div className="text-right text-[11px] text-stone-500 dark:text-zinc-400">
+                        <span>Submitted by: <strong className="text-stone-800 dark:text-zinc-200">{c.submittedBy || "Community User"}</strong></span>
+                        <span className="block text-[10px] text-stone-400">
+                          {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 3 Photos Gallery */}
+                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-zinc-200 dark:border-zinc-800/60">
+                      {/* Front Photo */}
+                      <div className="rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700/50 flex flex-col">
+                        <div className="p-1 text-[10px] font-bold text-center bg-zinc-800 text-zinc-300">
+                          1. Front Pack
+                        </div>
+                        <div className="h-24 sm:h-28 flex items-center justify-center bg-black/40">
+                          {c.frontPhotoUrl ? (
+                            <img
+                              src={c.frontPhotoUrl}
+                              alt="Front"
+                              className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                              onClick={() => window.open(c.frontPhotoUrl, "_blank")}
+                            />
+                          ) : (
+                            <span className="text-[10px] text-zinc-500">No Photo</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Ingredients Photo */}
+                      <div className="rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700/50 flex flex-col">
+                        <div className="p-1 text-[10px] font-bold text-center bg-zinc-800 text-zinc-300">
+                          2. Ingredients
+                        </div>
+                        <div className="h-24 sm:h-28 flex items-center justify-center bg-black/40">
+                          {c.ingredientsPhotoUrl ? (
+                            <img
+                              src={c.ingredientsPhotoUrl}
+                              alt="Ingredients"
+                              className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                              onClick={() => window.open(c.ingredientsPhotoUrl, "_blank")}
+                            />
+                          ) : (
+                            <span className="text-[10px] text-zinc-500">No Photo</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Nutrition Photo */}
+                      <div className="rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700/50 flex flex-col">
+                        <div className="p-1 text-[10px] font-bold text-center bg-zinc-800 text-zinc-300">
+                          3. Nutrition Table
+                        </div>
+                        <div className="h-24 sm:h-28 flex items-center justify-center bg-black/40">
+                          {c.nutritionPhotoUrl ? (
+                            <img
+                              src={c.nutritionPhotoUrl}
+                              alt="Nutrition"
+                              className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                              onClick={() => window.open(c.nutritionPhotoUrl, "_blank")}
+                            />
+                          ) : (
+                            <span className="text-[10px] text-zinc-500">No Photo</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))

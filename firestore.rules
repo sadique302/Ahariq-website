@@ -25,5 +25,9 @@ service cloud.firestore {
     match /custom_products/{productId} {
       allow read, write: if true;
     }
+
+    match /community_contributions/{contributionId} {
+      allow read, write: if true;
+    }
   }
 }

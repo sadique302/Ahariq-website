@@ -1255,5 +1255,206 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       }
     ],
     novaGroup: 4
+  },
+  {
+    id: "pepsi-cola-carbonated-drink",
+    barcode: "8902080000043",
+    name: "Pepsi Carbonated Soft Drink (Cola)",
+    nameHindi: "पेप्सी कार्बोनेटेड सॉफ्ट ड्रिंक (कोला)",
+    brand: "PepsiCo India",
+    category: "Dairy & Drinks",
+    categoryHindi: "डेयरी और पेय",
+    imageUrl: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=600&auto=format&fit=crop&q=80",
+    healthScore: 16,
+    verdict: "Avoid Karein",
+    verdictHindi: "बचने की सलाह",
+    verdictType: "red",
+    summaryEn: "Extreme liquid sugar (10.6g per 100ml / ~35g in a 330ml can = 8.5 teaspoons of sugar), zero protein, zero micronutrients, contains Phosphoric Acid (INS 338) that erodes teeth and depletes calcium, along with Caramel IV (INS 150d) containing trace 4-MEI chemical.",
+    summaryHi: "अत्यधिक घुली हुई चीनी (10.6g प्रति 100ml यानी 1 केन में 8-9 चम्मच चीनी), 0% प्रोटीन, दांतों को कमजोर करने वाला फॉस्फोरिक एसिड (INS 338) और केमिकल कैरेमल रंग (INS 150d)। सेहत के लिए अत्यंत नुकसानदेह।",
+    isVegetarian: true,
+    fssaiNumber: "10012011000120",
+    packagingSize: "250ml / 600ml / 750ml",
+    warnings: [
+      {
+        type: "added_sugar",
+        titleEn: "Extreme Liquid Sugar (10.6g / 100ml)",
+        titleHi: "अत्यधिक तरल चीनी (10.6g / 100ml)",
+        severity: "high",
+        tagValue: "35g Sugar per Can",
+        descriptionEn: "Liquid sucrose / high fructose syrup bypasses satiety triggers, causing instant liver fat accumulation, insulin resistance, and visceral obesity.",
+        descriptionHi: "कोल्ड्रिंक में घुली हुई चीनी खून में सीधे मिलकर फैटी लिवर, इंसुलिन रेजिस्टेंस और तेजी से वजन/डायबिटीज बढ़ाती है।"
+      },
+      {
+        type: "artificial_colours",
+        titleEn: "Caramel IV Colour (INS 150d)",
+        titleHi: "कैरामेलाइज़्ड रंग IV (INS 150d)",
+        severity: "high",
+        tagValue: "INS 150d Synthetic Color",
+        descriptionEn: "Processed under high temperature with ammonia and sulfites, producing trace 4-MEI (4-Methylimidazole), listed as a potential health hazard.",
+        descriptionHi: "अमोनिया और सल्फाइट प्रक्रिया से बना कृत्रिम काला रंग, जिसमें हानिकारक 4-MEI केमिकल के अंश होते हैं।"
+      },
+      {
+        type: "preservatives",
+        titleEn: "Phosphoric Acid (INS 338)",
+        titleHi: "फॉस्फोरिक एसिड (INS 338)",
+        severity: "high",
+        tagValue: "Acidity Regulator 338",
+        descriptionEn: "Acidic pH (~2.5) erodes tooth enamel and alters calcium-phosphorus bone homeostasis over prolonged consumption.",
+        descriptionHi: "अत्यधिक अम्लीय (pH 2.5), जो दांतों के इनेमल को गलाता है और हड्डियों से कैल्शियम सोख लेता है।"
+      }
+    ],
+    nutritionPer100g: {
+      calories: "43 kcal",
+      protein: "0.0g",
+      carbohydrates: "10.6g",
+      sugar: "10.6g",
+      addedSugar: "10.6g",
+      totalFat: "0.0g",
+      saturatedFat: "0.0g",
+      transFat: "0.0g",
+      sodium: "12mg",
+      fiber: "0.0g"
+    },
+    ingredientsList: [
+      "Carbonated Water",
+      "Sugar",
+      "Acidity Regulator (INS 338 Phosphoric Acid)",
+      "Colour (INS 150d Caramel IV)",
+      "Flavours (Natural Flavouring Substances)",
+      "Caffeine"
+    ],
+    ingredientsExplanation: [
+      { name: "Carbonated Water", nameHi: "कार्बोनेटेड पानी", purpose: "Fizz and base liquid", safety: "safe" },
+      { name: "Sugar (10.6g)", nameHi: "अतिरिक्त सफेद चीनी", purpose: "Intense sweetness & empty calories", safety: "hazard" },
+      { name: "INS 338 Phosphoric Acid", nameHi: "फॉस्फोरिक एसिड", purpose: "Tart acid kick (causes dental & bone erosion)", safety: "hazard" },
+      { name: "INS 150d Caramel IV", nameHi: "कैरामेलाइज्ड रंग", purpose: "Dark brown cola color (contains 4-MEI)", safety: "hazard" },
+      { name: "Caffeine", nameHi: "कैफीन", purpose: "Mild central stimulant", safety: "caution" }
+    ],
+    adulterationCheck: {
+      riskLevel: "Moderate",
+      detailsEn: "Legally compliant under carbonated water rules, but zero nutritional value and high metabolic burden.",
+      detailsHi: "पोषण मूल्य 0% (शून्य प्रोटीन, शून्य विटामिन), केवल खाली कैलोरी और केमिकल।"
+    },
+    cleanerAlternatives: [
+      {
+        id: "fresh-desi-shikanji",
+        name: "ताज़ा देसी नींबू पानी / शिकंजी (Fresh Lemon Shikanji)",
+        brand: "Home / Fresh Natural",
+        score: 96,
+        priceEst: "₹15 - ₹30",
+        reasonEn: "100% Natural Vitamin C, digestive cumin/rock salt, zero phosphoric acid (INS 338), zero synthetic colors.",
+        reasonHi: "100% प्राकृतिक विटामिन C, भुना जीरा व सेंधा नमक। दांतों को गलाने वाले एसिड और केमिकल से पूरी तरह मुक्त।"
+      },
+      {
+        id: "raw-pressery-coconut-water",
+        name: "RAW Pressery 100% Tender Coconut Water (ताज़ा नारियल पानी)",
+        brand: "RAW Pressery",
+        score: 95,
+        priceEst: "₹60",
+        reasonEn: "100% Natural electrolytes (Potassium, Magnesium), zero added refined sugar, zero preservatives, 0 chemical color.",
+        reasonHi: "100% प्राकृतिक नारियल पानी, शून्य अतिरिक्त चीनी, प्राकृतिक इलेक्ट्रोलाइट्स और बिना केमिकल।"
+      },
+      {
+        id: "paper-boat-coconut-water",
+        name: "Paper Boat Real Tender Coconut Water",
+        brand: "Paper Boat",
+        score: 92,
+        priceEst: "₹50",
+        reasonEn: "Natural source of hydration without harmful phosphoric acid or industrial caramel colors.",
+        reasonHi: "हड्डियों और दांतों के लिए सुरक्षित, प्राकृतिक ताजगी।"
+      }
+    ],
+    novaGroup: 4
+  },
+  {
+    id: "coca-cola-original",
+    barcode: "8901764012272",
+    name: "Coca-Cola Original Taste Carbonated Drink",
+    nameHindi: "कोका-कोला ओरिजिनल टेस्ट",
+    brand: "The Coca-Cola Company",
+    category: "Dairy & Drinks",
+    categoryHindi: "डेयरी और पेय",
+    imageUrl: "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=600&auto=format&fit=crop&q=80",
+    healthScore: 16,
+    verdict: "Avoid Karein",
+    verdictHindi: "बचने की सलाह",
+    verdictType: "red",
+    summaryEn: "10.6g sugar per 100ml (35g sugar in a can), 0g protein, with Phosphoric Acid (INS 338) and Caramel IV (INS 150d). Contributes to insulin resistance, dental decay, and metabolic syndrome.",
+    summaryHi: "10.6 ग्राम चीनी प्रति 100ml, 0 ग्राम प्रोटीन। फॉस्फोरिक एसिड और केमिकल कैरेमल रंग से युक्त। स्वास्थ्य के लिए बेहद हानिकारक।",
+    isVegetarian: true,
+    fssaiNumber: "10012011000120",
+    packagingSize: "300ml / 750ml",
+    warnings: [
+      {
+        type: "added_sugar",
+        titleEn: "Extreme Added Sugar (10.6g / 100ml)",
+        titleHi: "अत्यधिक चीनी (10.6g / 100ml)",
+        severity: "high",
+        tagValue: "10.6g Sugar/100ml",
+        descriptionEn: "Massive sugar load causes severe blood glucose surges and visceral fat buildup.",
+        descriptionHi: "ब्लड शुगर और इंसुलिन में तेजी से उछाल, फैटी लिवर का मुख्य कारण।"
+      },
+      {
+        type: "artificial_colours",
+        titleEn: "Caramel IV (INS 150d)",
+        titleHi: "कैरेमल रंग IV (INS 150d)",
+        severity: "high",
+        tagValue: "Sulfite Ammonia Caramel",
+        descriptionEn: "Processed caramel dye containing trace 4-methylimidazole by-products.",
+        descriptionHi: "रासायनिक विधि से बना गहरा भूरा रंग।"
+      }
+    ],
+    nutritionPer100g: {
+      calories: "44 kcal",
+      protein: "0.0g",
+      carbohydrates: "10.6g",
+      sugar: "10.6g",
+      addedSugar: "10.6g",
+      totalFat: "0.0g",
+      saturatedFat: "0.0g",
+      transFat: "0.0g",
+      sodium: "10mg",
+      fiber: "0.0g"
+    },
+    ingredientsList: [
+      "Carbonated Water",
+      "Sugar",
+      "Acidity Regulator (INS 338)",
+      "Colour (INS 150d)",
+      "Natural Flavours",
+      "Caffeine"
+    ],
+    ingredientsExplanation: [
+      { name: "Carbonated Water", nameHi: "सोडा पानी", purpose: "Fizz liquid", safety: "safe" },
+      { name: "Sugar (10.6g)", nameHi: "सफेद चीनी", purpose: "Sweetener", safety: "hazard" },
+      { name: "INS 338", nameHi: "फॉस्फोरिक एसिड", purpose: "Acidity kick", safety: "hazard" },
+      { name: "INS 150d", nameHi: "कैरामेलाइज़्ड रंग", purpose: "Dark dye", safety: "hazard" }
+    ],
+    adulterationCheck: {
+      riskLevel: "Moderate",
+      detailsEn: "High acidity and pure refined sugar formulation.",
+      detailsHi: "अत्यधिक एसिडिक और अत्यधिक मीठा।"
+    },
+    cleanerAlternatives: [
+      {
+        id: "fresh-desi-shikanji",
+        name: "ताज़ा देसी नींबू पानी / शिकंजी (Fresh Lemon Shikanji)",
+        brand: "Home / Fresh Natural",
+        score: 96,
+        priceEst: "₹15 - ₹30",
+        reasonEn: "100% Natural Vitamin C, digestive cumin/rock salt, zero phosphoric acid (INS 338), zero synthetic colors.",
+        reasonHi: "100% प्राकृतिक विटामिन C, भुना जीरा व सेंधा नमक। दांतों को गलाने वाले एसिड और केमिकल से पूरी तरह मुक्त।"
+      },
+      {
+        id: "raw-pressery-coconut-water",
+        name: "RAW Pressery 100% Tender Coconut Water (ताज़ा नारियल पानी)",
+        brand: "RAW Pressery",
+        score: 95,
+        priceEst: "₹60",
+        reasonEn: "Zero chemical acidulants, 100% natural hydration and electrolytes.",
+        reasonHi: "प्राकृतिक इलेक्ट्रोलाइट्स और बिना केमिकल की शुद्ध ड्रिंक।"
+      }
+    ],
+    novaGroup: 4
   }
 ];
