@@ -33,6 +33,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹30-50",
         priceEst: "₹30-50",
         problem: "Zyada Cheeni + Chemical",
+        benefit: "Pure Milk Curcumin, 0% Added Sugar, Natural Immunity",
+        benefitHi: "100% शुद्ध हल्दी दूध, शून्य अतिरिक्त चीनी, प्राकृतिक इम्यूनिटी",
         reasonEn: "100% Pure warm milk infused with natural turmeric curcumin; zero refined sugar or synthetic maltodextrin.",
         reasonHi: "शुद्ध हल्दी और दूध, बिना किसी हानिकारक रिफाइंड चीनी या केमिकल के। रोग प्रतिरोधक क्षमता बढ़ाता है।",
         tags: ["Natural Immunity", "0% Added Sugar", "Pure Curcumin"]
@@ -45,6 +47,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹45",
         priceEst: "₹45",
         problem: "Zyada Cheeni + Artificial Flavours",
+        benefit: "Sprouted Ragi, High Bioavailable Calcium, Natural Jaggery",
+        benefitHi: "अंकुरित रागी, प्रचुर कैल्शियम, शुद्ध देसी गुड़ से मिठास",
         reasonEn: "Sprouted finger millet (Ragi) loaded with bioavailable calcium and fiber, sweetened with natural jaggery.",
         reasonHi: "अंकुरित रागी, प्राकृतिक कैल्शियम और पाचक फाइबर से भरपूर (सिंथेटिक फ्लेवर मुक्त)।",
         tags: ["High Calcium", "Sprouted Ragi", "Natural Energy"]
@@ -57,6 +61,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹25",
         priceEst: "₹25",
         problem: "Zyada Cheeni + Chemical Additives",
+        benefit: "20g Natural Plant Protein, Zero Chemicals, Gut Cooling",
+        benefitHi: "20g शुद्ध प्राकृतिक प्रोटीन, शून्य केमिकल, पेट को प्राकृतिक ठंडक",
         reasonEn: "Traditional roasted gram flour (Sattu) packed with 20g natural plant protein, pink rock salt, and roasted cumin.",
         reasonHi: "भुने चने का सत्तू, शुद्ध प्रोटीन और ऊर्जा का प्राकृतिक देसी स्रोत। पेट को ठंडा रखता है।",
         tags: ["20g Plant Protein", "Zero Chemicals", "Gut Cooling"]
@@ -90,6 +96,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹95",
         priceEst: "₹95",
         problem: "Refined Maida + Palm Oil",
+        benefit: "Oats & Lentils, Steamed Not Fried, 0% Maida, 0% Palm Oil",
+        benefitHi: "ओट्स व दाल, भाप में पका (बिना तेल तला), 0% मैदा, 0% पाम ऑयल",
         reasonEn: "100% Steamed & baked with Oats, Lentils, and Brown Rice. 0% Maida, 0% Palm Oil, zero synthetic MSG synergists.",
         reasonHi: "ओट्स, दाल और ब्राउन राइस से भरपूर; स्टीम करके पकाया हुआ, 0% मैदा और 0% पाम ऑयल।",
         tags: ["Steamed Not Fried", "0% Maida", "0% Palm Oil"]
@@ -102,6 +110,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹89",
         priceEst: "₹89",
         problem: "Palm Oil Frying + Zyada Sodium",
+        benefit: "100% Sun-Dried Millets, 0% Palmolein Oil, Low Sodium",
+        benefitHi: "धूप में सुखाए बाजरा-रागी, 0% पामोलिन तेल, कम सोडियम",
         reasonEn: "100% Sun-dried (Not fried in palmolein). Made from natural foxtail millet and ragi with real spices.",
         reasonHi: "धूप में सुखाया हुआ बाजरा और रागी नूडल्स, पाम तेल में डीप-फ्राई नहीं किया गया।",
         tags: ["Sun Dried", "100% Millets", "Low Sodium"]
@@ -114,6 +124,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹35",
         priceEst: "₹35",
         problem: "Chemical Tastemaker + Maida",
+        benefit: "100% Roasted Suji, Fresh Vegetables, Zero Chemical Tastemaker",
+        benefitHi: "100% भुनी सूजी, ताजी हरी सब्जियां, शून्य केमिकल टेस्टमेकर",
         reasonEn: "Traditional roasted semolina (Suji) vermicelli cooked with fresh garden vegetables, curry leaves, and mustard seeds.",
         reasonHi: "शुद्ध सूजी सेवई और ताजी हरी सब्जियों का पौष्टिक उपमा। केमिकल टेस्टमेकर से पूरी तरह मुक्त।",
         tags: ["100% Suji", "Fresh Vegetables", "Zero Chemicals"]
@@ -145,6 +157,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹55",
         priceEst: "₹55",
         problem: "Maida Bleach + Chemical Emulsifiers",
+        benefit: "100% Atta, Zero Maida, No Palm Oil, No Bleach",
+        benefitHi: "100% साबुत आटा, शून्य मैदा, शून्य पाम ऑयल, केमिकल ब्लीच मुक्त",
         reasonEn: "100% Whole wheat flour, 0% Maida, 0% Palm Oil, zero chemical bleaching agents or artificial caramel colors.",
         reasonHi: "100% साबुत गेहूं का आटा, शून्य मैदा, शून्य पाम ऑयल, बिना हानिकारक ब्लीच के तैयार।",
         tags: ["Zero Maida", "100% Whole Wheat", "No Palm Oil"]
@@ -157,6 +171,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹79",
         priceEst: "₹79",
         problem: "Chemical Yeast + Preservatives (INS 282)",
+        benefit: "Natural Sourdough, No Chemical Yeast, Gut Friendly",
+        benefitHi: "प्राकृतिक सावरडो खमीर, शून्य केमिकल यीस्ट, पाचन के लिए सुपाच्य",
         reasonEn: "Naturally slow-fermented with wild sourdough culture. Easy to digest and prebiotic gut-friendly.",
         reasonHi: "प्राकृतिक खमीर (Sourdough) से फर्मेंटेड। केमिकल प्रिजर्वेटिव्स और ब्रेड इम्प्रूवर से मुक्त।",
         tags: ["Wild Fermented", "Gut Friendly", "Preservative Free"]
@@ -169,6 +185,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹30",
         priceEst: "₹30",
         problem: "Refined White Flour + High Glycemic Index",
+        benefit: "100% Natural Corn, High Fiber, Zero Maida, Low GI",
+        benefitHi: "100% शुद्ध मक्के का आटा, भरपूर फाइबर, शून्य मैदा",
         reasonEn: "Traditional stone-ground whole corn flour flatbread with natural fiber, lutein, and zero maida.",
         reasonHi: "ताज़ा मक्के की रोटी, प्राकृतिक फाइबर से भरपूर और मैदा मुक्त। ब्लड शुगर को स्थिर रखती है।",
         tags: ["100% Natural Corn", "High Fiber", "Traditional"]
@@ -203,6 +221,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹65",
         priceEst: "₹65-110",
         problem: "Palmolein Oil + Chemical TBHQ + Zyada Namak",
+        benefit: "Roasted Superfood, High Protein, Zero Palmolein, Pink Salt",
+        benefitHi: "भुना मखाना सुपरफूड, हाई प्रोटीन, 0% पामोलिन, सेंधा नमक",
         reasonEn: "High-protein roasted lotus seeds (Foxnuts) seasoned with natural pink rock salt and cold-pressed oil. 0 Palmolein.",
         reasonHi: "सेंधा नमक और हल्के तेल में भुना हुआ मखाना, पामोलिन तेल और केमिकल प्रिजर्वेटिव्स से मुक्त।",
         tags: ["High Protein", "Roasted Superfood", "Zero Palmolein"]
@@ -215,6 +235,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹35",
         priceEst: "₹35",
         problem: "Deep Fried Palmolein + MSG (INS 635)",
+        benefit: "Oil-Free Dry Roasted, High Fiber & Plant Protein, Heart Safe",
+        benefitHi: "बिना तेल सूखा भुना, प्रचुर फाइबर व प्रोटीन, हृदय के लिए सुरक्षित",
         reasonEn: "100% Dry-roasted black chickpeas with skin. Outstanding source of plant protein and resistant dietary fiber.",
         reasonHi: "बिना तेल के भुना हुआ छिलके वाला देसी चना, प्रोटीन और फाइबर का प्राकृतिक पावरहाउस।",
         tags: ["Oil-Free Roasting", "High Fiber", "Heart Friendly"]
@@ -227,6 +249,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹60",
         priceEst: "₹60",
         problem: "Synthetic Flavour + Heavy Palm Oil",
+        benefit: "Baked Sweet Potato, 60% Less Saturated Fat, Vitamin A Rich",
+        benefitHi: "बेक्ड शकरकंद, 60% कम सैचुरेटेड फैट, विटामिन A से भरपूर",
         reasonEn: "Baked sweet potato crisps rich in Beta-Carotene Vitamin A and complex carbs with 60% less saturated fat.",
         reasonHi: "शकरकंद (स्वीट पोटैटो) के बेक्ड चिप्स, विटामिन A और फाइबर से भरपूर।",
         tags: ["Baked Sweet Potato", "Low Saturated Fat", "Vitamin A"]
@@ -264,6 +288,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹55",
         priceEst: "₹50-65",
         problem: "Zyada Cheeni + Phosphoric Acid + Synthetic Color",
+        benefit: "100% Pure Electrolytes, Zero Added Sugar, Zero Acid",
+        benefitHi: "100% शुद्ध प्राकृतिक इलेक्ट्रोलाइट्स, शून्य चीनी, शून्य एसिड",
         reasonEn: "100% Pure tender coconut water with bio-active potassium electrolytes and zero added sugar or phosphoric acid.",
         reasonHi: "100% शुद्ध ताज़ा नारियल पानी, शून्य अतिरिक्त चीनी, प्राकृतिक इलेक्ट्रोलाइट्स और बिना किसी केमिकल के।",
         tags: ["100% Pure Natural", "No Added Sugar", "Electrolyte Rich"]
@@ -276,6 +302,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹20",
         priceEst: "₹15-25",
         problem: "High Fructose Syrup + Chemical Additives",
+        benefit: "Natural Vitamin C, Pink Rock Salt, No Fructose Syrup",
+        benefitHi: "प्राकृतिक विटामिन C, सेंधा नमक, शून्य लिक्विड फ्रुक्टोज सिरप",
         reasonEn: "Real lemon juice rich in natural Vitamin C, pink rock salt, and roasted cumin. Free from liquid fructose syrup.",
         reasonHi: "ताजा नींबू रस, प्राकृतिक विटामिन C और सेंधा नमक। लिवर पर भारी पड़ने वाले लिक्विड फ्रुक्टोज से पूरी तरह मुक्त।",
         tags: ["Vitamin C", "Digestive Shikanji", "Zero Chemicals"]
@@ -288,6 +316,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹20",
         priceEst: "₹15-30",
         problem: "Synthetic Caffeine + Tooth Enamel Acid",
+        benefit: "Live Probiotics, Digestive Mint & Cumin, Gut Friendly",
+        benefitHi: "सक्रिय प्रोबायोटिक्स, पाचक पुदीना व भुना जीरा, पेट के लिए शीतल",
         reasonEn: "Probiotic fresh buttermilk seasoned with mint, ginger, and cumin. Naturally cools and aids digestion.",
         reasonHi: "पुदीने और भुने जीरे वाली ताज़ा प्रोबायोटिक छाछ, पेट के हाजमे और ठंडक के लिए बेहतरीन।",
         tags: ["Probiotic", "Gut Friendly", "Refreshing"]
@@ -325,6 +355,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹99",
         priceEst: "₹99-130",
         problem: "60%+ Maida + Palm Oil + Invert Sugar Syrup",
+        benefit: "Zero Maida, No Palm Oil, Whole Ragi & Organic Jaggery",
+        benefitHi: "शून्य मैदा, शून्य पाम ऑयल, साबुत रागी व शुद्ध जैविक गुड़",
         reasonEn: "0% Refined Flour (Maida), 0% Palm Oil. Baked with whole finger millet (Ragi), cow butter, and organic jaggery.",
         reasonHi: "शून्य मैदा, शून्य पाम ऑयल, शुद्ध मक्खन और जैविक गुड़ से तैयार पौष्टिक रागी कुकीज़।",
         tags: ["Zero Maida", "No Palm Oil", "Jaggery Sweetened"]
@@ -337,6 +369,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹50",
         priceEst: "₹40-80",
         problem: "Chemical Emulsifiers + Artificial Flavors",
+        benefit: "Slow-Roasted Peanuts, Iron-Rich Organic Jaggery, High Protein",
+        benefitHi: "भुनी मूंगफली, आयरन से भरपूर देसी गुड़, शुद्ध प्राकृतिक प्रोटीन",
         reasonEn: "Slow-roasted bold peanuts blended with iron-rich organic jaggery. Rich in healthy unsaturated fats and protein.",
         reasonHi: "भुनी मूंगफली और गुड़ का पारंपरिक देसी लड्डू; प्रोटीन, आयरन और प्राकृतिक ऊर्जा का बेहतरीन मेल।",
         tags: ["High Protein", "Iron Rich", "Traditional Ladoo"]
@@ -349,6 +383,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹30",
         priceEst: "₹25-45",
         problem: "Refined White Cane Sugar + Trans Fats",
+        benefit: "Ayurvedic Classic, Boosts Hemoglobin & Stamina, Zero Trans Fat",
+        benefitHi: "आयुर्वेदिक सुपरफूड, हीमोग्लोबिन व स्टेमिना वर्धक, शून्य ट्रांस फैट",
         reasonEn: "Time-tested Indian Ayurvedic combination of roasted black chickpeas and unrefined natural sugarcane jaggery.",
         reasonHi: "भुना चना और शुद्ध देसी गुड़, हीमोग्लोबिन, स्टेमिना और पाचन शक्ति बढ़ाने वाला पारंपरिक सुपरफूड।",
         tags: ["Ayurvedic Classic", "Boosts Hemoglobin", "Zero Trans Fat"]
@@ -380,6 +416,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹240",
         priceEst: "₹240",
         problem: "Hexane Chemical Solvents + High Heat Bleaching",
+        benefit: "Cold Wood-Pressed, Zero Solvents, Zero Bleaching, 100% Pure",
+        benefitHi: "लकड़ी की घानी, शून्य केमिकल साल्वेंट, शून्य ब्लीच, 100% शुद्ध",
         reasonEn: "Wood-pressed at cold temperature without chemical solvents or synthetic bleaching.",
         reasonHi: "लकड़ी की घानी में निकाला गया शुद्ध कच्ची घानी सरसों का तेल (केमिकल साल्वेंट मुक्त)।",
         tags: ["Cold Pressed", "Zero Hexane", "100% Pure"]
@@ -392,6 +430,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹340",
         priceEst: "₹340",
         problem: "Vanaspati Trans Fats + Adulteration",
+        benefit: "Traditional Bilona Ghee, High Smoke Point, Zero Trans Fat",
+        benefitHi: "पारंपरिक बिलोना घी, उच्च स्मोक पॉइंट, शून्य ट्रांस फैट",
         reasonEn: "Traditional clarified butter with high smoke point and zero lipid oxidation.",
         reasonHi: "शुद्ध देसी गाय का घी, उच्च स्मोक पॉइंट और शून्य ट्रांस फैट।",
         tags: ["Traditional Bilona", "Heart Friendly", "Pure Dairy"]
@@ -423,6 +463,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹120",
         priceEst: "₹100-160",
         problem: "55%+ White Cane Sugar + Palm Oil Fillers",
+        benefit: "Pure Cocoa & Dates, 0% Cane Sugar, No Palm Oil, No Emulsifiers",
+        benefitHi: "शुद्ध कोको व खजूर, 0% रिफाइंड चीनी, 0% पाम तेल, केमिकल मुक्त",
         reasonEn: "Pure cocoa and dates. 0% Cane sugar, 0% Palm oil, zero chemical emulsifiers.",
         reasonHi: "शुद्ध कोको और खजूर से मिठास; शून्य सफेद चीनी और शून्य पाम तेल।",
         tags: ["Zero Cane Sugar", "No Palm Oil", "Pure Cocoa"]
@@ -435,6 +477,8 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         price: "₹30",
         priceEst: "₹30",
         problem: "Liquid Glucose Syrup + Synthetic Preservatives",
+        benefit: "100% Natural Jaggery & Peanuts, No Liquid Glucose Syrup",
+        benefitHi: "100% शुद्ध देसी गुड़ व मूंगफली, शून्य लिक्विड ग्लूकोज सिरप",
         reasonEn: "Crushed roasted peanuts bound with 100% natural sugarcane jaggery.",
         reasonHi: "मूंगफली और शुद्ध देसी गुड़ की चिक्की, बिना किसी ग्लूकोज सिरप के।",
         tags: ["100% Jaggery", "Natural Snack", "Iron Rich"]
@@ -493,6 +537,25 @@ export function detectProductCategoryId(input: {
   ]
     .join(" ")
     .toLowerCase();
+
+  // 0. Bottled Water, Mineral Water & Hydration (Bisleri, Kinley, Aquafina, etc.)
+  if (
+    text.includes("bisleri") ||
+    text.includes("kinley") ||
+    text.includes("aquafina") ||
+    text.includes("himalayan water") ||
+    text.includes("bailey") ||
+    text.includes("rail neer") ||
+    text.includes("vedica") ||
+    text.includes("qua") ||
+    text.includes("mineral water") ||
+    text.includes("packaged drinking water") ||
+    text.includes("spring water") ||
+    text.includes("drinking water") ||
+    (input.category && input.category.toLowerCase().includes("water"))
+  ) {
+    return "pure_water";
+  }
 
   // 1. Instant Noodles & Pasta (Maggi, Yippee, Top Ramen, etc.)
   if (
@@ -605,7 +668,6 @@ export function detectProductCategoryId(input: {
 
   // 7. Cooking Oils & Ghee
   if (
-    text.includes("oil") ||
     text.includes("palmolein") ||
     text.includes("refined oil") ||
     text.includes("sunflower oil") ||
@@ -613,7 +675,8 @@ export function detectProductCategoryId(input: {
     text.includes("soybean oil") ||
     text.includes("vanaspati") ||
     text.includes("dalda") ||
-    text.includes("ghee")
+    text.includes("cooking oil") ||
+    (text.includes("oil") && !text.includes("essential") && !text.includes("hair"))
   ) {
     return "cooking_oil";
   }
@@ -635,15 +698,17 @@ export function detectProductCategoryId(input: {
   // Broad category fallbacks
   if (input.category) {
     const cat = input.category.toLowerCase();
+    if (cat.includes("water")) return "pure_water";
     if (cat.includes("noodle") || cat.includes("instant")) return "instant_noodles";
     if (cat.includes("chip") || cat.includes("snack") || cat.includes("namkeen")) return "potato_chips";
-    if (cat.includes("biscuit") || cat.includes("bakery")) return "biscuit_cookie";
-    if (cat.includes("drink") || cat.includes("juice") || cat.includes("beverage")) return "cold_drink";
-    if (cat.includes("oil") || cat.includes("ghee")) return "cooking_oil";
-    if (cat.includes("chocolate") || cat.includes("sweet")) return "chocolates_sweets";
+    if (cat.includes("biscuit") || cat.includes("bakery") || cat.includes("cookie")) return "biscuit_cookie";
+    if (cat.includes("drink") || cat.includes("soda") || cat.includes("cola")) return "cold_drink";
+    if (cat.includes("oil") || cat.includes("fat") || cat.includes("ghee")) return "cooking_oil";
+    if (cat.includes("chocolate") || cat.includes("sweet") || cat.includes("candy")) return "chocolates_sweets";
+    if (cat.includes("bread") || cat.includes("toast") || cat.includes("bun")) return "white_bread";
   }
 
-  return "instant_noodles"; // safe default
+  return "unknown_category";
 }
 
 /**
@@ -659,12 +724,17 @@ export function getSmartCleanerAlternatives(input: {
 }): CleanerAlternative[] {
   const categoryId = detectProductCategoryId(input);
 
+  // Pure water or top clean natural items need NO alternatives
+  if (categoryId === "pure_water") {
+    return [];
+  }
+
   // Check dynamic Firestore cache first
   const doc = dynamicAlternativesCache[categoryId] || DEFAULT_CATEGORY_ALTERNATIVES[categoryId];
   if (doc && Array.isArray(doc.alternatives) && doc.alternatives.length > 0) {
     return doc.alternatives;
   }
 
-  // Fallback to instant noodles or energy drink
-  return DEFAULT_CATEGORY_ALTERNATIVES.instant_noodles.alternatives;
+  // If unknown category, don't force noodles
+  return [];
 }

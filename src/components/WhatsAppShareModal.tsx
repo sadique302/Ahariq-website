@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { FoodProduct, Language } from "../types";
-import { X, Share2, Download, Check, ShieldCheck, AlertTriangle, Sparkles } from "lucide-react";
+import { X, Share2, Download, Check, ShieldCheck, AlertTriangle } from "lucide-react";
 import html2canvas from "html2canvas";
 
 interface WhatsAppShareModalProps {

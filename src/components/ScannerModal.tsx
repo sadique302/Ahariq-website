@@ -12,7 +12,6 @@ import {
   AlertCircle,
   PlusCircle,
   CheckCircle2,
-  Sparkles,
   ShieldAlert,
   Image as ImageIcon,
   FileText,
@@ -29,7 +28,12 @@ import {
 } from "lucide-react";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { decodeBarcodeFromCanvas } from "../utils/barcodeScanner";
-import { fetchProductFromOpenFoodFacts, calculateScoreFromManualNutrition } from "../services/openFoodFacts";
+import {
+  fetchProductFromOpenFoodFacts,
+  calculateScoreFromManualNutrition,
+  getSynchronizedIngredientsExplanation,
+  getDynamicHazardSummary,
+} from "../services/openFoodFacts";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import { ContributeProductModal } from "./ContributeProductModal";
 import { HeartHandshake } from "lucide-react";
@@ -732,8 +736,22 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           !lower.includes("egg") &&
           !lower.includes("fish"),
         verdictType: score >= 70 ? "green" : score >= 40 ? "yellow" : "red",
-        summaryEn: `Ahariq scanned ${ingredientText.split(",").length} ingredients. Rated ${score}/100 based on ICMR & FSSAI benchmarks.`,
-        summaryHi: `Ahariq ने सामग्री का विश्लेषण किया। 100 में से स्वास्थ्य स्कोर ${score}/100 है।`,
+        summaryEn: getDynamicHazardSummary({
+          score,
+          warnings,
+          productName: "Ingredient Scan",
+          ingredientsText: ingredientText,
+          sugarVal: hasSugar ? 24 : 4,
+          sodiumMg: 450,
+        }).summaryEn,
+        summaryHi: getDynamicHazardSummary({
+          score,
+          warnings,
+          productName: "सामग्री स्कैन",
+          ingredientsText: ingredientText,
+          sugarVal: hasSugar ? 24 : 4,
+          sodiumMg: 450,
+        }).summaryHi,
         imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80",
         warnings,
         ingredientsList: ingredientText
@@ -745,23 +763,17 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           detailsEn: "Analyzed directly from user-provided ingredient label text against ICMR food safety limits.",
           detailsHi: "उपयोगकर्ता द्वारा दर्ज सामग्री विवरण का भारतीय खाद्य सुरक्षा मानकों के अनुसार विश्लेषण।",
         },
-        ingredientsExplanation: ingredientText
-          .split(/[,;\n]+/)
-          .filter(Boolean)
-          .map((item) => ({
-            name: item.trim(),
-            nameHi: item.trim(),
-            purpose: "Ingredient / Additive",
-            safety:
-              item.toLowerCase().includes("palm") ||
-              item.toLowerCase().includes("sugar") ||
-              item.toLowerCase().includes("621") ||
-              item.toLowerCase().includes("102")
-                ? "hazard"
-                : item.toLowerCase().includes("flour") || item.toLowerCase().includes("oil")
-                ? "caution"
-                : "safe",
-          })),
+        ingredientsExplanation: getSynchronizedIngredientsExplanation({
+          ingredientsList: ingredientText
+            .split(/[,;\n]+/)
+            .map((s) => s.trim())
+            .filter(Boolean),
+          warnings,
+          healthScore: score,
+          sugarVal: hasSugar ? 24 : 4,
+          sodiumMg: 450,
+          isHindi: true,
+        }),
         nutritionPer100g: {
           calories: "380 kcal",
           protein: "6.5g",

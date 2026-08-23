@@ -4,7 +4,7 @@ import {
   X,
   Share2,
   PlusSquare,
-  Sparkles,
+  ShieldCheck,
   Smartphone,
   CheckCircle2,
   ExternalLink,
@@ -278,7 +278,7 @@ export const InstallPwaPrompt: React.FC<InstallPwaPromptProps> = ({
 
             <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-left space-y-1">
               <span className="text-[11px] font-black text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 {isHindi ? "APK फाइल डाउनलोड क्यों नहीं करनी पड़ती?" : "Why no heavy APK download needed?"}
               </span>
               <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-relaxed">

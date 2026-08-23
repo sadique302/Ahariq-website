@@ -4,7 +4,6 @@ import {
   Bookmark,
   Trash2,
   Share2,
-  Sparkles,
   ShoppingBag,
   CheckCircle2,
   AlertTriangle,

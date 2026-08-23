@@ -75,7 +75,7 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
     id: "Spices & Masalas",
     nameEn: "Spices & Masala",
     nameHi: "मसाले व हल्दी",
-    iconName: "Sparkles",
+    iconName: "Flame",
     descriptionEn: "Turmeric, Garam Masala, Mirch, Hing",
     descriptionHi: "हल्दी, गरम मसाला, लाल मिर्च, हींग",
     accentColor: "teal",

@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Lock,
-  Sparkles,
   Leaf,
   Droplet,
   Wheat,

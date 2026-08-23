@@ -40,7 +40,9 @@ export interface CleanerAlternative {
   score: number;
   price?: string;
   priceEst?: string;
-  problem?: string; // Hindi problem explanation e.g. "Zyada Cheeni + Chemical"
+  problem?: string; // Problem in ultra-processed counterpart (optional legacy)
+  benefit?: string; // Clean positive benefit in English, e.g. "100% Atta, Zero Maida, No Palm Oil"
+  benefitHi?: string; // Clean positive benefit in Hindi, e.g. "100% साबुत आटा, 0% मैदा, शून्य पाम ऑयल"
   image?: string;
   reasonEn?: string;
   reasonHi?: string;

@@ -3,7 +3,6 @@ import { FoodProduct, Language, ProductCategory, UserProfile } from "../types";
 import {
   ScanLine,
   Search,
-  Sparkles,
   ChevronRight,
   TrendingUp,
   ShieldAlert,
@@ -304,11 +303,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           {/* Live Search Indicator */}
           {isSearching && (
             <div className="flex items-center gap-2 mt-2 px-2 text-xs font-bold text-[#059669] dark:text-[#34D399] animate-pulse">
-              <Sparkles className="w-3.5 h-3.5 text-[#10B981] animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-[#10B981] animate-spin" />
               <span>
                 {isHindi
-                  ? "🔍 उत्पाद सामग्री और न्यूट्रिशन डेटा खोज रहे हैं..."
-                  : "🔍 Searching product ingredients & nutrition data..."}
+                  ? "उत्पाद सामग्री और न्यूट्रिशन डेटा खोज रहे हैं..."
+                  : "Searching product ingredients & nutrition data..."}
               </span>
             </div>
           )}

@@ -32,8 +32,14 @@ export default function App() {
 
   // 2. Dark Mode State
   const [isDark, setIsDark] = useState<boolean>(() => {
-    const saved = localStorage.getItem("ahariq_theme");
-    return saved === "dark";
+    try {
+      const saved = localStorage.getItem("ahariq_theme");
+      if (saved === "dark") return true;
+      if (saved === "light") return false;
+      return typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch (e) {
+      return false;
+    }
   });
 
   useEffect(() => {

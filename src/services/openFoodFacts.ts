@@ -29,6 +29,17 @@ const ADDITIVE_DATABASE: Record<
   "e471": { nameEn: "Mono- & Diglycerides (INS 471)", nameHi: "इमल्सीफायर 471", purpose: "Fat emulsifier & texture improver", safety: "caution", note: "May contain hidden trans fats from hydrogenated oils." },
   "e951": { nameEn: "Aspartame (INS 951)", nameHi: "एस्पार्टेम (स्वीटनर)", purpose: "Artificial sweetener", safety: "hazard", note: "Non-nutritive sweetener flagged by WHO IARC." },
   "e955": { nameEn: "Sucralose (INS 955)", nameHi: "सुक्रालोज", purpose: "Zero calorie sweetener", safety: "caution", note: "Alters gut bacteria microbiome balance." },
+  "sugar": { nameEn: "Refined Sugar", nameHi: "रिफाइंड चीनी", purpose: "Concentrated caloric sweetener", safety: "caution", note: "Causes blood glucose surges and metabolic strain." },
+  "en:sugar": { nameEn: "Refined Sugar", nameHi: "रिफाइंड चीनी", purpose: "Concentrated caloric sweetener", safety: "caution", note: "Causes blood glucose surges and metabolic strain." },
+  "en:sugars": { nameEn: "Refined Sugars", nameHi: "शर्करा / चीनी", purpose: "Sweetening agent", safety: "caution", note: "Elevates blood sugar rapidly." },
+  "en:invert-sugar-syrup": { nameEn: "Invert Sugar Syrup", nameHi: "इनवर्ट शुगर सिरप", purpose: "Processed liquid sugar", safety: "hazard", note: "Rapidly absorbed liquid fructose/glucose." },
+  "en:glucose-syrup": { nameEn: "Glucose Syrup", nameHi: "ग्लूकोज सिरप", purpose: "High glycemic sweetener", safety: "hazard", note: "Directly surges blood glucose." },
+  "en:vegetable-oil": { nameEn: "Edible Vegetable Oil", nameHi: "रिफाइंड वनस्पति तेल", purpose: "Refined industrial frying fat", safety: "caution", note: "Commercial vegetable oil, often palm/palmolein." },
+  "en:palm-oil": { nameEn: "Refined Palm Oil", nameHi: "रिफाइंड पाम तेल", purpose: "Industrial saturated fat", safety: "hazard", note: "High palmitic acid linked to cardiovascular risk." },
+  "en:palmolein": { nameEn: "Refined Palmolein", nameHi: "पामोलिन ऑयल", purpose: "Commercial deep-frying fat", safety: "hazard", note: "Industrial high-temperature frying medium." },
+  "en:wheat-flour": { nameEn: "Wheat Flour (Maida)", nameHi: "मैदा (रिफाइंड आटा)", purpose: "Refined bulk starch", safety: "caution", note: "Stripped of whole grain bran & fiber." },
+  "en:refined-wheat-flour": { nameEn: "Refined Wheat Flour (Maida)", nameHi: "मैदा (रिफाइंड आटा)", purpose: "Refined bulk starch", safety: "hazard", note: "Stripped of whole grain bran & fiber." },
+  "en:salt": { nameEn: "Iodised Salt", nameHi: "नमक", purpose: "Flavor and preservative", safety: "safe", note: "Mineral seasoning." },
 };
 
 /**
@@ -403,19 +414,15 @@ export function calculateHealthScoreFromOFF(productData: any): {
     verdictType = "red";
   }
 
-  const summaryEn =
-    finalScore >= 70
-      ? `Rated ${finalScore}/100. This product has a clean ingredient profile with low hazardous processing.`
-      : finalScore >= 40
-      ? `Rated ${finalScore}/100. Contains moderate refined ingredients, fats, or sugars. Consume in moderation.`
-      : `Rated ${finalScore}/100. Ultra-processed with heavy liquid sugar, Palm oil, Maida, or synthetic additives. Best to avoid.`;
-
-  const summaryHi =
-    finalScore >= 70
-      ? `स्कोर: ${finalScore}/100। यह उत्पाद शुद्ध एवं सुरक्षित सामग्री से बना है और स्वास्थ्य के लिए बेहतर है।`
-      : finalScore >= 40
-      ? `स्कोर: ${finalScore}/100। इसमें रिफाइंड तेल, चीनी या प्रिजर्वेटिव्स मौजूद हैं। सीमित मात्रा में उपयोग करें।`
-      : `स्कोर: ${finalScore}/100। इसमें घुली हुई चीनी, पाम ऑयल, मैदा या हानिकारक एडिटिव्स मौजूद हैं। इससे बचने की सलाह है।`;
+  const { summaryEn, summaryHi } = getDynamicHazardSummary({
+    score: finalScore,
+    warnings,
+    productName: (productData.product_name || productData.product_name_en || ""),
+    ingredientsText,
+    sugarVal,
+    sodiumMg,
+    isBeverage,
+  });
 
   return {
     score: finalScore,
@@ -426,6 +433,491 @@ export function calculateHealthScoreFromOFF(productData: any): {
     summaryEn,
     summaryHi,
   };
+}
+
+/**
+ * Generates an accurate, hazard-specific summary for both Hindi and English.
+ * Strictly adheres to detected hazards:
+ * - If Palm Oil / Palmolein detected: "इसमें हानिकारक पामोलिन तेल और अत्यधिक सोडियम है"
+ * - If Sugar detected: ONLY mentions "चीनी" / "sugar" if actual sugar hazard/excess is detected. Never mentions sugar for savory chips/snacks without sugar hazard.
+ * - If Maida detected: mentions Maida.
+ * - If Preservatives/Additives detected: mentions additives/INS codes.
+ * - Clean choice: mentions clean ingredients without false negatives.
+ */
+export function getDynamicHazardSummary(params: {
+  score: number;
+  warnings?: IndianHazardWarning[];
+  productName?: string;
+  ingredientsText?: string;
+  ingredientsList?: string[];
+  sugarVal?: number;
+  sodiumMg?: number;
+  isBeverage?: boolean;
+}): { summaryEn: string; summaryHi: string } {
+  const {
+    score,
+    warnings = [],
+    productName = "",
+    ingredientsText = "",
+    sugarVal = 0,
+    sodiumMg = 0,
+    isBeverage = false,
+  } = params;
+
+  // 1. Clean Choice (88+)
+  if (score >= 88) {
+    return {
+      summaryEn: `Rated ${score}/100. Clean and safe nutritional profile with zero harmful additives, zero palm oil, and no excessive sugar.`,
+      summaryHi: `स्कोर: ${score}/100। यह उत्पाद शुद्ध एवं सुरक्षित है। इसमें कोई हानिकारक पाम ऑयल, अतिरिक्त चीनी या केमिकल प्रिजर्वेटिव्स नहीं हैं।`,
+    };
+  }
+
+  // 2. Identify exact hazards present
+  const ingLower = (ingredientsText + " " + productName).toLowerCase();
+
+  const hasPalmOil =
+    warnings.some((w) => w.type === "palm_oil") ||
+    ingLower.includes("palm") ||
+    ingLower.includes("palmolein");
+
+  const isPalmolein =
+    ingLower.includes("palmolein") ||
+    warnings.some((w) => /palmolein/i.test(w.titleEn + " " + w.titleHi + " " + (w.tagValue || "")));
+
+  const hasMaida =
+    warnings.some((w) => w.type === "maida") ||
+    ingLower.includes("maida") ||
+    ingLower.includes("refined wheat flour");
+
+  const hasHighSodium =
+    warnings.some((w) => w.type === "sodium") ||
+    sodiumMg >= 500;
+
+  // STRICT SUGAR CHECK:
+  // Only flag sugar if an explicit added_sugar warning exists OR sugarVal is high (>= 6g for foods, >= 4g for beverages)
+  const hasSugarWarning = warnings.some((w) => w.type === "added_sugar");
+  const isSavorySnack =
+    ingLower.includes("chip") ||
+    ingLower.includes("lay") ||
+    ingLower.includes("kurkure") ||
+    ingLower.includes("bhujia") ||
+    ingLower.includes("namkeen") ||
+    ingLower.includes("sev") ||
+    ingLower.includes("makhana");
+
+  const hasHighSugar = hasSugarWarning || (!isSavorySnack && (sugarVal >= 7 || (isBeverage && sugarVal >= 4)));
+
+  const hasTransFat = warnings.some((w) => w.type === "trans_fat");
+
+  const hasFlavorEnhancers =
+    /ins\s*(627|631|635)|flavour enhancer|flavor enhancer|ribonucleotide|msg|monosodium/i.test(ingLower) ||
+    warnings.some((w) => /627|631|635|enhancer/i.test(w.titleEn + " " + w.titleHi + " " + (w.tagValue || "")));
+
+  const hasAdditives =
+    hasFlavorEnhancers ||
+    warnings.some((w) => w.type === "artificial_colours" || w.type === "preservatives") ||
+    /ins\s*(102|110|122|133|150d|338|211|282)/i.test(ingLower);
+
+  // If score is decent (70-87) with minimal/no warnings:
+  if (score >= 70 && warnings.length === 0) {
+    return {
+      summaryEn: `Rated ${score}/100. Wholesome profile with low hazardous processing and clean baseline ingredients.`,
+      summaryHi: `स्कोर: ${score}/100। यह उत्पाद सुरक्षित सामग्री से बना है और स्वास्थ्य के लिए एक अच्छा विकल्प है।`,
+    };
+  }
+
+  // 3. Build dynamic Hindi & English hazard clauses
+  const hindiHazards: string[] = [];
+  const englishHazards: string[] = [];
+
+  // Palm oil & Sodium combo (classic savory snack pattern: Lay's, Kurkure, Bhujia)
+  if (hasPalmOil && hasHighSodium) {
+    hindiHazards.push(isPalmolein ? "हानिकारक पामोलिन तेल" : "रिफाइंड पाम ऑयल");
+    hindiHazards.push("अत्यधिक सोडियम (नमक)");
+    englishHazards.push(isPalmolein ? "harmful Palmolein oil" : "refined Palm oil");
+    englishHazards.push("excessive sodium");
+  } else {
+    if (hasPalmOil) {
+      hindiHazards.push(isPalmolein ? "हानिकारक पामोलिन तेल" : "रिफाइंड पाम ऑयल");
+      englishHazards.push(isPalmolein ? "harmful Palmolein oil" : "refined Palm oil");
+    }
+    if (hasHighSodium) {
+      hindiHazards.push("अत्यधिक सोडियम (नमक)");
+      englishHazards.push("high sodium load");
+    }
+  }
+
+  if (hasMaida) {
+    hindiHazards.push("मैदा (रिफाइंड आटा)");
+    englishHazards.push("refined wheat flour (Maida)");
+  }
+
+  // Sugar is ONLY added if hasHighSugar is strictly TRUE
+  if (hasHighSugar) {
+    if (isBeverage) {
+      hindiHazards.push("अत्यधिक घुली हुई चीनी");
+      englishHazards.push("excessive liquid sugar");
+    } else {
+      hindiHazards.push("अत्यधिक चीनी");
+      englishHazards.push("high added sugar");
+    }
+  }
+
+  if (hasTransFat) {
+    hindiHazards.push("औद्योगिक ट्रांस फैट");
+    englishHazards.push("industrial trans fats");
+  }
+
+  if (hasFlavorEnhancers) {
+    hindiHazards.push("स्वाद बढ़ाने वाले केमिकल (INS 627/631/635)");
+    englishHazards.push("artificial flavour enhancers (INS 627/631/635)");
+  } else if (hasAdditives) {
+    hindiHazards.push("सिंथेटिक एडिटिव्स व प्रिजर्वेटिव्स");
+    englishHazards.push("synthetic additives & preservatives");
+  }
+
+  // If specific hazards were detected:
+  if (hindiHazards.length > 0) {
+    let hindiListText = "";
+    if (hindiHazards.length === 1) {
+      hindiListText = hindiHazards[0];
+    } else if (hindiHazards.length === 2) {
+      hindiListText = `${hindiHazards[0]} और ${hindiHazards[1]}`;
+    } else {
+      const last = hindiHazards[hindiHazards.length - 1];
+      const initial = hindiHazards.slice(0, -1).join(", ");
+      hindiListText = `${initial} और ${last}`;
+    }
+
+    let englishListText = "";
+    if (englishHazards.length === 1) {
+      englishListText = englishHazards[0];
+    } else if (englishHazards.length === 2) {
+      englishListText = `${englishHazards[0]} and ${englishHazards[1]}`;
+    } else {
+      const last = englishHazards[englishHazards.length - 1];
+      const initial = englishHazards.slice(0, -1).join(", ");
+      englishListText = `${initial}, and ${last}`;
+    }
+
+    const adviceHi = score < 40 ? "नियमित सेवन से बचें।" : "सीमित मात्रा में ही उपयोग करें।";
+    const adviceEn = score < 40 ? "Best to limit or avoid regular consumption." : "Recommended in moderation.";
+
+    return {
+      summaryHi: `स्कोर: ${score}/100। इसमें ${hindiListText} मौजूद है। ${adviceHi}`,
+      summaryEn: `Rated ${score}/100. Contains ${englishListText}. ${adviceEn}`,
+    };
+  }
+
+  // Fallback for general moderate products without recognized specific hazards
+  if (score >= 40) {
+    return {
+      summaryHi: `स्कोर: ${score}/100। इसमें मध्यम स्तर की प्रोसेस्ड सामग्री है। सीमित मात्रा में उपयोग करें।`,
+      summaryEn: `Rated ${score}/100. Contains moderate processed ingredients. Consume in moderation.`,
+    };
+  }
+
+  return {
+    summaryHi: `स्कोर: ${score}/100। यह अत्यधिक प्रोसेस्ड खाद्य उत्पाद है। नियमित सेवन से बचने की सलाह है।`,
+    summaryEn: `Rated ${score}/100. Ultra-processed food formulation. Best to avoid regular consumption.`,
+  };
+}
+
+/**
+ * Resolves a fully synchronized ingredient decoding list where:
+ * 1. "Sugar" / "चीनी" is NEVER "safe" (Green) - always Caution (Orange) or Hazard (Red).
+ * 2. "Edible Vegetable Oil" / "Vegetable Fat" / "Palmolein" synchronizes with Palm Oil / Trans Fat alerts (Hazard Red if alert or low score, Caution Orange otherwise, NEVER Green).
+ * 3. All items in the Hazard List (Red/Orange) are 100% synchronized with the Decoder items (Colors & Verdicts match).
+ */
+export function getSynchronizedIngredientsExplanation(params: {
+  existingExplanation?: IngredientItem[];
+  ingredientsList?: string[];
+  warnings?: IndianHazardWarning[];
+  healthScore?: number;
+  sugarVal?: number;
+  sodiumMg?: number;
+  productName?: string;
+  isHindi?: boolean;
+}): IngredientItem[] {
+  const {
+    existingExplanation,
+    ingredientsList = [],
+    warnings = [],
+    healthScore = 50,
+    sugarVal = 0,
+    sodiumMg = 0,
+    isHindi = false,
+  } = params;
+
+  const hasPalmWarning = warnings.some(
+    (w) => w.type === "palm_oil" || w.type === "trans_fat"
+  );
+  const hasSugarWarning = warnings.some((w) => w.type === "added_sugar");
+  const hasMaidaWarning = warnings.some((w) => w.type === "maida");
+  const hasSodiumWarning =
+    warnings.some((w) => w.type === "sodium") || sodiumMg >= 750;
+  const hasPreservativeWarning = warnings.some((w) => w.type === "preservatives");
+  const hasColorWarning = warnings.some((w) => w.type === "artificial_colours");
+  const isSevereScore = healthScore < 40;
+
+  // If existing explanation exists and has rich items, start from there
+  let baseItems: IngredientItem[] = [];
+  if (existingExplanation && existingExplanation.length > 0) {
+    baseItems = existingExplanation.map((it) => ({ ...it }));
+  } else if (ingredientsList && ingredientsList.length > 0) {
+    // Generate from ingredientsList
+    baseItems = ingredientsList.slice(0, 12).map((itemStr) => {
+      const clean = itemStr.trim();
+      const lower = clean.toLowerCase();
+      let foundInfo: any = null;
+
+      for (const [key, val] of Object.entries(ADDITIVE_DATABASE)) {
+        if (lower.includes(key) || key.includes(lower)) {
+          foundInfo = val;
+          break;
+        }
+      }
+
+      return {
+        name: clean,
+        nameHi: foundInfo ? foundInfo.nameHi : clean,
+        purpose: foundInfo ? foundInfo.purpose : "खाद्य घटक / सामग्री",
+        safety: foundInfo ? foundInfo.safety : "safe",
+      };
+    });
+  }
+
+  // If still empty, return default empty
+  if (baseItems.length === 0) return [];
+
+  // Now apply strict synchronization rules to every item
+  return baseItems.map((item) => {
+    const rawName = (item.name || "").toLowerCase();
+    const rawNameHi = (item.nameHi || "").toLowerCase();
+    const rawPurpose = (item.purpose || "").toLowerCase();
+    const combined = `${rawName} ${rawNameHi} ${rawPurpose}`;
+
+    let safety: "safe" | "caution" | "hazard" = item.safety;
+    let nameHi = item.nameHi || item.name;
+    let purpose = item.purpose;
+
+    // --- 1. SUGAR / SWEETENER RULE (Strictly NEVER "safe") ---
+    const isSugar =
+      combined.includes("sugar") ||
+      combined.includes("sucrose") ||
+      combined.includes("glucose") ||
+      combined.includes("fructose") ||
+      combined.includes("syrup") ||
+      combined.includes("sweetener") ||
+      combined.includes("dextrose") ||
+      combined.includes("maltodextrin") ||
+      combined.includes("invert sugar") ||
+      combined.includes("corn syrup") ||
+      combined.includes("चीनी") ||
+      combined.includes("शर्करा") ||
+      combined.includes("गुड़") ||
+      combined.includes("मीठा");
+
+    if (isSugar) {
+      if (
+        hasSugarWarning ||
+        sugarVal >= 8 ||
+        isSevereScore ||
+        combined.includes("invert") ||
+        combined.includes("corn syrup") ||
+        combined.includes("glucose syrup")
+      ) {
+        safety = "hazard";
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "रिफाइंड चीनी / स्वीटनर";
+        purpose = isHindi
+          ? "अतिरिक्त चीनी (इंसुलिन स्पाइक, फैटी लिवर व डायबिटीज का जोखिम)"
+          : "Added refined sweetener (Causes blood glucose surges & metabolic strain)";
+      } else {
+        safety = "caution"; // NEVER SAFE
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "चीनी / शर्करा";
+        purpose = isHindi
+          ? "रिफाइंड चीनी (ब्लड शुगर स्तर को तेजी से बढ़ाती है, सीमित सेवन करें)"
+          : "Refined sugar (Spikes blood glucose, consume in strict moderation)";
+      }
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // --- 2. EDIBLE VEGETABLE OIL / FAT / PALMOLEIN RULE (Synchronize with Palm Hazard) ---
+    const isOilOrFat =
+      combined.includes("oil") ||
+      combined.includes("fat") ||
+      combined.includes("palmolein") ||
+      combined.includes("palm") ||
+      combined.includes("shortening") ||
+      combined.includes("vanaspati") ||
+      combined.includes("margarine") ||
+      combined.includes("interesterified") ||
+      combined.includes("hydrogenated") ||
+      combined.includes("vegetable oil") ||
+      combined.includes("edible vegetable") ||
+      combined.includes("refined oil") ||
+      combined.includes("पाम") ||
+      combined.includes("पामोलिन") ||
+      combined.includes("तेल") ||
+      combined.includes("वनस्पति");
+
+    // Pure unrefined traditional fats check (e.g. Pure Desi Ghee / Kacchi Ghani Mustard)
+    const isPureHealthyFat =
+      (combined.includes("desi ghee") ||
+        combined.includes("kacchi ghani") ||
+        combined.includes("cold pressed") ||
+        combined.includes("extra virgin")) &&
+      !hasPalmWarning &&
+      healthScore >= 75;
+
+    if (isOilOrFat && !isPureHealthyFat) {
+      if (
+        hasPalmWarning ||
+        isSevereScore ||
+        combined.includes("palm") ||
+        combined.includes("palmolein") ||
+        combined.includes("vanaspati") ||
+        combined.includes("hydrogenated") ||
+        combined.includes("shortening")
+      ) {
+        safety = "hazard";
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "रिफाइंड पाम तेल / पामोलिन";
+        purpose = isHindi
+          ? "हानिकारक पामोलिन/पाम तेल (45-50% सैचुरेटेड फैट, हृदय व लिवर के लिए नुकसानदेह)"
+          : "Cheap refined industrial palm oil (High saturated fat & arterial risk)";
+      } else {
+        safety = "caution"; // NEVER SAFE for generic refined vegetable oil
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "रिफाइंड वनस्पति तेल";
+        purpose = isHindi
+          ? "रिफाइंड औद्योगिक तेल (केमिकल रिफाइनिंग, सीमित मात्रा में उपयोग करें)"
+          : "Refined vegetable oil (Solvent processed, consume in moderation)";
+      }
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // --- 3. MAIDA / REFINED FLOUR RULE ---
+    const isFlour =
+      combined.includes("maida") ||
+      combined.includes("refined wheat") ||
+      combined.includes("refined flour") ||
+      combined.includes("bleached flour") ||
+      combined.includes("wheat flour (maida)") ||
+      combined.includes("मैदा");
+
+    if (isFlour) {
+      if (hasMaidaWarning || healthScore < 50) {
+        safety = "hazard";
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "मैदा (रिफाइंड आटा)";
+        purpose = isHindi
+          ? "फाइबर-रहित मैदा (रक्त में ग्लूकोज तेजी से बढ़ाता है व पाचन सुस्त करता है)"
+          : "Refined flour stripped of bran & germ (Rapid glucose spike)";
+      } else {
+        safety = "caution";
+        nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "रिफाइंड आटा (मैदा)";
+        purpose = isHindi ? "रिफाइंड आटा (कम फाइबर)" : "Refined flour (Low dietary fiber)";
+      }
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // --- 4. SALT / SODIUM RULE ---
+    const isSalt =
+      combined.includes("salt") ||
+      combined.includes("sodium") ||
+      combined.includes("iodised salt") ||
+      combined.includes("नमक") ||
+      combined.includes("सोडियम");
+
+    if (
+      isSalt &&
+      !combined.includes("benzoate") &&
+      !combined.includes("carbonates") &&
+      !combined.includes("metabisulfite")
+    ) {
+      if (hasSodiumWarning || sodiumMg >= 750) {
+        safety = "hazard";
+        nameHi = "नमक (अत्यधिक सोडियम)";
+        purpose = isHindi
+          ? "अत्यधिक सोडियम लोड (हाई ब्लड प्रेशर व किडनी पर भार)"
+          : "High sodium load (Spikes blood pressure)";
+      } else if (sodiumMg >= 400) {
+        safety = "caution";
+        nameHi = "नमक (सोडियम)";
+        purpose = isHindi ? "मध्यम सोडियम मात्रा" : "Moderate sodium load";
+      } else {
+        safety = "safe";
+      }
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // --- 5. CHEMICAL ADDITIVES / FLAVOR ENHANCERS / DYES ---
+    // Flavour enhancers (INS 621, 627, 631, 635)
+    if (
+      combined.includes("621") ||
+      combined.includes("627") ||
+      combined.includes("631") ||
+      combined.includes("635") ||
+      combined.includes("msg") ||
+      combined.includes("glutamate") ||
+      combined.includes("ribonucleotide")
+    ) {
+      safety = hasPreservativeWarning || isSevereScore ? "hazard" : "caution";
+      nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "फ्लेवर एन्हांसर (INS 627/631/635)";
+      purpose = isHindi
+        ? "कृत्रिम स्वाद बढ़ाने वाले केमिकल तत्व (अति-सेवन की लत लगाते हैं)"
+        : "Chemical flavor enhancer (Stimulates overconsumption)";
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // Artificial colors (INS 102, 110, 122, 124, 129, 150d)
+    if (
+      combined.includes("102") ||
+      combined.includes("110") ||
+      combined.includes("122") ||
+      combined.includes("124") ||
+      combined.includes("129") ||
+      combined.includes("150d") ||
+      combined.includes("tartrazine") ||
+      combined.includes("sunset yellow") ||
+      combined.includes("carmoisine") ||
+      combined.includes("allura red") ||
+      combined.includes("caramel") ||
+      hasColorWarning
+    ) {
+      safety = "hazard";
+      nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "सिंथेटिक कृत्रिम रंग (INS Dye)";
+      purpose = isHindi
+        ? "रासायनिक फूड कलर (एलर्जी, बच्चों में अतिसक्रियता व स्वास्थ्य जोखिम)"
+        : "Synthetic coal-tar / ammonia dye (Allergy & hyperactivity risk)";
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // Acidulants (INS 338 Phosphoric Acid)
+    if (combined.includes("338") || combined.includes("phosphoric acid")) {
+      safety = "hazard";
+      nameHi = "फॉस्फोरिक एसिड (INS 338)";
+      purpose = isHindi
+        ? "दांतों के इनेमल और हड्डियों से कैल्शियम सोखने वाला एसिड"
+        : "Enamel & bone calcium depleting acidulant";
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    // Chemical Preservatives (INS 282, 211, 223, 471, 481)
+    if (
+      combined.includes("282") ||
+      combined.includes("211") ||
+      combined.includes("223") ||
+      combined.includes("471") ||
+      combined.includes("481") ||
+      combined.includes("preservative") ||
+      combined.includes("propionate") ||
+      combined.includes("benzoate")
+    ) {
+      safety = hasPreservativeWarning || isSevereScore ? "hazard" : "caution";
+      return { ...item, nameHi, purpose, safety };
+    }
+
+    return { ...item, nameHi, purpose, safety };
+  });
 }
 
 /**
@@ -450,6 +942,7 @@ export function mapOpenFoodFactsToAhariq(productData: any, barcode: string): Foo
     rawIngLower.includes("phosphoric acid");
 
   const sugarVal = parseFloat(nutriments.sugars_100g || nutriments.sugars || "0");
+  const sodiumMg = parseFloat(nutriments.sodium_100g ? (parseFloat(nutriments.sodium_100g) < 10 ? (parseFloat(nutriments.sodium_100g) * 1000).toString() : nutriments.sodium_100g) : (nutriments.salt_100g ? (parseFloat(nutriments.salt_100g) * 400).toString() : "0"));
 
   const { score, verdict, verdictHindi, verdictType, warnings, summaryEn, summaryHi } =
     calculateHealthScoreFromOFF(productData);
@@ -461,11 +954,11 @@ export function mapOpenFoodFactsToAhariq(productData: any, barcode: string): Foo
         .filter((s: string) => s.length > 1)
     : [];
 
-  const ingredientsExplanation: IngredientItem[] = (
+  const rawIngredientsExplanation: IngredientItem[] = (
     productData.ingredients || []
-  ).slice(0, 10).map((ing: any) => {
+  ).slice(0, 12).map((ing: any) => {
     const rawId = (ing.id || "").replace("en:", "").toLowerCase();
-    const info = ADDITIVE_DATABASE[rawId];
+    const info = ADDITIVE_DATABASE[rawId] || ADDITIVE_DATABASE[`en:${rawId}`];
     const isPalm = rawId.includes("palm") || (ing.text || "").toLowerCase().includes("palm");
     const isMaida = (ing.text || "").toLowerCase().includes("maida") || (ing.text || "").toLowerCase().includes("wheat flour");
 
@@ -475,6 +968,18 @@ export function mapOpenFoodFactsToAhariq(productData: any, barcode: string): Foo
       purpose: info ? info.purpose : isPalm ? "Cheap frying oil" : isMaida ? "Base refined grain" : "Primary ingredient",
       safety: isPalm || (info && info.safety === "hazard") ? "hazard" : isMaida || (info && info.safety === "caution") ? "caution" : "safe",
     };
+  });
+
+  // Synchronize Decoder items with Hazard warnings and Indian nutritional safety rules
+  const ingredientsExplanation = getSynchronizedIngredientsExplanation({
+    existingExplanation: rawIngredientsExplanation.length > 0 ? rawIngredientsExplanation : undefined,
+    ingredientsList,
+    warnings,
+    healthScore: score,
+    sugarVal,
+    sodiumMg,
+    productName: productData.product_name || productData.product_name_en || "",
+    isHindi: true,
   });
 
   // Vegetarian check from Open Food Facts
@@ -763,19 +1268,13 @@ export function calculateScoreFromManualNutrition(data: {
     verdictType = "red";
   }
 
-  const summaryEn =
-    finalScore >= 70
-      ? `Rated ${finalScore}/100. Wholesome nutritional profile with balanced macros (${proteinG}g Protein, ${sugarG}g Sugar).`
-      : finalScore >= 40
-      ? `Rated ${finalScore}/100. Moderate nutrient balance (${fatG}g Fat, ${sugarG}g Sugar). Recommended in portion moderation.`
-      : `Rated ${finalScore}/100. Unfavourable balance (${fatG}g Fat, ${sugarG}g Sugar, ${energyKcal} kcal). Best to limit or avoid.`;
-
-  const summaryHi =
-    finalScore >= 70
-      ? `स्कोर: ${finalScore}/100। संतुलित पोषण अनुपात (${proteinG}g प्रोटीन, ${sugarG}g चीनी)। यह स्वास्थ्य के लिए बेहतर विकल्प है।`
-      : finalScore >= 40
-      ? `स्कोर: ${finalScore}/100। इसमें फैट या चीनी की मध्यम मात्रा है (${fatG}g फैट, ${sugarG}g चीनी)। सीमित मात्रा में लें।`
-      : `स्कोर: ${finalScore}/100। इसमें अधिक फैट, चीनी या कैलोरी की मात्रा है (${sugarG}g चीनी, ${fatG}g फैट)। इससे बचें।`;
+  const { summaryEn, summaryHi } = getDynamicHazardSummary({
+    score: finalScore,
+    warnings,
+    productName: name,
+    sugarVal: sugarG,
+    sodiumMg,
+  });
 
   return {
     id: `manual_${barcode}`,
@@ -806,29 +1305,46 @@ export function calculateScoreFromManualNutrition(data: {
       `Total Fat: ${fatG}g`,
       `Carbohydrates: ${carbsG}g`,
       `Sugar: ${sugarG}g`,
-      hasPalmOil ? "Refined Palm Oil" : "Vegetable Fat",
+      hasPalmOil ? "Refined Palm Oil" : "Edible Vegetable Fat",
       hasMaida ? "Refined Wheat Flour (Maida)" : "Whole Grains",
     ],
-    ingredientsExplanation: [
-      {
-        name: "Carbohydrates & Energy",
-        nameHi: "कार्बोहाइड्रेट्स व ऊर्जा",
-        purpose: `${carbsG}g Carbs, ${energyKcal} kcal`,
-        safety: carbsG > 70 && sugarG > 20 ? "hazard" : "safe",
-      },
-      {
-        name: "Protein",
-        nameHi: "प्रोटीन",
-        purpose: `${proteinG}g Protein`,
-        safety: "safe",
-      },
-      {
-        name: "Fats & Lipids",
-        nameHi: "वसा",
-        purpose: `${fatG}g Total Fat`,
-        safety: hasPalmOil || fatG > 20 ? "hazard" : fatG > 10 ? "caution" : "safe",
-      },
-    ],
+    ingredientsExplanation: getSynchronizedIngredientsExplanation({
+      existingExplanation: [
+        {
+          name: "Carbohydrates & Energy",
+          nameHi: "कार्बोहाइड्रेट्स व ऊर्जा",
+          purpose: `${carbsG}g Carbs, ${energyKcal} kcal`,
+          safety: carbsG > 70 && sugarG > 20 ? "hazard" : "safe",
+        },
+        {
+          name: "Sugar Content",
+          nameHi: "चीनी / शर्करा",
+          purpose: `${sugarG}g Sugar per 100g`,
+          safety: sugarG >= 10 ? "hazard" : "caution",
+        },
+        {
+          name: hasPalmOil ? "Refined Palm Oil" : "Edible Vegetable Fat",
+          nameHi: hasPalmOil ? "रिफाइंड पाम तेल" : "वनस्पति वसा",
+          purpose: `${fatG}g Fat per 100g`,
+          safety: hasPalmOil ? "hazard" : "caution",
+        },
+        ...(hasMaida
+          ? [
+              {
+                name: "Refined Wheat Flour (Maida)",
+                nameHi: "मैदा (रिफाइंड आटा)",
+                purpose: "Refined flour base",
+                safety: "hazard" as const,
+              },
+            ]
+          : []),
+      ],
+      warnings,
+      healthScore: finalScore,
+      sugarVal: sugarG,
+      sodiumMg: sodiumMg || 350,
+      isHindi: true,
+    }),
     nutritionPer100g: {
       calories: `${energyKcal} kcal`,
       protein: `${proteinG}g`,

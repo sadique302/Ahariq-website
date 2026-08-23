@@ -59,7 +59,7 @@ export const ADULTERATION_GUIDES: AdulterationGuide[] = [
     adulterantHi: "चावल व मक्का का शुगर सिरप (चाशनी)",
     testNameEn: "Water Dispersion & Matchstick Test",
     testNameHi: "पानी में घुलनशीलता व माचिस परीक्षण",
-    icon: "Sparkles",
+    icon: "Droplet",
     fssaiRef: "FSSAI DART Sweet-02",
     stepByStepEn: [
       "Take a transparent glass filled with regular tap water.",

@@ -5,7 +5,6 @@ import {
   Upload,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
   ShieldCheck,
   RefreshCw,
   Image as ImageIcon,

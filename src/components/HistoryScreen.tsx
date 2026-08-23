@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  Sparkles,
   ArrowRight
 } from "lucide-react";
 import { ContactSupport } from "./ContactSupport";

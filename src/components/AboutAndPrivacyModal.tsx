@@ -9,7 +9,6 @@ import {
   EyeOff,
   CheckCircle2,
   Heart,
-  Sparkles,
   Mail,
   Phone,
   Building2,
@@ -251,7 +250,7 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                     }`}
                   >
                     <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Sparkles className="w-4 h-4" />
+                      <Activity className="w-4 h-4" />
                     </div>
                     <div>
                       <strong className="block text-xs font-black text-blue-950 dark:text-blue-200">

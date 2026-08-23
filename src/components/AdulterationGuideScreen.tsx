@@ -4,7 +4,7 @@ import {
   FlaskConical,
   Flame,
   Milk,
-  Sparkles,
+  Droplet,
   Wheat,
   ShieldCheck,
   AlertTriangle,
@@ -101,10 +101,10 @@ export const AdulterationGuideScreen: React.FC<AdulterationGuideScreenProps> = (
                         <Milk className="w-5 h-5" />
                       ) : guide.icon === "Flame" ? (
                         <Flame className="w-5 h-5" />
-                      ) : guide.icon === "Wheat" ? (
-                        <Wheat className="w-5 h-5" />
+                      ) : guide.icon === "Droplet" ? (
+                        <Droplet className="w-5 h-5" />
                       ) : (
-                        <span className="text-base leading-none">🌾</span>
+                        <Wheat className="w-5 h-5" />
                       )}
                     </div>
                     <div>

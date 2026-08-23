@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { FoodProduct, Language, CleanerAlternative } from "../types";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
+import { getDynamicHazardSummary, getSynchronizedIngredientsExplanation } from "../services/openFoodFacts";
 import {
   ArrowLeft,
   Bookmark,
@@ -10,7 +11,6 @@ import {
   CheckCircle2,
   XCircle,
   HelpCircle,
-  Sparkles,
   ShieldCheck,
   Flame,
   Wheat,
@@ -53,7 +53,14 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Compute category-specific dynamic alternatives from Firestore/Engine
+  const isCleanChoice =
+    product.healthScore >= 90 ||
+    product.category === "water" ||
+    product.category === "packaged_water" ||
+    product.category === "pure_water";
+
   const cleanAlternatives: CleanerAlternative[] = useMemo(() => {
+    if (isCleanChoice) return [];
     const dynamic = getSmartCleanerAlternatives({
       name: product.name,
       nameHindi: product.nameHindi,
@@ -63,7 +70,54 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
     });
     if (dynamic && dynamic.length > 0) return dynamic;
     return product.cleanerAlternatives || [];
+  }, [product, isCleanChoice]);
+
+  // Dynamically resolve hazard-specific summary without generic sugar/cheeni boilerplate
+  const resolvedSummary = useMemo(() => {
+    const summaryHi = product.summaryHi || "";
+    const isGenericHi =
+      !summaryHi ||
+      summaryHi.includes("इसमें रिफाइंड तेल, चीनी या प्रिजर्वेटिव्स") ||
+      summaryHi.includes("इसमें घुली हुई चीनी, पाम ऑयल, मैदा या हानिकारक") ||
+      ((product.name.toLowerCase().includes("lay") ||
+        product.name.toLowerCase().includes("chip") ||
+        product.name.toLowerCase().includes("kurkure") ||
+        product.name.toLowerCase().includes("bhujia") ||
+        product.name.toLowerCase().includes("namkeen") ||
+        parseFloat(product.nutritionPer100g.sugar || "0") < 5) &&
+        !product.warnings.some((w) => w.type === "added_sugar") &&
+        summaryHi.includes("चीनी"));
+
+    if (isGenericHi) {
+      return getDynamicHazardSummary({
+        score: product.healthScore,
+        warnings: product.warnings,
+        productName: product.name,
+        ingredientsText: product.ingredientsList?.join(" ") || "",
+        sugarVal: parseFloat(product.nutritionPer100g.sugar || "0"),
+        sodiumMg: parseFloat(product.nutritionPer100g.sodium || "0"),
+      });
+    }
+
+    return {
+      summaryHi: product.summaryHi,
+      summaryEn: product.summaryEn,
+    };
   }, [product]);
+
+  // Synchronize Decoder items with Hazard warnings and Indian nutritional safety rules
+  const synchronizedIngredients = useMemo(() => {
+    return getSynchronizedIngredientsExplanation({
+      existingExplanation: product.ingredientsExplanation,
+      ingredientsList: product.ingredientsList,
+      warnings: product.warnings,
+      healthScore: product.healthScore,
+      sugarVal: parseFloat(product.nutritionPer100g?.sugar || "0"),
+      sodiumMg: parseFloat(product.nutritionPer100g?.sodium || "0"),
+      productName: product.name,
+      isHindi,
+    });
+  }, [product, isHindi]);
 
   const handleSaveClick = () => {
     if (!isSaved) {
@@ -283,7 +337,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
               <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-[#111827] dark:text-zinc-100">
-                  {isHindi ? product.summaryHi : product.summaryEn}
+                  {isHindi ? resolvedSummary.summaryHi : resolvedSummary.summaryEn}
                 </p>
               </div>
             </div>
@@ -334,7 +388,9 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
             }`}
           >
-            {isHindi ? "बेहतर विकल्प" : "Alternatives"} ({cleanAlternatives.length})
+            {isCleanChoice
+              ? (isHindi ? "उत्पाद स्थिति (Best)" : "Product Status (Best)")
+              : `${isHindi ? "बेहतर विकल्प" : "Alternatives"} (${cleanAlternatives.length})`}
           </button>
         </div>
 
@@ -435,63 +491,95 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
               </p>
             </div>
 
-            {/* DIRECT HIGHLIGHT: Recommended Healthy Switch / Alternatives Preview */}
-            {cleanAlternatives && cleanAlternatives.length > 0 && (
-              <div className="p-4 rounded-2xl border bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/30 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399]">
-                    <span className="text-base">💡</span>
-                    <h4 className="font-bold text-sm text-[#000000] dark:text-white">
-                      {isHindi ? "इसके बदले क्या लें? (स्वस्थ विकल्प)" : "What to drink/eat instead? (Healthy Switch)"}
-                    </h4>
-                  </div>
-                  <button
-                    onClick={() => setActiveTab("alternatives")}
-                    className="text-xs font-bold text-[#059669] dark:text-[#34D399] hover:underline cursor-pointer"
-                  >
-                    {isHindi ? "सभी देखें →" : "View all →"}
-                  </button>
+            {/* DIRECT HIGHLIGHT: Recommended Healthy Switch OR Clean Choice Status */}
+            {isCleanChoice ? (
+              <div
+                className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+                  isDark
+                    ? "bg-emerald-950/20 border-emerald-800/50"
+                    : "bg-emerald-50/70 border-emerald-200 shadow-2xs"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 text-[#059669] dark:text-[#34D399]">
+                  <CheckCircle2 className="w-5 h-5 text-[#10B981] flex-shrink-0" />
+                  <h4 className="font-black text-sm text-[#000000] dark:text-white">
+                    {isHindi
+                      ? "यह उत्पाद बेस्ट है (विकल्प की आवश्यकता नहीं)"
+                      : "Clean Choice (No Alternative Needed)"}
+                  </h4>
                 </div>
-
-                <div className="space-y-2.5">
-                  {cleanAlternatives.slice(0, 2).map((alt, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setActiveTab("alternatives")}
-                      className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
-                        isDark ? "bg-zinc-900/90 border-zinc-800 hover:border-emerald-500/50" : "bg-white border-emerald-100 hover:border-emerald-300 shadow-2xs"
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
-                            {alt.brand}
-                          </span>
-                          {(alt.price || alt.priceEst) && (
-                            <span className="text-[11px] font-bold text-gray-500 dark:text-zinc-400">
-                              {alt.price || alt.priceEst}
-                            </span>
-                          )}
-                        </div>
-                        <h5 className="font-bold text-xs text-[#000000] dark:text-white mt-1">
-                          {alt.name}
-                        </h5>
-                        {alt.problem && (
-                          <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-500/20">
-                            <span>⚠️ {isHindi ? `समस्या: ${alt.problem}` : `Hazard: ${alt.problem}`}</span>
-                          </div>
-                        )}
-                        <p className="text-[11px] text-[#111827] dark:text-zinc-300 mt-1 leading-snug font-medium">
-                          {isHindi ? alt.reasonHi : alt.reasonEn}
-                        </p>
-                      </div>
-                      <div className="px-2 py-0.5 rounded-lg bg-[#10B981] text-white font-black text-[11px] flex-shrink-0">
-                        {alt.score}/100
-                      </div>
-                    </div>
-                  ))}
+                <p className="text-xs text-[#111827] dark:text-zinc-300 mt-2 leading-relaxed font-medium">
+                  {isHindi
+                    ? `इस उत्पाद का स्वास्थ्य स्कोर ${product.healthScore}/100 है। यह पूरी तरह सुरक्षित, मिलावट-मुक्त और स्वच्छ है। आपको इसके बदले किसी अन्य विकल्प को खोजने की आवश्यकता नहीं है।`
+                    : `This product scored ${product.healthScore}/100 and passes all safety audits. It is already a top-tier clean label product — no replacement needed!`}
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-2.5">
+                  <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-100/70 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-300/80 dark:border-emerald-700/60">
+                    ✓ {isHindi ? "सुरक्षित एवं शुद्ध सामग्री" : "100% Safe Ingredients"}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-100/70 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-300/80 dark:border-emerald-700/60">
+                    ✓ {isHindi ? "पाम ऑयल / मैदा मुक्त" : "Zero Palm Oil / Maida"}
+                  </span>
                 </div>
               </div>
+            ) : (
+              cleanAlternatives && cleanAlternatives.length > 0 && (
+                <div className="p-4 rounded-2xl border bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399]">
+                      <span className="text-base">💡</span>
+                      <h4 className="font-bold text-sm text-[#000000] dark:text-white">
+                        {isHindi ? "इसके बदले क्या लें? (स्वस्थ विकल्प)" : "What to drink/eat instead? (Healthy Switch)"}
+                      </h4>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab("alternatives")}
+                      className="text-xs font-bold text-[#059669] dark:text-[#34D399] hover:underline cursor-pointer"
+                    >
+                      {isHindi ? "सभी देखें →" : "View all →"}
+                    </button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {cleanAlternatives.slice(0, 2).map((alt, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => setActiveTab("alternatives")}
+                        className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
+                          isDark ? "bg-zinc-900/90 border-zinc-800 hover:border-emerald-500/50" : "bg-white border-emerald-100 hover:border-emerald-300 shadow-2xs"
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
+                              {alt.brand}
+                            </span>
+                            {(alt.price || alt.priceEst) && (
+                              <span className="text-[11px] font-bold text-gray-500 dark:text-zinc-400">
+                                {alt.price || alt.priceEst}
+                              </span>
+                            )}
+                          </div>
+                          <h5 className="font-bold text-xs text-[#000000] dark:text-white mt-1">
+                            {alt.name}
+                          </h5>
+                          {alt.problem && (
+                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-500/20">
+                              <span>⚠️ {isHindi ? `समस्या: ${alt.problem}` : `Hazard: ${alt.problem}`}</span>
+                            </div>
+                          )}
+                          <p className="text-[11px] text-[#111827] dark:text-zinc-300 mt-1 leading-snug font-medium">
+                            {isHindi ? alt.reasonHi : alt.reasonEn}
+                          </p>
+                        </div>
+                        <div className="px-2 py-0.5 rounded-lg bg-[#10B981] text-white font-black text-[11px] flex-shrink-0">
+                          {alt.score}/100
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
             )}
           </div>
         )}
@@ -510,12 +598,12 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   <span>{isHindi ? "सामग्री सूची डिकोडर" : "Ingredients & E-Code Decoder"}</span>
                 </h3>
                 <span className="text-xs text-gray-500 font-bold">
-                  {product.ingredientsExplanation.length} {isHindi ? "तत्व" : "Items"}
+                  {synchronizedIngredients.length} {isHindi ? "तत्व" : "Items"}
                 </span>
               </div>
 
               <div className="space-y-2.5">
-                {product.ingredientsExplanation.map((ing, idx) => (
+                {synchronizedIngredients.map((ing, idx) => (
                   <div
                     key={idx}
                     className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
@@ -531,7 +619,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                         <span className="font-bold text-[#000000] dark:text-white">
                           {isHindi ? ing.nameHi || ing.name : ing.name}
                         </span>
-                        {isHindi && ing.nameHi && (
+                        {isHindi && ing.nameHi && ing.nameHi !== ing.name && (
                           <span className="text-[10px] text-gray-500 dark:text-zinc-400">
                             ({ing.name})
                           </span>
@@ -687,11 +775,31 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 </span>
               </div>
 
-              {cleanAlternatives.length === 0 ? (
-                <div className="p-6 rounded-2xl bg-zinc-900 text-center text-zinc-300 border border-zinc-800">
-                  <p className="text-xs font-medium">
-                    {isHindi ? "यह उत्पाद पहले से ही श्रेणी में सर्वोत्तम है!" : "This product already has a top-tier health score!"}
-                  </p>
+              {isCleanChoice || cleanAlternatives.length === 0 ? (
+                <div
+                  className={`p-6 sm:p-8 rounded-2xl border text-center space-y-3.5 transition-all ${
+                    isDark
+                      ? "bg-emerald-950/20 border-emerald-800/50 text-zinc-200"
+                      : "bg-emerald-50/70 border-emerald-200 text-emerald-950 shadow-xs"
+                  }`}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#059669] to-[#10B981] text-white flex items-center justify-center mx-auto shadow-md shadow-[#10B981]/30">
+                    <ShieldCheck className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-base sm:text-lg text-[#000000] dark:text-white">
+                      {isHindi ? "यह उत्पाद पहले से ही सर्वोत्तम है!" : "Top Clean Label Choice!"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#111827] dark:text-zinc-300 max-w-md mx-auto mt-1.5 leading-relaxed font-medium">
+                      {isHindi
+                        ? `इस उत्पाद का स्वास्थ्य स्कोर ${product.healthScore}/100 है। इसमें कोई हानिकारक पाम ऑयल, अतिरिक्त मैदा, केमिकल या सिंथेटिक रंग नहीं मिले हैं। यह दैनिक उपभोग के लिए बिल्कुल सुरक्षित है और किसी अन्य विकल्प की आवश्यकता नहीं है।`
+                        : `This product scored an outstanding ${product.healthScore}/100 and passes all ingredient audits. It is already a clean, safe product — no replacement needed!`}
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-[#059669] dark:text-[#34D399] font-bold text-xs border border-emerald-500/40">
+                    <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                    <span>{isHindi ? "स्वच्छ एवं सुरक्षित उत्पाद प्रमाणित" : "Certified Clean Choice"}</span>
+                  </div>
                 </div>
               ) : (
                 cleanAlternatives.map((alt, idx) => (
@@ -718,12 +826,14 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                           {alt.name}
                         </h4>
 
-                        {/* Problem In Ultra-Processed / Standard Version */}
-                        {alt.problem && (
-                          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-500/20 text-xs font-semibold">
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                        {/* Clean Certified Benefit Tag */}
+                        {(alt.benefit || alt.benefitHi || (alt.tags && alt.tags.length > 0)) && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25 text-xs font-bold">
+                            <Wheat className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
                             <span>
-                              {isHindi ? `क्यों बचें: ${alt.problem}` : `Hazard in standard version: ${alt.problem}`}
+                              {isHindi
+                                ? `फायदा: ${alt.benefitHi || alt.benefit || alt.tags?.join(", ")}`
+                                : `Benefit: ${alt.benefit || alt.benefitHi || alt.tags?.join(", ")}`}
                             </span>
                           </div>
                         )}
