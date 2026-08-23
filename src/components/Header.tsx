@@ -51,7 +51,11 @@ export const Header: React.FC<HeaderProps> = ({
   const isHindi = language === "hi";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const isOwner = user.email === "sadiquehavari@gmail.com";
+  const isOwner =
+    user?.isLoggedIn &&
+    (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
+      user?.email?.toLowerCase().includes("sadiquehavari") ||
+      user?.role === "admin");
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -79,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header
       id="app-header"
-      className={`sticky top-0 z-30 transition-colors duration-200 border-b w-full max-w-full overflow-hidden ${
+      className={`sticky top-0 z-40 transition-colors duration-200 border-b w-full max-w-full ${
         isDark
           ? "bg-[#09090B]/95 border-zinc-800 text-zinc-100 backdrop-blur-md"
           : "bg-white/95 border-gray-200/90 text-[#111827] backdrop-blur-md"
@@ -199,10 +203,10 @@ export const Header: React.FC<HeaderProps> = ({
             {isMenuOpen && (
               <div
                 id="header-menu-dropdown"
-                className={`absolute right-0 mt-2 w-60 rounded-2xl border shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 ${
+                className={`absolute right-0 mt-2 w-64 sm:w-72 max-h-[calc(100vh-80px)] overflow-y-auto rounded-2xl border shadow-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 ${
                   isDark
-                    ? "bg-[#18181B] border-zinc-800 text-zinc-100"
-                    : "bg-white border-gray-200 text-[#111827]"
+                    ? "bg-[#18181B] border-zinc-700 text-zinc-100 shadow-black/80"
+                    : "bg-white border-gray-200 text-[#111827] shadow-xl"
                 }`}
               >
                 {/* Install App in Menu */}
@@ -247,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </button>
 
-                {/* Secret Founder & Admin Panel (Only visible to sadiquehavari@gmail.com) */}
+                {/* Secret Founder & Admin Panel (STRICTLY ONLY visible to sadiquehavari@gmail.com) */}
                 {isOwner && onOpenAdmin && (
                   <button
                     id="menu-owner-admin-btn"
@@ -255,17 +259,20 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsMenuOpen(false);
                       onOpenAdmin();
                     }}
-                    className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 transition-colors text-left cursor-pointer mb-1 animate-pulse"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 transition-colors text-left cursor-pointer mb-1"
                   >
                     <ShieldCheck className="w-4 h-4 text-amber-500 flex-shrink-0" />
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="block font-black text-amber-900 dark:text-amber-100">
-                          {isHindi ? "👑 एडमिन व लाइव ट्रैफिक" : "👑 Founder Admin & Traffic"}
+                          {isHindi ? "👑 एडमिन व लाइव ट्रैफिक" : "👑 Founder & Admin Dashboard"}
+                        </span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500 text-white font-bold">
+                          FOUNDER
                         </span>
                       </div>
                       <span className="text-[10px] text-amber-700/80 dark:text-amber-300/80 block">
-                        {isHindi ? "लाइव यूज़र्स और स्कैन डेटा देखें" : "View Live Users & Scans in Cloud"}
+                        {isHindi ? "लाइव यूज़र्स और स्कैन डेटा देखें" : "View Live Cloud Users & Scans"}
                       </span>
                     </div>
                   </button>

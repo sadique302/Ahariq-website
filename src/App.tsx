@@ -18,6 +18,8 @@ import {
   recordScanToCloud,
   syncSavedItemToCloud,
   syncUserProfileToCloud,
+  seedDefaultAlternativesIfEmpty,
+  listenToCategoryAlternatives,
 } from "./lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -137,6 +139,17 @@ export default function App() {
       }
     });
     return () => unsubscribe();
+  }, []);
+
+  // Initialize and synchronize Firestore alternatives collection
+  useEffect(() => {
+    seedDefaultAlternativesIfEmpty();
+    const unsub = listenToCategoryAlternatives((_docs) => {
+      // realtime cache updated
+    });
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   // Persistence helpers
@@ -298,6 +311,9 @@ export default function App() {
             user={user}
             onOpenAuth={() => setIsAuthOpen(true)}
             onOpenInstallPwa={() => setIsInstallPwaOpen(true)}
+            onOpenAbout={handleOpenAbout}
+            onOpenPrivacy={handleOpenPrivacy}
+            onOpenAdmin={() => setIsAdminDashboardOpen(true)}
           />
         ) : currentTab === "saved" ? (
           <SavedListScreen

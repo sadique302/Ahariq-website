@@ -1,15 +1,35 @@
 import React from "react";
-import { Mail, Phone, Headphones, HeartHandshake, ShieldCheck } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Headphones,
+  HeartHandshake,
+  ShieldCheck,
+  Info,
+  Lock,
+  Smartphone,
+  Crown
+} from "lucide-react";
 import { Language } from "../types";
 
 interface ContactSupportProps {
   language?: Language;
   isDark?: boolean;
+  onOpenAbout?: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenAdmin?: () => void;
+  onOpenInstallPwa?: () => void;
+  isOwner?: boolean;
 }
 
 export const ContactSupport: React.FC<ContactSupportProps> = ({
   language = "en",
   isDark = false,
+  onOpenAbout,
+  onOpenPrivacy,
+  onOpenAdmin,
+  onOpenInstallPwa,
+  isOwner = false,
 }) => {
   const isHindi = language === "hi";
 
@@ -17,14 +37,14 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
     <div
       id="contact-support-card"
       style={{ padding: "20px" }}
-      className={`rounded-3xl border-2 p-5 sm:p-6 transition-all shadow-sm ${
+      className={`rounded-3xl border-2 p-5 sm:p-6 transition-all shadow-sm space-y-4 ${
         isDark
           ? "bg-stone-900 border-stone-800 text-stone-100"
           : "bg-[#FFFFFF] border-[#E5E7EB] text-[#111827] shadow-stone-900/5"
       }`}
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200 dark:border-stone-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200 dark:border-stone-800">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-[#22c55e]/15 flex items-center justify-center text-[#22c55e] flex-shrink-0">
             <Headphones className="w-5 h-5" />
@@ -53,8 +73,72 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
         </div>
       </div>
 
+      {/* Quick Navigation Quick-Links: About Us, Privacy Policy, [Founder Admin if logged in], Install App */}
+      <div className={`grid ${isOwner && onOpenAdmin ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"} gap-2 pt-1`}>
+        {onOpenAbout && (
+          <button
+            id="footer-about-us-btn"
+            onClick={onOpenAbout}
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+              isDark
+                ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
+                : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
+            }`}
+          >
+            <Info className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+            <span className="truncate">{isHindi ? "हमारे बारे में" : "About Us"}</span>
+          </button>
+        )}
+
+        {onOpenPrivacy && (
+          <button
+            id="footer-privacy-btn"
+            onClick={onOpenPrivacy}
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+              isDark
+                ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
+                : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
+            }`}
+          >
+            <Lock className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+            <span className="truncate">{isHindi ? "गोपनीयता नीति" : "Privacy Policy"}</span>
+          </button>
+        )}
+
+        {/* SECRET FOUNDER BUTTON - STRICTLY ONLY VISIBLE WHEN LOGGED IN AS SADIQUEHAVARI@GMAIL.COM */}
+        {isOwner && onOpenAdmin && (
+          <button
+            id="footer-admin-btn"
+            onClick={onOpenAdmin}
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+              isDark
+                ? "bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50 text-amber-300"
+                : "bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-800"
+            }`}
+          >
+            <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "एडमिन पैनल" : "Founder Panel"}</span>
+          </button>
+        )}
+
+        {onOpenInstallPwa && (
+          <button
+            id="footer-install-btn"
+            onClick={onOpenInstallPwa}
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+              isDark
+                ? "bg-emerald-950/40 border-emerald-800/60 hover:bg-emerald-900/50 text-emerald-300"
+                : "bg-emerald-500 border-emerald-600 hover:bg-emerald-600 text-white shadow-sm shadow-emerald-500/20"
+            }`}
+          >
+            <Smartphone className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "ऐप इनस्टॉल करें" : "Install App"}</span>
+          </button>
+        )}
+      </div>
+
       {/* 2 Big Action Cards: Email & Phone */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         {/* Email Direct Action Button */}
         <a
           id="contact-email-btn"

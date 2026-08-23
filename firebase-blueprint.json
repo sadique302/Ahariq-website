@@ -94,6 +94,20 @@
         "status": { "type": "string" }
       },
       "required": ["id", "barcode", "productName", "createdAt"]
+    },
+    "alternatives": {
+      "title": "Category Healthy Alternatives",
+      "description": "Clean, healthy alternatives indexed by category_id for Indian foods",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category_id": { "type": "string" },
+        "category_name": { "type": "string" },
+        "target_products": { "type": "array" },
+        "alternatives": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "category_id", "alternatives"]
     }
   },
   "firestore": {
@@ -116,6 +130,10 @@
     "/community_contributions/{contributionId}": {
       "schema": "#/entities/community_contributions",
       "description": "Community 3-photo submissions"
+    },
+    "/alternatives/{categoryId}": {
+      "schema": "#/entities/alternatives",
+      "description": "Category-specific healthy food recommendations"
     }
   }
 }

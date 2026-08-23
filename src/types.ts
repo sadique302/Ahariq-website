@@ -36,13 +36,24 @@ export interface NutritionFacts {
 export interface CleanerAlternative {
   id?: string;
   name: string;
-  brand: string;
+  brand?: string;
   score: number;
-  image?: string;
-  reasonEn: string;
-  reasonHi: string;
+  price?: string;
   priceEst?: string;
+  problem?: string; // Hindi problem explanation e.g. "Zyada Cheeni + Chemical"
+  image?: string;
+  reasonEn?: string;
+  reasonHi?: string;
   tags?: string[];
+}
+
+export interface CategoryAlternativeDoc {
+  id: string; // document id matching category_id e.g. "energy_drink"
+  category_id: string;
+  category_name?: string;
+  target_products?: string[];
+  alternatives: CleanerAlternative[];
+  updatedAt?: string;
 }
 
 export interface AdulterationCheck {

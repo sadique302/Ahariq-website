@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { FoodProduct, Language } from "../types";
+import React, { useState, useMemo } from "react";
+import { FoodProduct, Language, CleanerAlternative } from "../types";
+import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import {
   ArrowLeft,
   Bookmark,
@@ -20,7 +21,9 @@ import {
   Droplet,
   Zap,
   Activity,
-  HeartCrack
+  HeartCrack,
+  Tag,
+  DollarSign
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { WhatsAppShareModal } from "./WhatsAppShareModal";
@@ -48,6 +51,19 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   const isHindi = language === "hi";
   const [activeTab, setActiveTab] = useState<"overview" | "ingredients" | "nutrition" | "alternatives">("overview");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  // Compute category-specific dynamic alternatives from Firestore/Engine
+  const cleanAlternatives: CleanerAlternative[] = useMemo(() => {
+    const dynamic = getSmartCleanerAlternatives({
+      name: product.name,
+      nameHindi: product.nameHindi,
+      brand: product.brand,
+      category: product.category,
+      ingredientsText: product.ingredientsList?.join(" "),
+    });
+    if (dynamic && dynamic.length > 0) return dynamic;
+    return product.cleanerAlternatives || [];
+  }, [product]);
 
   const handleSaveClick = () => {
     if (!isSaved) {
@@ -318,7 +334,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 : "text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-zinc-100"
             }`}
           >
-            {isHindi ? "बेहतर विकल्प" : "Alternatives"} ({product.cleanerAlternatives.length})
+            {isHindi ? "बेहतर विकल्प" : "Alternatives"} ({cleanAlternatives.length})
           </button>
         </div>
 
@@ -420,7 +436,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
             </div>
 
             {/* DIRECT HIGHLIGHT: Recommended Healthy Switch / Alternatives Preview */}
-            {product.cleanerAlternatives && product.cleanerAlternatives.length > 0 && (
+            {cleanAlternatives && cleanAlternatives.length > 0 && (
               <div className="p-4 rounded-2xl border bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border-emerald-500/30 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399]">
@@ -437,24 +453,34 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   </button>
                 </div>
 
-                <div className="space-y-2">
-                  {product.cleanerAlternatives.slice(0, 2).map((alt, idx) => (
+                <div className="space-y-2.5">
+                  {cleanAlternatives.slice(0, 2).map((alt, idx) => (
                     <div
                       key={idx}
                       onClick={() => setActiveTab("alternatives")}
-                      className={`p-3 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
                         isDark ? "bg-zinc-900/90 border-zinc-800 hover:border-emerald-500/50" : "bg-white border-emerald-100 hover:border-emerald-300 shadow-2xs"
                       }`}
                     >
                       <div className="flex-1">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                           <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
                             {alt.brand}
                           </span>
-                          <h5 className="font-bold text-xs text-[#000000] dark:text-white">
-                            {alt.name}
-                          </h5>
+                          {(alt.price || alt.priceEst) && (
+                            <span className="text-[11px] font-bold text-gray-500 dark:text-zinc-400">
+                              {alt.price || alt.priceEst}
+                            </span>
+                          )}
                         </div>
+                        <h5 className="font-bold text-xs text-[#000000] dark:text-white mt-1">
+                          {alt.name}
+                        </h5>
+                        {alt.problem && (
+                          <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-500/20">
+                            <span>⚠️ {isHindi ? `समस्या: ${alt.problem}` : `Hazard: ${alt.problem}`}</span>
+                          </div>
+                        )}
                         <p className="text-[11px] text-[#111827] dark:text-zinc-300 mt-1 leading-snug font-medium">
                           {isHindi ? alt.reasonHi : alt.reasonEn}
                         </p>
@@ -661,14 +687,14 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 </span>
               </div>
 
-              {product.cleanerAlternatives.length === 0 ? (
+              {cleanAlternatives.length === 0 ? (
                 <div className="p-6 rounded-2xl bg-zinc-900 text-center text-zinc-300 border border-zinc-800">
                   <p className="text-xs font-medium">
                     {isHindi ? "यह उत्पाद पहले से ही श्रेणी में सर्वोत्तम है!" : "This product already has a top-tier health score!"}
                   </p>
                 </div>
               ) : (
-                product.cleanerAlternatives.map((alt, idx) => (
+                cleanAlternatives.map((alt, idx) => (
                   <div
                     key={idx}
                     className={`p-4 rounded-2xl border transition-all ${
@@ -681,24 +707,52 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                           <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                             {alt.brand}
                           </span>
-                          {alt.priceEst && (
-                            <span className="text-xs text-gray-500 font-semibold">{alt.priceEst}</span>
+                          {(alt.price || alt.priceEst) && (
+                            <span className="text-xs text-gray-600 dark:text-zinc-300 font-bold bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                              {alt.price || alt.priceEst}
+                            </span>
                           )}
                         </div>
-                        <h4 className="font-bold text-sm text-[#000000] dark:text-white mt-1">
+
+                        <h4 className="font-bold text-base text-[#000000] dark:text-white mt-1.5">
                           {alt.name}
                         </h4>
-                        <p className="text-xs text-[#111827] dark:text-zinc-300 mt-1.5 leading-relaxed font-medium">
+
+                        {/* Problem In Ultra-Processed / Standard Version */}
+                        {alt.problem && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-500/20 text-xs font-semibold">
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                            <span>
+                              {isHindi ? `क्यों बचें: ${alt.problem}` : `Hazard in standard version: ${alt.problem}`}
+                            </span>
+                          </div>
+                        )}
+
+                        <p className="text-xs text-[#111827] dark:text-zinc-300 mt-2 leading-relaxed font-medium">
                           {isHindi ? alt.reasonHi : alt.reasonEn}
                         </p>
+
+                        {/* Tags */}
+                        {alt.tags && alt.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2.5">
+                            {alt.tags.map((t, tidx) => (
+                              <span
+                                key={tidx}
+                                className="text-[10px] font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50/80 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200/60 dark:border-emerald-800/60"
+                              >
+                                ✓ {t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
-                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                         <div className="px-2.5 py-1 rounded-xl bg-[#10B981] text-white font-black text-xs shadow-sm">
                           {alt.score}/100
                         </div>
                         <span className="text-[10px] font-bold text-[#059669] dark:text-[#34D399]">
-                          +{alt.score - product.healthScore} Pts
+                          +{Math.max(1, alt.score - product.healthScore)} Pts
                         </span>
                       </div>
                     </div>

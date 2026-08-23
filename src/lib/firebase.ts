@@ -24,7 +24,11 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import firebaseConfigData from "../../firebase-applet-config.json";
-import { FoodProduct, UserProfile, CommunityContribution } from "../types";
+import { FoodProduct, UserProfile, CommunityContribution, CategoryAlternativeDoc } from "../types";
+import {
+  DEFAULT_CATEGORY_ALTERNATIVES,
+  updateAlternativesCache,
+} from "../data/cleanAlternativesEngine";
 
 // Firebase Configuration (supports Vercel Environment Variables with automatic fallback)
 const env = (import.meta as any).env || {};
@@ -344,4 +348,124 @@ export async function fetchRealAdminStatsFromCloud() {
     };
   }
 }
+
+// ----------------------------------------------------
+// DYNAMIC ALTERNATIVES COLLECTION (Firestore CRUD & Seeding)
+// ----------------------------------------------------
+
+/**
+ * Seeds default healthy alternatives into Firestore 'alternatives' collection
+ * Each document ID is the exact category_id (e.g. energy_drink, instant_noodles, etc.)
+ */
+export async function seedDefaultAlternativesIfEmpty(): Promise<boolean> {
+  try {
+    const colRef = collection(db, "alternatives");
+    const snapshot = await getDocs(colRef);
+
+    if (snapshot.empty) {
+      console.log("Seeding initial alternatives collection in Firestore...");
+      for (const [categoryId, data] of Object.entries(DEFAULT_CATEGORY_ALTERNATIVES)) {
+        const docRef = doc(db, "alternatives", categoryId);
+        await setDoc(docRef, {
+          ...data,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+      console.log("Successfully seeded default alternatives into Firestore.");
+      return true;
+    } else {
+      // Refresh cache from existing Firestore documents
+      const docs: CategoryAlternativeDoc[] = [];
+      snapshot.forEach((d) => {
+        docs.push({ id: d.id, ...(d.data() as any) });
+      });
+      updateAlternativesCache(docs);
+      return true;
+    }
+  } catch (err) {
+    console.warn("Could not seed or fetch cloud alternatives, using local offline fallback:", err);
+    return false;
+  }
+}
+
+/**
+ * Fetch all category alternatives from Firestore
+ */
+export async function fetchCategoryAlternativesFromCloud(): Promise<CategoryAlternativeDoc[]> {
+  try {
+    const colRef = collection(db, "alternatives");
+    const snapshot = await getDocs(colRef);
+    const docs: CategoryAlternativeDoc[] = [];
+    snapshot.forEach((d) => {
+      docs.push({ id: d.id, ...(d.data() as any) });
+    });
+    if (docs.length > 0) {
+      updateAlternativesCache(docs);
+    }
+    return docs;
+  } catch (err) {
+    console.warn("fetchCategoryAlternativesFromCloud error:", err);
+    return Object.values(DEFAULT_CATEGORY_ALTERNATIVES);
+  }
+}
+
+/**
+ * Save or update a category alternative document in Firestore
+ */
+export async function saveCategoryAlternativeToCloud(
+  categoryId: string,
+  docData: Partial<CategoryAlternativeDoc>
+): Promise<boolean> {
+  try {
+    const docRef = doc(db, "alternatives", categoryId);
+    await setDoc(
+      docRef,
+      {
+        ...docData,
+        id: categoryId,
+        category_id: categoryId,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+    // Refresh memory cache
+    const existing = await getDoc(docRef);
+    if (existing.exists()) {
+      updateAlternativesCache([{ id: existing.id, ...(existing.data() as any) }]);
+    }
+    return true;
+  } catch (err) {
+    console.error("saveCategoryAlternativeToCloud error:", err);
+    return false;
+  }
+}
+
+/**
+ * Realtime listener for alternatives collection
+ */
+export function listenToCategoryAlternatives(callback: (docs: CategoryAlternativeDoc[]) => void) {
+  try {
+    const colRef = collection(db, "alternatives");
+    return onSnapshot(
+      colRef,
+      (snapshot) => {
+        const docs: CategoryAlternativeDoc[] = [];
+        snapshot.forEach((d) => {
+          docs.push({ id: d.id, ...(d.data() as any) });
+        });
+        if (docs.length > 0) {
+          updateAlternativesCache(docs);
+        }
+        callback(docs);
+      },
+      (err) => {
+        console.warn("listenToCategoryAlternatives warning:", err);
+      }
+    );
+  } catch (err) {
+    console.warn("Could not attach realtime alternatives listener:", err);
+    return () => {};
+  }
+}
+
 

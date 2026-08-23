@@ -41,6 +41,9 @@ interface HomeScreenProps {
   user?: UserProfile;
   onOpenAuth?: () => void;
   onOpenInstallPwa?: () => void;
+  onOpenAbout?: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenAdmin?: () => void;
 }
 
 const QUICK_SEARCH_TAGS = [
@@ -66,8 +69,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   user,
   onOpenAuth,
   onOpenInstallPwa,
+  onOpenAbout,
+  onOpenPrivacy,
+  onOpenAdmin,
 }) => {
   const isHindi = language === "hi";
+  const isOwner =
+    user?.isLoggedIn &&
+    (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
+      user?.email?.toLowerCase().includes("sadiquehavari") ||
+      user?.role === "admin");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isSearching, setIsSearching] = useState(false);
@@ -679,7 +690,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         )}
 
         {/* CONTACT SUPPORT FOOTER SECTION */}
-        <ContactSupport language={language} isDark={isDark} />
+        <ContactSupport
+          language={language}
+          isDark={isDark}
+          onOpenAbout={onOpenAbout}
+          onOpenPrivacy={onOpenPrivacy}
+          onOpenAdmin={onOpenAdmin}
+          onOpenInstallPwa={onOpenInstallPwa}
+          isOwner={isOwner}
+        />
       </div>
     </div>
   );

@@ -29,5 +29,9 @@ service cloud.firestore {
     match /community_contributions/{contributionId} {
       allow read, write: if true;
     }
+
+    match /alternatives/{categoryId} {
+      allow read, write: if true;
+    }
   }
 }
