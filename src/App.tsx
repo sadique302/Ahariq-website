@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import { FoodProduct, Language, UserProfile } from "./types";
 import { INDIAN_PRODUCTS_DB } from "./data/indianProducts";
 import { Header } from "./components/Header";
@@ -406,6 +407,9 @@ export default function App() {
         isDark={isDark}
         adminEmail={user.email || "sadiquehavari@gmail.com"}
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
