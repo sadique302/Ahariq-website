@@ -167,3 +167,50 @@ export interface UserProfile {
   languagePreference?: Language;
   dietaryPreferences: DietaryPreferences;
 }
+
+export type ActivityEventType =
+  | "APP_VISIT"
+  | "SEARCH"
+  | "PRODUCT_VIEW"
+  | "SCAN"
+  | "VOICE_LISTEN"
+  | "ALTERNATIVE_CLICK"
+  | "BOOKMARK"
+  | "COMMUNITY_SUBMIT"
+  | "LOGIN"
+  | "LOGOUT"
+  | "TAB_SWITCH"
+  | "APP_LEAVE";
+
+export interface UserActivityEvent {
+  id?: string;
+  visitorId: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
+  isLoggedIn: boolean;
+  eventType: ActivityEventType;
+  title: string;
+  details?: Record<string, any>;
+  deviceType?: "Mobile" | "Desktop" | "Tablet";
+  timestamp: string;
+  createdAt?: string;
+}
+
+export interface UserSessionRecord {
+  id: string; // visitorId
+  visitorId: string;
+  userId?: string;
+  userName?: string;
+  userEmail?: string;
+  isLoggedIn: boolean;
+  deviceType: "Mobile" | "Desktop" | "Tablet";
+  startedAt: string;
+  lastActiveAt: string;
+  durationSeconds: number;
+  totalActions: number;
+  lastAction: string;
+  recentSearches?: string[];
+  recentProductsViewed?: string[];
+}
+

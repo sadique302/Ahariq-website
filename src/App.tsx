@@ -25,6 +25,8 @@ import {
   fetchUserScansFromCloud,
 } from "./lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { initSessionTracker, trackUserActivity } from "./services/analyticsTracker";
+
 
 export default function App() {
   // 1. Language State (English / Hindi)
@@ -112,6 +114,9 @@ export default function App() {
 
   // Listen to Firebase Auth state & sync user-scoped items
   useEffect(() => {
+    // Start active visitor telemetry session
+    const cleanupSession = initSessionTracker(user);
+
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
         const updated: UserProfile = {
@@ -129,6 +134,14 @@ export default function App() {
         };
         setUser(updated);
         await syncUserProfileToCloud(fbUser.uid, updated);
+
+        // Track Login activity event
+        trackUserActivity({
+          eventType: "LOGIN",
+          title: `User logged in: ${fbUser.displayName || fbUser.email || fbUser.phoneNumber || "Google User"}`,
+          details: { email: fbUser.email, uid: fbUser.uid },
+          user: updated,
+        });
 
         // Fetch authenticated user's cloud saved items & history securely
         try {
@@ -155,7 +168,10 @@ export default function App() {
         }
       }
     });
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (cleanupSession) cleanupSession();
+    };
   }, []);
 
   // Initialize and synchronize Firestore alternatives collection
@@ -222,6 +238,21 @@ export default function App() {
 
     setSelectedProduct(sanitizedProduct);
 
+    // Track user scan activity
+    trackUserActivity({
+      eventType: "SCAN",
+      title: `Scanned: ${sanitizedProduct.name} (${sanitizedProduct.healthScore}/100)`,
+      details: {
+        productId: sanitizedProduct.id,
+        productName: sanitizedProduct.name,
+        brand: sanitizedProduct.brand,
+        healthScore: sanitizedProduct.healthScore,
+        verdict: sanitizedProduct.verdict,
+        barcode: sanitizedProduct.barcode,
+      },
+      user,
+    });
+
     // Sync scan to Firebase Cloud in background
     const uid = user.id || "guest_device";
     recordScanToCloud(uid, sanitizedProduct);
@@ -238,9 +269,21 @@ export default function App() {
         prev.filter((p) => p.id !== product.id && p.barcode !== product.barcode)
       );
       syncSavedItemToCloud(uid, product, false);
+      trackUserActivity({
+        eventType: "BOOKMARK",
+        title: `Removed Bookmark: ${product.name}`,
+        details: { productName: product.name, barcode: product.barcode },
+        user,
+      });
     } else {
       setSavedProducts((prev) => [product, ...prev]);
       syncSavedItemToCloud(uid, product, true);
+      trackUserActivity({
+        eventType: "BOOKMARK",
+        title: `Saved Bookmark: ${product.name}`,
+        details: { productName: product.name, barcode: product.barcode, healthScore: product.healthScore },
+        user,
+      });
     }
   };
 
@@ -265,6 +308,39 @@ export default function App() {
   const handleOpenPrivacy = () => {
     setAboutPrivacyTab("privacy");
     setIsAboutPrivacyOpen(true);
+  };
+
+  const handleSelectProduct = (p: FoodProduct, source: string = "card") => {
+    setSelectedProduct(p);
+    trackUserActivity({
+      eventType: "PRODUCT_VIEW",
+      title: `Viewed Product: ${p.name} (${p.healthScore}/100)`,
+      details: {
+        productId: p.id,
+        productName: p.name,
+        brand: p.brand,
+        category: p.category,
+        healthScore: p.healthScore,
+        verdict: p.verdict,
+        source,
+      },
+      user,
+    });
+  };
+
+  const handleNavigateTab = (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => {
+    if (tab === "scanner") {
+      handleOpenScanner();
+      return;
+    }
+    setCurrentTab(tab);
+    setSelectedProduct(null);
+    trackUserActivity({
+      eventType: "TAB_SWITCH",
+      title: `Navigated to ${tab.toUpperCase()} screen`,
+      details: { tab },
+      user,
+    });
   };
 
   const isCurrentProductSaved = selectedProduct
@@ -294,10 +370,7 @@ export default function App() {
           onOpenAuth={() => setIsAuthOpen(true)}
           onOpenScanner={handleOpenScanner}
           savedCount={savedProducts.length}
-          onNavigateTab={(tab) => {
-            setCurrentTab(tab);
-            setSelectedProduct(null);
-          }}
+          onNavigateTab={handleNavigateTab}
           onOpenAbout={handleOpenAbout}
           onOpenPrivacy={handleOpenPrivacy}
           onOpenAdmin={() => setIsAdminDashboardOpen(true)}
@@ -315,12 +388,12 @@ export default function App() {
             isDark={isDark}
             isSaved={isCurrentProductSaved}
             onToggleSave={handleToggleSave}
-            onSelectAlternative={(alt) => setSelectedProduct(alt)}
+            onSelectAlternative={(alt) => handleSelectProduct(alt, "alternative")}
           />
         ) : currentTab === "home" ? (
           <HomeScreen
             onOpenScanner={handleOpenScanner}
-            onSelectProduct={(p) => setSelectedProduct(p)}
+            onSelectProduct={(p) => handleSelectProduct(p, "home_catalog")}
             recentScans={scanHistory}
             language={language}
             isDark={isDark}
@@ -335,7 +408,7 @@ export default function App() {
         ) : currentTab === "saved" ? (
           <SavedListScreen
             savedProducts={savedProducts}
-            onSelectProduct={(p) => setSelectedProduct(p)}
+            onSelectProduct={(p) => handleSelectProduct(p, "saved_list")}
             onRemoveProduct={handleRemoveSaved}
             onOpenScanner={handleOpenScanner}
             language={language}
@@ -344,7 +417,7 @@ export default function App() {
         ) : currentTab === "history" ? (
           <HistoryScreen
             scanHistory={scanHistory}
-            onSelectProduct={(p) => setSelectedProduct(p)}
+            onSelectProduct={(p) => handleSelectProduct(p, "history_list")}
             onClearHistory={handleClearHistory}
             onOpenScanner={handleOpenScanner}
             language={language}
@@ -359,14 +432,7 @@ export default function App() {
       {!selectedProduct && (
         <BottomNav
           currentTab={currentTab}
-          onSelectTab={(tab) => {
-            if (tab === "scanner") {
-              handleOpenScanner();
-            } else {
-              setCurrentTab(tab);
-              setSelectedProduct(null);
-            }
-          }}
+          onSelectTab={handleNavigateTab}
           language={language}
           isDark={isDark}
           savedCount={savedProducts.length}

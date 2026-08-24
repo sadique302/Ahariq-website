@@ -28,6 +28,7 @@ import {
 import { PRODUCT_CATEGORIES } from "../data/categories";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { searchProductsFromOpenFoodFacts } from "../services/openFoodFacts";
+import { trackUserActivity } from "../services/analyticsTracker";
 import { ContactSupport } from "./ContactSupport";
 
 interface HomeScreenProps {
@@ -149,12 +150,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       try {
         const offResults = await searchProductsFromOpenFoodFacts(q, 30);
         setOpenFoodFactsResults(offResults);
+        
+        // Track search query telemetry
+        trackUserActivity({
+          eventType: "SEARCH",
+          title: `Searched: "${q}"`,
+          details: { query: q, resultsCount: offResults.length },
+          user,
+        });
       } catch (err) {
         console.warn("Open Food Facts search error:", err);
       } finally {
         setIsSearching(false);
       }
-    }, 250);
+    }, 450);
 
     return () => {
       if (searchDebounceRef.current) {
@@ -364,7 +373,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         )}
 
-        {/* “Aaj ka Clean Choice” (Product of the Day) */}
+        {/* “Lab Tested: Sabse Shuddh Vikalp (LAB VERIFIED)” */}
         {!searchQuery && cleanChoiceOfTheDay && (
           <div
             id="aaj-ka-clean-choice-card"
@@ -376,17 +385,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
                 <h3 className="text-xs font-black text-[#059669] dark:text-[#34D399] uppercase tracking-wider">
-                  {isHindi ? "🌾 आज का क्लीन चॉइस (Aaj ka Clean Choice)" : "🌾 Clean Choice of the Day"}
+                  {isHindi
+                    ? "🔬 लैब जाँचित: सबसे शुद्ध विकल्प (LAB VERIFIED)"
+                    : "🔬 Lab Tested: Sabse Shuddh Vikalp (LAB VERIFIED)"}
                 </h3>
               </div>
-              <span className="text-[10px] text-gray-400 font-mono font-bold">100% CLEAN</span>
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-md font-mono font-bold">
+                LAB VERIFIED
+              </span>
             </div>
 
             <div
               onClick={() => onSelectProduct(cleanChoiceOfTheDay)}
-              className="flex items-center gap-4 cursor-pointer group"
+              className="flex items-center gap-3.5 cursor-pointer group"
             >
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-100 dark:bg-zinc-800 flex-shrink-0 border border-gray-200 dark:border-zinc-700">
+              <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 dark:bg-zinc-800 flex-shrink-0 border border-gray-200 dark:border-zinc-700">
                 <img
                   src={cleanChoiceOfTheDay.imageUrl}
                   alt={cleanChoiceOfTheDay.name}
@@ -407,14 +420,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </p>
               </div>
 
+              {/* Big Audit Score */}
               <div className="flex flex-col items-end flex-shrink-0">
-                <div className="px-3 py-1 rounded-xl bg-[#10B981] text-white font-extrabold text-xs shadow-xs">
-                  {cleanChoiceOfTheDay.healthScore}/100
+                <div className="w-14 h-14 rounded-2xl bg-[#10B981] text-white flex flex-col items-center justify-center shadow-xs">
+                  <span className="text-base font-black leading-none">{cleanChoiceOfTheDay.healthScore}</span>
+                  <span className="text-[8px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
                 </div>
-                <span className="text-[10px] text-[#059669] dark:text-[#34D399] font-bold mt-1 flex items-center">
-                  <span>{isHindi ? "देखें" : "View"}</span>
-                  <ChevronRight className="w-3 h-3" />
-                </span>
               </div>
             </div>
           </div>
@@ -467,7 +478,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <Clock className="w-4 h-4 text-[#10B981]" />
                 <span>{isHindi ? "हालिया स्कैन (Recent Scans)" : "Recently Scanned"}</span>
               </h2>
-              <span className="text-xs text-gray-500 dark:text-zinc-400 font-bold">{recentScans.length} {isHindi ? "उत्पाद" : "items"}</span>
+              <span className="text-xs text-gray-500 dark:text-zinc-400 font-bold">
+                {recentScans.length} {isHindi ? "ऑडिट" : "Audited"}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -475,11 +488,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <div
                   key={product.id + (product.scannedAt || "")}
                   onClick={() => onSelectProduct(product)}
-                  className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer hover:border-[#10B981]/60 transition-all ${
+                  className={`p-4 rounded-2xl border flex items-center gap-3.5 cursor-pointer hover:border-[#10B981]/60 transition-all ${
                     isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
                   }`}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700">
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700">
                     <img
                       src={product.imageUrl}
                       alt={product.name}
@@ -505,7 +518,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     </span>
                   </div>
                   <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs text-white flex-shrink-0 ${
+                    className={`w-13 h-13 rounded-2xl flex flex-col items-center justify-center font-black text-white flex-shrink-0 shadow-xs ${
                       product.healthScore >= 70
                         ? "bg-[#10B981]"
                         : product.healthScore >= 40
@@ -513,7 +526,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         : "bg-red-600"
                     }`}
                   >
-                    {product.healthScore}
+                    <span className="text-sm font-black leading-none">{product.healthScore}</span>
+                    <span className="text-[7px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
                   </div>
                 </div>
               ))}
@@ -531,8 +545,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     ? `खोज परिणाम (${allFilteredProducts.length})`
                     : `Search Results (${allFilteredProducts.length})`
                   : isHindi
-                  ? "लोकप्रिय भारतीय खाद्य उत्पाद"
-                  : "Popular Packaged Foods Database"}
+                  ? "हाल ही में जाँचे गए प्रोडक्ट (RECENTLY SCANNED)"
+                  : "Haal hi me Janche Gaye Product (RECENTLY SCANNED)"}
               </h2>
               {searchQuery && (
                 <p className="text-[11px] text-gray-500 dark:text-zinc-400 font-medium">
@@ -542,8 +556,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </p>
               )}
             </div>
-            <span className="text-xs font-bold text-[#10B981]">
-              {allFilteredProducts.length} {isHindi ? "उत्पाद" : "Products"}
+            <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-[#059669] dark:bg-emerald-950/60 dark:text-[#34D399] border border-emerald-200/80 dark:border-emerald-800/60 flex items-center gap-1.5 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+              <span>Live Database</span>
             </span>
           </div>
 
@@ -590,20 +605,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   key={product.id}
                   id={`product-card-${product.id}`}
                   onClick={() => onSelectProduct(product)}
-                  className={`p-4 rounded-2xl border cursor-pointer hover:border-[#10B981]/60 transition-all flex items-start gap-4 group ${
+                  className={`p-4 rounded-2xl border cursor-pointer hover:border-[#10B981]/60 transition-all flex items-center gap-3.5 group ${
                     isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
                   }`}
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700 relative">
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700 relative">
                     <img
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded border border-gray-300 flex items-center justify-center shadow-xs">
+                    <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-white rounded border border-gray-300 flex items-center justify-center shadow-xs">
                       <div
-                        className={`w-2 h-2 rounded-full ${
+                        className={`w-1.5 h-1.5 rounded-full ${
                           product.isVegetarian ? "bg-[#10B981]" : "bg-amber-800"
                         }`}
                       />
@@ -626,7 +641,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     </h3>
 
                     {/* Key hazard warning pills in Exposr style */}
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-1 mt-1.5">
                       {product.warnings.slice(0, 2).map((w, idx) => (
                         <span
                           key={idx}
@@ -643,10 +658,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     </div>
                   </div>
 
-                  {/* Score Pill */}
+                  {/* Big Health Audit Score */}
                   <div className="flex flex-col items-end flex-shrink-0">
                     <div
-                      className={`w-10 h-10 rounded-2xl flex flex-col items-center justify-center font-black text-xs text-white shadow-xs ${
+                      className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center font-black text-white shadow-xs ${
                         isGreen
                           ? "bg-[#10B981]"
                           : isYellow
@@ -654,8 +669,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           : "bg-red-600"
                       }`}
                     >
-                      <span>{product.healthScore}</span>
-                      <span className="text-[8px] font-bold opacity-80 leading-none">/100</span>
+                      <span className="text-base sm:text-lg font-black leading-none">{product.healthScore}</span>
+                      <span className="text-[8px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
                     </div>
                   </div>
                 </div>

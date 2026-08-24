@@ -108,6 +108,47 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "category_id", "alternatives"]
+    },
+    "user_activities": {
+      "title": "User Realtime Activities",
+      "description": "Granular user event log tracking visits, searches, product clicks, audio plays, and scans",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "visitorId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "isLoggedIn": { "type": "boolean" },
+        "eventType": { "type": "string" },
+        "title": { "type": "string" },
+        "details": { "type": "object" },
+        "deviceType": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["visitorId", "eventType", "title", "timestamp"]
+    },
+    "user_sessions": {
+      "title": "User Visitor Sessions",
+      "description": "Aggregated visitor session records with engagement time and search trends",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "visitorId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "isLoggedIn": { "type": "boolean" },
+        "deviceType": { "type": "string" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "lastActiveAt": { "type": "string", "format": "date-time" },
+        "durationSeconds": { "type": "number" },
+        "totalActions": { "type": "number" },
+        "lastAction": { "type": "string" },
+        "recentSearches": { "type": "array" },
+        "recentProductsViewed": { "type": "array" }
+      },
+      "required": ["visitorId", "startedAt", "lastActiveAt"]
     }
   },
   "firestore": {
@@ -134,6 +175,14 @@
     "/alternatives/{categoryId}": {
       "schema": "#/entities/alternatives",
       "description": "Category-specific healthy food recommendations"
+    },
+    "/user_activities/{activityId}": {
+      "schema": "#/entities/user_activities",
+      "description": "Live user activities and event logs"
+    },
+    "/user_sessions/{sessionId}": {
+      "schema": "#/entities/user_sessions",
+      "description": "Live visitor session summary records"
     }
   }
 }

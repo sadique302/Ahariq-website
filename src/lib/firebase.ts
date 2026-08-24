@@ -24,7 +24,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import firebaseConfigData from "../../firebase-applet-config.json";
-import { FoodProduct, UserProfile, CommunityContribution, CategoryAlternativeDoc } from "../types";
+import { FoodProduct, UserProfile, CommunityContribution, CategoryAlternativeDoc, UserActivityEvent, UserSessionRecord } from "../types";
 import {
   DEFAULT_CATEGORY_ALTERNATIVES,
   updateAlternativesCache,
@@ -586,5 +586,70 @@ export function listenToCategoryAlternatives(callback: (docs: CategoryAlternativ
     return () => {};
   }
 }
+
+/**
+ * Fetch recent live user activity events from Firestore
+ */
+export async function fetchLiveUserActivities(maxItems: number = 100): Promise<UserActivityEvent[]> {
+  try {
+    const col = collection(db, "user_activities");
+    const q = query(col, orderBy("createdAt", "desc"), limit(maxItems));
+    const snapshot = await getDocs(q);
+    const list: UserActivityEvent[] = [];
+    snapshot.forEach((d) => {
+      list.push({ id: d.id, ...d.data() } as UserActivityEvent);
+    });
+    return list;
+  } catch (e) {
+    console.warn("fetchLiveUserActivities err:", e);
+    return [];
+  }
+}
+
+/**
+ * Realtime listener for live user activity stream
+ */
+export function listenToLiveUserActivities(callback: (events: UserActivityEvent[]) => void) {
+  try {
+    const col = collection(db, "user_activities");
+    const q = query(col, orderBy("createdAt", "desc"), limit(80));
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const events: UserActivityEvent[] = [];
+        snapshot.forEach((d) => {
+          events.push({ id: d.id, ...d.data() } as UserActivityEvent);
+        });
+        callback(events);
+      },
+      (err) => {
+        console.warn("listenToLiveUserActivities warning:", err);
+      }
+    );
+  } catch (err) {
+    console.warn("Could not attach live activities listener:", err);
+    return () => {};
+  }
+}
+
+/**
+ * Fetch all user sessions for startup growth analytics
+ */
+export async function fetchLiveUserSessions(maxItems: number = 100): Promise<UserSessionRecord[]> {
+  try {
+    const col = collection(db, "user_sessions");
+    const q = query(col, orderBy("lastActiveAt", "desc"), limit(maxItems));
+    const snapshot = await getDocs(q);
+    const list: UserSessionRecord[] = [];
+    snapshot.forEach((d) => {
+      list.push({ id: d.id, ...d.data() } as UserSessionRecord);
+    });
+    return list;
+  } catch (e) {
+    console.warn("fetchLiveUserSessions err:", e);
+    return [];
+  }
+}
+
 
 

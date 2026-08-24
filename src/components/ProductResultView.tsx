@@ -31,6 +31,7 @@ import {
 import confetti from "canvas-confetti";
 import { WhatsAppShareModal } from "./WhatsAppShareModal";
 import { ContactSupport } from "./ContactSupport";
+import { trackUserActivity } from "../services/analyticsTracker";
 
 interface ProductResultViewProps {
   product: FoodProduct;
@@ -182,6 +183,17 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
 
     setSpeakingCardIndex(index);
     window.speechSynthesis.speak(utterance);
+
+    // Track voice guidance listening event
+    trackUserActivity({
+      eventType: "VOICE_LISTEN",
+      title: `Listened to Voice Warning: ${warning.titleHi || warning.titleEn}`,
+      details: {
+        warningType: warning.type,
+        productName: product.name,
+        healthScore: product.healthScore,
+      },
+    });
   };
 
   // Compute category-specific dynamic alternatives from Firestore/Engine
