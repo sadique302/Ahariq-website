@@ -246,7 +246,7 @@ export const Header: React.FC<HeaderProps> = ({
                       {user.isLoggedIn ? user.name || "My Account" : isHindi ? "साइन अप / लॉगिन करें" : "Sign In / Register"}
                     </span>
                     <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
-                      {user.isLoggedIn ? "Firebase Cloud Synced" : isHindi ? "Google / OTP से लॉगिन" : "Sync history to cloud"}
+                      {user.isLoggedIn ? (isHindi ? "क्लाउड सिंक सक्रिय" : "Cloud Sync Active") : isHindi ? "Google / OTP से लॉगिन" : "Sync history to cloud"}
                     </span>
                   </div>
                 </button>

@@ -21,6 +21,8 @@ import {
   syncUserProfileToCloud,
   seedDefaultAlternativesIfEmpty,
   listenToCategoryAlternatives,
+  fetchUserSavedItemsFromCloud,
+  fetchUserScansFromCloud,
 } from "./lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -72,38 +74,22 @@ export default function App() {
     "about"
   );
 
-  // 4. Saved Items ("Mere List")
+  // 4. Saved Items ("Mere List") - Isolated per user, defaults to empty [] for new users/guests
   const [savedProducts, setSavedProducts] = useState<FoodProduct[]>(() => {
     try {
       const saved = localStorage.getItem("ahariq_saved");
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return [
-      INDIAN_PRODUCTS_DB[3], // Slurrp Farm Millet Noodles (Clean)
-      INDIAN_PRODUCTS_DB[2], // Kurkure (Watchout)
-    ];
+    return [];
   });
 
-  // 5. Scan History
+  // 5. Scan History - Isolated per user, defaults to empty [] for new users/guests
   const [scanHistory, setScanHistory] = useState<FoodProduct[]>(() => {
     try {
       const saved = localStorage.getItem("ahariq_history");
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return [
-      {
-        ...INDIAN_PRODUCTS_DB[0],
-        scannedAt: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        ...INDIAN_PRODUCTS_DB[1],
-        scannedAt: new Date(Date.now() - 7200000).toISOString(),
-      },
-      {
-        ...INDIAN_PRODUCTS_DB[4],
-        scannedAt: new Date(Date.now() - 14400000).toISOString(),
-      },
-    ];
+    return [];
   });
 
   // 6. User Profile
@@ -124,7 +110,7 @@ export default function App() {
     };
   });
 
-  // Listen to Firebase Auth state
+  // Listen to Firebase Auth state & sync user-scoped items
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
@@ -143,6 +129,30 @@ export default function App() {
         };
         setUser(updated);
         await syncUserProfileToCloud(fbUser.uid, updated);
+
+        // Fetch authenticated user's cloud saved items & history securely
+        try {
+          const [cloudSaved, cloudScans] = await Promise.all([
+            fetchUserSavedItemsFromCloud(fbUser.uid),
+            fetchUserScansFromCloud(fbUser.uid),
+          ]);
+          if (cloudSaved && cloudSaved.length > 0) {
+            setSavedProducts((prev) => {
+              const ids = new Set(cloudSaved.map((s) => s.id || s.barcode));
+              const localUnsynced = prev.filter((p) => !ids.has(p.id) && !ids.has(p.barcode));
+              return [...cloudSaved, ...localUnsynced];
+            });
+          }
+          if (cloudScans && cloudScans.length > 0) {
+            setScanHistory((prev) => {
+              const ids = new Set(cloudScans.map((s) => s.id || s.barcode));
+              const localUnsynced = prev.filter((p) => !ids.has(p.id) && !ids.has(p.barcode));
+              return [...cloudScans, ...localUnsynced];
+            });
+          }
+        } catch (e) {
+          console.warn("User data cloud load warn:", e);
+        }
       }
     });
     return () => unsubscribe();

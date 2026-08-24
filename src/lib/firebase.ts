@@ -182,6 +182,125 @@ export async function syncSavedItemToCloud(
 }
 
 /**
+ * Fetch strictly authenticated user's own scans from Firestore
+ */
+export async function fetchUserScansFromCloud(userId: string): Promise<FoodProduct[]> {
+  if (!userId || userId === "guest_device") return [];
+  try {
+    const scansCol = collection(db, "scans");
+    const q = query(
+      scansCol,
+      where("userId", "==", userId),
+      orderBy("scannedAt", "desc"),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    const results: FoodProduct[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      results.push({
+        id: d.id,
+        barcode: data.barcode || "",
+        name: data.productName || data.name || "Scanned Product",
+        nameHindi: data.nameHindi || "",
+        brand: data.brand || "",
+        category: data.category || "General",
+        categoryHindi: data.categoryHindi || "सामान्य",
+        imageUrl: data.imageUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80",
+        healthScore: typeof data.healthScore === "number" ? data.healthScore : 50,
+        verdict: data.verdict || "Soch Samajh Kar",
+        verdictHindi: data.verdictHindi || "सोच समझ कर",
+        verdictType: (data.healthScore >= 70 ? "green" : data.healthScore >= 40 ? "yellow" : "red") as any,
+        summaryEn: data.summaryEn || "",
+        summaryHi: data.summaryHi || "",
+        isVegetarian: data.isVegetarian ?? true,
+        warnings: data.warnings || [],
+        nutritionPer100g: data.nutritionPer100g || {
+          calories: "0 kcal",
+          protein: "0g",
+          carbohydrates: "0g",
+          sugar: "0g",
+          totalFat: "0g",
+          sodium: "0mg",
+        },
+        ingredientsList: data.ingredientsList || [],
+        ingredientsExplanation: data.ingredientsExplanation || [],
+        adulterationCheck: data.adulterationCheck || {
+          riskLevel: "Low",
+          detailsEn: "No adulteration risk detected",
+          detailsHi: "कोई मिलावट जोखिम नहीं मिला",
+        },
+        cleanerAlternatives: data.cleanerAlternatives || [],
+        scannedAt: data.scannedAt || new Date().toISOString(),
+      });
+    });
+    return results;
+  } catch (err) {
+    console.warn("Error fetching user cloud scans (falling back to user local cache):", err);
+    return [];
+  }
+}
+
+/**
+ * Fetch strictly authenticated user's own saved products from Firestore
+ */
+export async function fetchUserSavedItemsFromCloud(userId: string): Promise<FoodProduct[]> {
+  if (!userId || userId === "guest_device") return [];
+  try {
+    const savedCol = collection(db, "saved_items");
+    const q = query(
+      savedCol,
+      where("userId", "==", userId)
+    );
+    const snap = await getDocs(q);
+    const results: FoodProduct[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      if (!data.deleted) {
+        results.push({
+          id: data.productId || d.id,
+          barcode: data.barcode || "",
+          name: data.name || "Saved Product",
+          nameHindi: data.nameHindi || "",
+          brand: data.brand || "",
+          category: data.category || "General",
+          categoryHindi: data.categoryHindi || "सामान्य",
+          imageUrl: data.imageUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&auto=format&fit=crop&q=80",
+          healthScore: typeof data.healthScore === "number" ? data.healthScore : 50,
+          verdict: data.verdict || "Soch Samajh Kar",
+          verdictHindi: data.verdictHindi || "सोच समझ कर",
+          verdictType: (data.healthScore >= 70 ? "green" : data.healthScore >= 40 ? "yellow" : "red") as any,
+          summaryEn: data.summaryEn || "",
+          summaryHi: data.summaryHi || "",
+          isVegetarian: data.isVegetarian ?? true,
+          warnings: data.warnings || [],
+          nutritionPer100g: data.nutritionPer100g || {
+            calories: "0 kcal",
+            protein: "0g",
+            carbohydrates: "0g",
+            sugar: "0g",
+            totalFat: "0g",
+            sodium: "0mg",
+          },
+          ingredientsList: data.ingredientsList || [],
+          ingredientsExplanation: data.ingredientsExplanation || [],
+          adulterationCheck: data.adulterationCheck || {
+            riskLevel: "Low",
+            detailsEn: "No adulteration risk detected",
+            detailsHi: "कोई मिलावट जोखिम नहीं मिला",
+          },
+          cleanerAlternatives: data.cleanerAlternatives || [],
+        });
+      }
+    });
+    return results;
+  } catch (err) {
+    console.warn("Error fetching user cloud saved items:", err);
+    return [];
+  }
+}
+
+/**
  * Submit community product (with 3 photos) to Firestore
  */
 export async function submitCommunityContribution(

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { FoodProduct, Language, CleanerAlternative } from "../types";
+import React, { useState, useMemo, useEffect } from "react";
+import { FoodProduct, Language, CleanerAlternative, IndianHazardWarning } from "../types";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import { getDynamicHazardSummary, getSynchronizedIngredientsExplanation } from "../services/openFoodFacts";
 import {
@@ -23,7 +23,9 @@ import {
   Activity,
   HeartCrack,
   Tag,
-  DollarSign
+  DollarSign,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { WhatsAppShareModal } from "./WhatsAppShareModal";
@@ -51,6 +53,103 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   const isHindi = language === "hi";
   const [activeTab, setActiveTab] = useState<"overview" | "ingredients" | "nutrition" | "alternatives">("overview");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [speakingCardIndex, setSpeakingCardIndex] = useState<number | null>(null);
+
+  // Clean up any playing speech synthesis when unmounting or switching products/language
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [product, language]);
+
+  // Voice playback logic for Indian Hazard Cards (Single short sentence, doctor-like tone)
+  const speakHazardWarning = (warning: IndianHazardWarning, index: number) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+
+    // If already speaking this card, stop playback
+    if (speakingCardIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingCardIndex(null);
+      return;
+    }
+
+    // Stop any previous speech
+    window.speechSynthesis.cancel();
+
+    // Determine 1 concise line based on card type & selected language
+    let textToSpeak = "";
+    if (warning.type === "added_sugar") {
+      textToSpeak = isHindi
+        ? "इसमें 5 चम्मच चीनी है, ये रोज़ पियोगे तो शुगर का ख़तरा है।"
+        : "It has 5 spoons of sugar, daily drinking can increase diabetes risk.";
+    } else if (warning.type === "preservatives" || warning.type === "artificial_colours") {
+      textToSpeak = isHindi
+        ? "इसमें केमिकल मिलाया है, जो बच्चों के लिए ठीक नहीं है।"
+        : "It contains added chemicals, not good for kids.";
+    } else if (warning.type === "palm_oil" || warning.type === "trans_fat") {
+      textToSpeak = isHindi
+        ? "इसमें सस्ता पाम ऑयल है, जो दिल और नसों के लिए ठीक नहीं है।"
+        : "It contains cheap palm oil, which is harmful for heart health.";
+    } else if (warning.type === "sodium") {
+      textToSpeak = isHindi
+        ? "इसमें ज़रूरत से ज़्यादा नमक है, जो हाई ब्लड प्रेशर का कारण बनता है।"
+        : "It has very high sodium, which increases high blood pressure risk.";
+    } else if (warning.type === "maida") {
+      textToSpeak = isHindi
+        ? "इसमें रिफाइंड मैदा है जिसमें पोषण नहीं है, ये पाचन को ख़राब करता है।"
+        : "It contains refined maida with zero nutrition, which harms gut digestion.";
+    } else {
+      textToSpeak = isHindi
+        ? "इसमें पोषण बिल्कुल नहीं है, सिर्फ़ पानी और रंग है।"
+        : "It has almost zero nutrition, just water and color.";
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+    // Set voice language
+    if (isHindi) {
+      utterance.lang = "hi-IN";
+    } else {
+      utterance.lang = "en-IN";
+    }
+
+    // Try finding matching Indian voice on device/browser
+    const voices = window.speechSynthesis.getVoices();
+    if (isHindi) {
+      const hiVoice = voices.find(
+        (v) => v.lang === "hi-IN" || v.lang.startsWith("hi") || v.name.toLowerCase().includes("hindi")
+      );
+      if (hiVoice) utterance.voice = hiVoice;
+    } else {
+      const enInVoice = voices.find(
+        (v) => v.lang === "en-IN" || (v.lang.startsWith("en") && v.name.toLowerCase().includes("india"))
+      );
+      if (enInVoice) {
+        utterance.voice = enInVoice;
+      } else {
+        const enVoice = voices.find((v) => v.lang.startsWith("en"));
+        if (enVoice) utterance.voice = enVoice;
+      }
+    }
+
+    utterance.rate = 0.95; // Calm, doctor-like tone
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => {
+      setSpeakingCardIndex(null);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingCardIndex(null);
+    };
+
+    setSpeakingCardIndex(index);
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Compute category-specific dynamic alternatives from Firestore/Engine
   const isCleanChoice =
@@ -71,6 +170,112 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
     if (dynamic && dynamic.length > 0) return dynamic;
     return product.cleanerAlternatives || [];
   }, [product, isCleanChoice]);
+
+  // Section 2: Smart Choice? Calculation (Main Product vs Healthy Alternative Comparison)
+  const smartChoice = useMemo(() => {
+    if (product.healthScore >= 80) return null;
+
+    const topAlt = cleanAlternatives && cleanAlternatives.length > 0 ? cleanAlternatives[0] : null;
+
+    const cat = (product.category || "").toLowerCase();
+    const name = (product.name || "").toLowerCase();
+    const combined = `${cat} ${name}`;
+
+    let mainPrice = 30; // default
+    let isMatched = false;
+
+    if (
+      combined.includes("noodle") ||
+      combined.includes("maggi") ||
+      combined.includes("pasta") ||
+      combined.includes("ramen") ||
+      combined.includes("instant")
+    ) {
+      mainPrice = 30;
+      isMatched = true;
+    } else if (
+      combined.includes("chip") ||
+      combined.includes("kurkure") ||
+      combined.includes("lays") ||
+      combined.includes("namkeen") ||
+      combined.includes("snack") ||
+      combined.includes("bhujia") ||
+      combined.includes("puff")
+    ) {
+      mainPrice = 20;
+      isMatched = true;
+    } else if (
+      combined.includes("drink") ||
+      combined.includes("cola") ||
+      combined.includes("pepsi") ||
+      combined.includes("coke") ||
+      combined.includes("soda") ||
+      combined.includes("juice") ||
+      combined.includes("beverage") ||
+      combined.includes("fizz") ||
+      combined.includes("energy")
+    ) {
+      mainPrice = 40;
+      isMatched = true;
+    } else if (
+      combined.includes("biscuit") ||
+      combined.includes("cookie") ||
+      combined.includes("cookies") ||
+      combined.includes("bakery") ||
+      combined.includes("rusk") ||
+      combined.includes("cake") ||
+      combined.includes("wafer")
+    ) {
+      mainPrice = 30;
+      isMatched = true;
+    } else {
+      mainPrice = 30;
+      isMatched = product.healthScore < 70;
+    }
+
+    if (!isMatched && !topAlt) return null;
+
+    const healthyName = topAlt ? topAlt.name : "Healthy Alternative";
+    const healthyScore = topAlt?.score || 95;
+
+    // Parse alt price
+    let healthyPrice = mainPrice + 15;
+    if (topAlt?.price) {
+      const match = topAlt.price.match(/\d+/);
+      if (match) healthyPrice = parseInt(match[0], 10);
+    } else if (topAlt?.priceEst) {
+      const match = topAlt.priceEst.match(/\d+/);
+      if (match) healthyPrice = parseInt(match[0], 10);
+    }
+
+    const difference = Math.max(0, healthyPrice - mainPrice);
+
+    // Extract 2 key benefits
+    let benefitsList: string[] = [];
+    if (topAlt?.tags && topAlt.tags.length > 0) {
+      benefitsList = topAlt.tags.slice(0, 2);
+    } else if (topAlt?.benefit) {
+      benefitsList = topAlt.benefit.split(",").map((s) => s.trim()).slice(0, 2);
+    }
+    if (benefitsList.length === 0) {
+      benefitsList = ["0% Palm Oil", "High Protein"];
+    }
+    const benefitsStr = benefitsList.join(" + ");
+
+    // Clean Main Name for concise display
+    const cleanMainName = product.name.length > 28 ? product.name.slice(0, 28) + "..." : product.name;
+
+    return {
+      mainName: cleanMainName,
+      mainPrice,
+      mainScore: product.healthScore,
+      healthyName,
+      healthyPrice,
+      healthyScore,
+      difference,
+      benefitsStr,
+    };
+  }, [product, cleanAlternatives]);
 
   // Dynamically resolve hazard-specific summary without generic sugar/cheeni boilerplate
   const resolvedSummary = useMemo(() => {
@@ -456,15 +661,53 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                           )}
                         </div>
                       </div>
-                      <span
-                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                          warning.severity === "high"
-                            ? "bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300"
-                            : "bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300"
-                        }`}
-                      >
-                        {warning.severity === "high" ? (isHindi ? "उच्च जोखिम" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {/* Voice Doctor Note Speaker Button */}
+                        <button
+                          id={`hazard-voice-btn-${index}`}
+                          type="button"
+                          onClick={() => speakHazardWarning(warning, index)}
+                          className={`px-2 py-1 rounded-lg border text-xs font-bold transition-all flex items-center gap-1 cursor-pointer select-none active:scale-95 ${
+                            speakingCardIndex === index
+                              ? "bg-emerald-600 text-white border-emerald-700 shadow-sm animate-pulse"
+                              : isDark
+                              ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700 hover:border-zinc-600"
+                              : "bg-white hover:bg-zinc-100 text-zinc-700 border-zinc-300 shadow-2xs"
+                          }`}
+                          title={
+                            speakingCardIndex === index
+                              ? isHindi ? "आवाज बंद करें" : "Stop voice note"
+                              : isHindi ? "डॉक्टर की आवाज में सुनें" : "Listen (Doctor's Note)"
+                          }
+                          aria-label={
+                            speakingCardIndex === index
+                              ? isHindi ? "आवाज बंद करें" : "Stop audio note"
+                              : isHindi ? "आवाज में सुनें" : "Listen to hazard note"
+                          }
+                        >
+                          {speakingCardIndex === index ? (
+                            <>
+                              <VolumeX className="w-3.5 h-3.5 text-white" />
+                              <span className="text-[10px] font-bold">{isHindi ? "रोकें" : "Stop"}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span className="text-[10px] font-bold">{isHindi ? "सुनें" : "Listen"}</span>
+                            </>
+                          )}
+                        </button>
+
+                        <span
+                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            warning.severity === "high"
+                              ? "bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300"
+                              : "bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300"
+                          }`}
+                        >
+                          {warning.severity === "high" ? (isHindi ? "उच्च जोखिम" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
+                        </span>
+                      </div>
                     </div>
                     <p className="text-xs mt-2 text-[#111827] dark:text-zinc-300 leading-relaxed font-medium">
                       {isHindi ? warning.descriptionHi : warning.descriptionEn}
@@ -474,7 +717,58 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
               )}
             </div>
 
-            {/* Adulteration Risk & FSSAI Notes */}
+            {/* SECTION 2: SMART CHOICE? CARD (Yellow Theme) */}
+            {smartChoice && (
+              <div
+                id="smart-choice-card"
+                className="p-4 sm:p-5 rounded-2xl shadow-sm transition-all border"
+                style={{
+                  backgroundColor: "#332B00",
+                  borderColor: "#FFC107",
+                  borderWidth: "1.5px"
+                }}
+              >
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl leading-none" role="img" aria-label="money">💰</span>
+                    <h4 className="font-extrabold text-sm sm:text-base text-[#FFC107] tracking-tight">
+                      {isHindi ? "Smart Choice? (स्मार्ट विकल्प)" : "Smart Choice?"}
+                    </h4>
+                  </div>
+                  <span
+                    className="text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-2xs font-mono"
+                    style={{
+                      backgroundColor: "rgba(255, 193, 7, 0.22)",
+                      color: "#FFE082",
+                      border: "1px solid rgba(255, 193, 7, 0.45)"
+                    }}
+                  >
+                    Score +{Math.max(1, smartChoice.healthyScore - smartChoice.mainScore)}
+                  </span>
+                </div>
+
+                {/* Line 1: Main Product vs Healthy Alternative */}
+                <p className="font-bold text-sm sm:text-[14.5px] text-[#FFF9C4] leading-snug">
+                  Ye {smartChoice.mainName} ~₹{smartChoice.mainPrice} (Score {smartChoice.mainScore}) vs {smartChoice.healthyName} ~₹{smartChoice.healthyPrice} (Score {smartChoice.healthyScore})
+                </p>
+
+                {/* Line 2: Benefit & Price Difference */}
+                <p className="font-semibold text-xs sm:text-[13px] text-[#FFE082] mt-1.5 leading-snug">
+                  {smartChoice.difference > 0
+                    ? `Sirf ₹${smartChoice.difference} zyada me: ${smartChoice.benefitsStr}`
+                    : `Same price me: ${smartChoice.benefitsStr}`}
+                </p>
+
+                {/* Line 3: Doctor / Annual Health Expense Savings Note */}
+                <p className="text-[11px] sm:text-xs text-zinc-400 mt-2 leading-relaxed">
+                  {isHindi
+                    ? "Roz ke unhealthy se saal ka ₹2000 tak ka extra health kharch bach sakta hai."
+                    : "Roz ke unhealthy se saal ka ₹2000 tak ka extra health kharch bach sakta hai."}
+                </p>
+              </div>
+            )}
+
+            {/* SECTION 3: Adulteration Risk & FSSAI Notes */}
             <div
               className={`p-4 rounded-2xl border ${
                 isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
@@ -563,9 +857,15 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                           <h5 className="font-bold text-xs text-[#000000] dark:text-white mt-1">
                             {alt.name}
                           </h5>
-                          {alt.problem && (
-                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-500/20">
-                              <span>⚠️ {isHindi ? `समस्या: ${alt.problem}` : `Hazard: ${alt.problem}`}</span>
+                          {/* Clean Healthy Benefit Tag */}
+                          {(alt.benefit || alt.benefitHi || (alt.tags && alt.tags.length > 0)) && (
+                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/25">
+                              <Wheat className="w-3 h-3 text-[#10B981] flex-shrink-0" />
+                              <span>
+                                {isHindi
+                                  ? `फायदा: ${alt.benefitHi || alt.benefit || alt.tags?.join(", ")}`
+                                  : `Benefit: ${alt.benefit || alt.benefitHi || alt.tags?.join(", ")}`}
+                              </span>
                             </div>
                           )}
                           <p className="text-[11px] text-[#111827] dark:text-zinc-300 mt-1 leading-snug font-medium">

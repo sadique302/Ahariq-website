@@ -219,9 +219,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <Database className="w-3.5 h-3.5" />
-            <span>Firebase Cloud Database Active</span>
+            <span>{isHindi ? "क्लाउड सिंक सक्रिय" : "Cloud Sync Active"}</span>
           </div>
-          <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-bold">100% Free & Secure</span>
+          <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-bold">
+            {isHindi ? "एंड-टू-एंड एन्क्रिप्टेड व सुरक्षित" : "End-to-End Encrypted & Secure"}
+          </span>
         </div>
 
         <div className="p-5 space-y-5">
@@ -381,7 +383,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500">
                     {isHindi ? "मेरी प्राथमिकताएं एवं अलर्ट्स:" : "Dietary Watchout Preferences:"}
                   </h4>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Auto Synced to Cloud</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                    {isHindi ? "क्लाउड सिंक सक्रिय" : "Cloud Sync Active"}
+                  </span>
                 </div>
 
                 <div className="space-y-2 text-xs">

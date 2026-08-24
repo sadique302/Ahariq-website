@@ -95,20 +95,39 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   // Synchronous Local Matches for immediate feedback
   const localMatches = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) {
+      if (selectedCategory === "all") return INDIAN_PRODUCTS_DB;
+      return INDIAN_PRODUCTS_DB.filter(
+        (p) =>
+          p.category === selectedCategory ||
+          (p.category && p.category.toLowerCase().includes(selectedCategory.toLowerCase()))
+      );
+    }
+
+    // Comprehensive multi-field search for any search query
     return INDIAN_PRODUCTS_DB.filter((p) => {
-      const q = searchQuery.trim().toLowerCase();
-      const matchSearch =
-        q === "" ||
-        p.name.toLowerCase().includes(q) ||
-        p.nameHindi.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        (p.barcode && p.barcode.includes(q));
+      const name = (p.name || "").toLowerCase();
+      const hindiName = (p.nameHindi || "").toLowerCase();
+      const brand = (p.brand || "").toLowerCase();
+      const category = (p.category || "").toLowerCase();
+      const categoryHindi = (p.categoryHindi || "").toLowerCase();
+      const barcode = (p.barcode || "").toLowerCase();
+      const summaryEn = (p.summaryEn || "").toLowerCase();
+      const summaryHi = (p.summaryHi || "").toLowerCase();
+      const ingredients = (p.ingredientsList || []).join(" ").toLowerCase();
 
-      const matchCategory =
-        selectedCategory === "all" || p.category === selectedCategory;
-
-      return matchSearch && matchCategory;
+      return (
+        name.includes(q) ||
+        hindiName.includes(q) ||
+        brand.includes(q) ||
+        category.includes(q) ||
+        categoryHindi.includes(q) ||
+        barcode.includes(q) ||
+        summaryEn.includes(q) ||
+        summaryHi.includes(q) ||
+        ingredients.includes(q)
+      );
     });
   }, [searchQuery, selectedCategory]);
 
@@ -135,7 +154,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       } finally {
         setIsSearching(false);
       }
-    }, 350);
+    }, 250);
 
     return () => {
       if (searchDebounceRef.current) {
@@ -146,17 +165,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   // Combined Results (Local DB + Open Food Facts DB with deduplication)
   const allFilteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) {
+    const q = searchQuery.trim();
+    if (!q) {
       return localMatches;
     }
 
     const combined: FoodProduct[] = [...localMatches];
     const seenBarcodes = new Set(localMatches.map((p) => p.barcode).filter(Boolean));
-    const seenNames = new Set(localMatches.map((p) => p.name.toLowerCase().trim()));
+    const seenNames = new Set(localMatches.map((p) => (p.name || "").toLowerCase().trim()));
 
     for (const offItem of openFoodFactsResults) {
       const barcodeKey = offItem.barcode;
-      const nameKey = offItem.name.toLowerCase().trim();
+      const nameKey = (offItem.name || "").toLowerCase().trim();
 
       if (
         (!barcodeKey || !seenBarcodes.has(barcodeKey)) &&
@@ -168,16 +188,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       }
     }
 
-    if (selectedCategory !== "all") {
-      return combined.filter(
-        (p) =>
-          p.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-          p.name.toLowerCase().includes(selectedCategory.toLowerCase())
-      );
-    }
-
     return combined;
-  }, [localMatches, openFoodFactsResults, searchQuery, selectedCategory]);
+  }, [localMatches, openFoodFactsResults, searchQuery]);
 
   const handleDismissPwaBanner = () => {
     setIsPwaBannerDismissed(true);
