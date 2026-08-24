@@ -115,216 +115,145 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
         {/* Modal Scrollable Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm">
           {activeTab === "about" ? (
-            <div className="space-y-5 animate-in fade-in duration-200">
+            <div className="space-y-4 animate-in fade-in duration-200">
               {/* Mission Statement Box */}
               <div
                 className={`p-4 sm:p-5 rounded-2xl border ${
                   isDark
                     ? "bg-stone-800/90 border-[#22c55e]/30 text-stone-100"
-                    : "bg-emerald-50/50 border-emerald-200 text-[#111827] shadow-sm"
+                    : "bg-emerald-50/60 border-emerald-200 text-[#111827] shadow-sm"
                 }`}
               >
                 <div className="flex items-center gap-2 text-[#22c55e] font-black text-sm mb-2.5">
-                  <ShieldCheck className="w-5 h-5" />
-                  <span className="font-bold text-base text-[#059669] dark:text-[#34D399]">
+                  <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+                  <h3 className="font-bold text-base sm:text-lg text-[#059669] dark:text-[#34D399]">
                     {isHindi ? "हमारा मिशन: स्वस्थ भारत - स्वच्छ भोजन" : "Our Mission: Clean & Honest Food for India"}
-                  </span>
+                  </h3>
                 </div>
-                
+
                 <p className="text-sm sm:text-base leading-relaxed text-[#111827] dark:text-stone-100 font-medium">
                   {isHindi
-                    ? "AharIQ (आहार IQ) भारत के 140 करोड़ नागरिकों और परिवारों को अल्ट्रा-प्रोसेस्ड पैकेज्ड फूड और खतरनाक खाद्य रसायनों के चंगुल से बचाने के लिए बनाया गया एक 100% स्वतंत्र और निष्पक्ष डिजिटल प्लेटफॉर्म है।"
-                    : "AharIQ is a 100% independent public initiative built to empower Indian families with lab-grade transparency against ultra-processed foods, hidden toxins, and adulterated grocery items."}
+                    ? "Ahariq (आहार IQ) का मकसद आपको पैकेज्ड फूड के लेबल पढ़ना सिखाना है। भारत में बिकने वाले 80% से अधिक पैकेज्ड फूड में अधिक चीनी, नमक और संतृप्त वसा (Saturated Fat) होती है, जिसके अधिक सेवन को WHO और FSSAI मोटापा, हाई ब्लड प्रेशर (High BP) और दिल से जुड़ी समस्याओं के जोखिम से जोड़ते हैं।"
+                    : "Ahariq (Aahar IQ) is designed to teach you how to read packaged food labels. Over 80% of packaged foods sold in India contain high sugar, sodium, and saturated fats, which WHO and FSSAI associate with risks of obesity, hypertension, and cardiovascular issues."}
                 </p>
 
-                <div className="mt-3 pt-3 border-t border-emerald-200 dark:border-stone-700 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                <div className="mt-3 pt-3 border-t border-emerald-200/80 dark:border-stone-700 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300">
                   <span>🇮🇳 100% Free & Open For Every Indian</span>
                   <span>🔬 Based on FSSAI & Global Food Standards</span>
                 </div>
               </div>
 
-              {/* DANGEROUS DISEASES & HEALTH WARNING SECTION */}
+              {/* 3 Key Points Cards */}
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-                  <AlertTriangle className="w-5 h-5 flex-shrink-0 animate-bounce" />
-                  <h3 className="font-black text-sm sm:text-base tracking-wide uppercase">
-                    {isHindi ? "⚠️ पैकेज्ड फूड का सच: जानलेवा बीमारियां और खतरे" : "⚠️ The Hidden Health Epidemic in Packaged Foods"}
-                  </h3>
+                {/* 1. Palm Oil & Hydrogenated Fat */}
+                <div
+                  className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/70 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-black text-xs">
+                    1
+                  </div>
+                  <div>
+                    <strong className="block text-xs sm:text-sm font-bold text-[#111827] dark:text-white">
+                      {isHindi
+                        ? "पाम ऑयल और हाइड्रोजनीकृत वसा (Palm Oil & Hydrogenated Fat)"
+                        : "Palm Oil & Hydrogenated Fat"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "इनमें संतृप्त वसा (Saturated Fat) अधिक होती है। विशेषज्ञ इसके अधिक सेवन को LDL (खराब कोलेस्ट्रॉल) बढ़ने से जोड़ते हैं।"
+                        : "These contain high saturated fat. Health experts associate its excess intake with elevated LDL (bad cholesterol)."}
+                    </p>
+                  </div>
                 </div>
 
-                <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-                  {isHindi
-                    ? "आज भारत में बिकने वाले 80% से अधिक पैकेज्ड फूड (बिस्कुट, चिप्स, नूडल्स, सीरियल्स, सॉफ्ट ड्रिंक्स) में ऐसे केमिकल्स और तेल होते हैं जो धीरे-धीरे शरीर के मुख्य अंगों को नुकसान पहुँचाते हैं:"
-                    : "Over 80% of ultra-processed packaged snacks and drinks in India contain hidden compounds scientifically linked to chronic lifestyle diseases:"}
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  {/* Disease 1: Heart Attack & Palm Oil */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-rose-950/20 border-rose-900/50" : "bg-rose-50/60 border-rose-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <HeartPulse className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-rose-950 dark:text-rose-200">
-                        {isHindi ? "1. कम उम्र में हार्ट अटैक व ब्लॉक नसें" : "1. Early Heart Attack & Clogged Arteries"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "पाम ऑयल (Palmolein) और हाइड्रोजनेटेड फैट्स धमनियों में एलडीएल (गंदा कोलेस्ट्रॉल) जमा करते हैं, जिससे 25-40 साल के युवाओं में अचानक कार्डियक अरेस्ट का खतरा बढ़ रहा है।"
-                          : "Cheap Palmolein oil & industrial trans-fats build arterial plaque, rapidly spiking cardiovascular disease risks in young adults."}
-                      </p>
-                    </div>
+                {/* 2. Synthetic Food Colors */}
+                <div
+                  className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/70 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-black text-xs">
+                    2
                   </div>
-
-                  {/* Disease 2: Type 2 Diabetes & Hidden Sugars */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-amber-950/20 border-amber-900/50" : "bg-amber-50/60 border-amber-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-amber-950 dark:text-amber-200">
-                        {isHindi ? "2. टाइप-2 डायबिटीज़ और इंसुलिन क्रैश" : "2. Type-2 Diabetes & Insulin Crash"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "माल्टोडेक्सट्रिन (Maltodextrin GI 110), लिक्विड ग्लूकोज और इनवर्ट सिरप साधारण चीनी से भी 2 गुना तेजी से ब्लड शुगर स्पाइक कर पेनक्रियाज को थका देते हैं।"
-                          : "Maltodextrin (GI up to 110) & liquid invert sugars spike blood sugar faster than pure table sugar, accelerating metabolic failure."}
-                      </p>
-                    </div>
+                  <div>
+                    <strong className="block text-xs sm:text-sm font-bold text-[#111827] dark:text-white">
+                      {isHindi
+                        ? "सिंथेटिक फूड कलर्स (Synthetic Food Colors - E129, E110, E102)"
+                        : "Synthetic Food Colors (E129, E110, E102)"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "कुछ अध्ययनों में इनके अधिक सेवन को बच्चों में अति-सक्रियता (Hyperactivity) से जोड़ा गया है, इसलिए यूरोप में इनपर चेतावनी लेबल अनिवार्य है।"
+                        : "Certain studies link high intake with hyperactivity in children, which is why warning labels are mandatory across Europe."}
+                    </p>
                   </div>
+                </div>
 
-                  {/* Disease 3: Fatty Liver in Children */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-purple-950/20 border-purple-900/50" : "bg-purple-50/60 border-purple-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Activity className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-purple-950 dark:text-purple-200">
-                        {isHindi ? "3. बच्चों में नॉन-अल्कोहलिक फैटी लिवर (NAFLD)" : "3. Non-Alcoholic Fatty Liver (NAFLD)"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "बिना शराब पिए भी 10-15 साल के बच्चों में लिवर में फैट जमा हो रहा है। इसका मुख्य कारण पैकेज्ड कोल्ड ड्रिंक्स और स्नैक्स का हाई फ्रुक्टोज कॉर्न सिरप है।"
-                          : "High Fructose Corn Syrup & ultra-refined starches directly convert to liver fat, triggering fatty liver even in young school kids."}
-                      </p>
-                    </div>
+                {/* 3. Preservatives */}
+                <div
+                  className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/70 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-black text-xs">
+                    3
                   </div>
-
-                  {/* Disease 4: Cancer Risk & Synthetic Colors */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-red-950/20 border-red-900/50" : "bg-red-50/60 border-red-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-red-500/20 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <AlertTriangle className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-red-950 dark:text-red-200">
-                        {isHindi ? "4. कैंसर और सेलुलर टॉक्सिसिटी का खतरा" : "4. Carcinogenic Additives & Dyes"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "सिंथेटिक फूड कलर्स (Red 40 / E129, Sunset Yellow E110, Tartrazine E102, Titanium Dioxide E171) यूरोप में बैन या कड़े प्रतिबंधों में हैं, लेकिन भारत में धड़ल्ले से इस्तेमाल हो रहे हैं।"
-                          : "Synthetic coal-tar dyes (Allura Red, Sunset Yellow, Titanium Dioxide) banned or restricted in Europe are widely fed to Indian children."}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Disease 5: Brain Fog & ADHD in Kids */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-blue-950/20 border-blue-900/50" : "bg-blue-50/60 border-blue-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Activity className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-blue-950 dark:text-blue-200">
-                        {isHindi ? "5. बच्चों में चिड़चिड़ापन और ADHD" : "5. ADHD, Hyperactivity & Gut Damage"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "प्रिजर्वेटिव्स (Sodium Benzoate E211, Potassium Sorbate) आंतों के गुड बैक्टीरिया को नष्ट कर बच्चों के दिमाग और एकाग्रता पर गहरा दुष्प्रभाव डालते हैं।"
-                          : "Harsh chemical preservatives destroy gut microbiota, directly impacting dopamine regulation, attention span, and mood in growing children."}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Disease 6: High Blood Pressure & MSG */}
-                  <div
-                    className={`p-3.5 rounded-2xl border flex items-start gap-3 ${
-                      isDark ? "bg-orange-950/20 border-orange-900/50" : "bg-orange-50/60 border-orange-200"
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <AlertTriangle className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <strong className="block text-xs font-black text-orange-950 dark:text-orange-200">
-                        {isHindi ? "6. हाई ब्लड प्रेशर और किडनी पर दबाव" : "6. High Blood Pressure & Renal Strain"}
-                      </strong>
-                      <p className="text-[11px] text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
-                        {isHindi
-                          ? "इंस्टेंट नूडल्स, नमकीन और सॉस में सोडियम और MSG (E621) का अत्यधिक स्तर साइलेंट किलर की तरह ब्लड प्रेशर बढ़ाकर किडनी को नुकसान पहुंचाता है।"
-                          : "Massive hidden sodium & flavour enhancers (MSG/E621, HVP) cause water retention, blood pressure spikes, and long-term renal damage."}
-                      </p>
-                    </div>
+                  <div>
+                    <strong className="block text-xs sm:text-sm font-bold text-[#111827] dark:text-white">
+                      {isHindi
+                        ? "प्रिजर्वेटिव्स (Preservatives - E211, E202)"
+                        : "Preservatives (E211, E202)"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "ये खाने को खराब होने से बचाते हैं। कुछ लोगों में इनके प्रति संवेदनशीलता (Sensitivity) हो सकती है।"
+                        : "These prevent food spoilage and extend shelf life. Some individuals may have sensitivities to them."}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Companies Marketing Traps vs Reality */}
-              <div className="space-y-3">
-                <h3 className="font-bold text-sm uppercase tracking-wider text-[#000000] dark:text-stone-200">
-                  {isHindi ? "पैकेजिंग के झूठे दावे vs असली सच्चाई:" : "Marketing Gimmicks vs Brutal Truth:"}
-                </h3>
-                <div className="space-y-2">
-                  <div
-                    className={`p-3 rounded-2xl border ${
-                      isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="font-bold text-rose-600">❌ "100% Atta / Wheat" दावा</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">✅ AharIQ सच: 60% मैदा + पाम ऑयल</span>
-                    </div>
-                  </div>
+              {/* Awareness & Data Sources Box */}
+              <div
+                className={`p-3.5 rounded-2xl border ${
+                  isDark
+                    ? "bg-emerald-950/20 border-emerald-800/40 text-emerald-200"
+                    : "bg-emerald-50 border-emerald-200 text-emerald-900"
+                }`}
+              >
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-sm leading-relaxed font-medium">
+                    {isHindi
+                      ? "हमारा काम आपको डराना नहीं, बल्कि जागरूक करना है। सारी जानकारी Open Food Facts, FSSAI और WHO की सार्वजनिक रिपोर्ट्स (Public Reports) पर आधारित है।"
+                      : "Our goal is not to scare, but to educate. All information is sourced from Open Food Facts, FSSAI, and WHO public reports."}
+                  </p>
+                </div>
+              </div>
 
-                  <div
-                    className={`p-3 rounded-2xl border ${
-                      isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="font-bold text-rose-600">❌ "Zero Added Sugar" दावा</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">✅ AharIQ सच: Maltodextrin & Sucralose</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`p-3 rounded-2xl border ${
-                      isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="font-bold text-rose-600">❌ "Real Fruit Juice" दावा</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">✅ AharIQ सच: 2% पल्प + 98% चीनी व पानी</span>
-                    </div>
-                  </div>
+              {/* Mandatory Medical Disclaimer Box */}
+              <div
+                className={`p-3.5 rounded-2xl border ${
+                  isDark
+                    ? "bg-amber-950/20 border-amber-800/40 text-amber-200"
+                    : "bg-amber-50 border-amber-200 text-amber-900"
+                }`}
+              >
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs leading-relaxed font-medium">
+                    {isHindi ? (
+                      <>
+                        <strong>अस्वीकरण (Disclaimer):</strong> यह ऐप मेडिकल सलाह नहीं है। किसी भी स्वास्थ्य समस्या के लिए डॉक्टर से संपर्क करें।
+                      </>
+                    ) : (
+                      <>
+                        <strong>Disclaimer:</strong> This app is for informational purposes and does not substitute professional medical advice. Always consult a physician for health concerns.
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 
@@ -348,7 +277,7 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                       Sadique Samtaan & Ahariq Team
                     </h4>
                     <p className="text-[11px] text-[#111827] dark:text-stone-300 font-normal">
-                      Dedicated to Clean, Honest & Disease-Free Food for India
+                      Dedicated to Clean & Honest Food Awareness
                     </p>
                   </div>
                 </div>
@@ -373,14 +302,14 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
 
               {/* Footer Note */}
               <div
-                className={`p-3.5 rounded-2xl border flex items-center justify-between text-xs ${
+                className={`p-3 rounded-2xl border flex items-center justify-between text-xs ${
                   isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200 shadow-sm"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 text-rose-500" />
                   <span className="font-bold text-[#000000] dark:text-stone-200">
-                    {isHindi ? "Ahariq (आहार IQ) • अपने परिवार को स्वस्थ रखें" : "Ahariq • Protect Your Family's Health"}
+                    Ahariq (Aahar IQ) • Label Padhna Sikhein
                   </span>
                 </div>
                 <span className="text-[11px] text-[#111827] dark:text-stone-300 font-bold">100% Free & Open 🇮🇳</span>

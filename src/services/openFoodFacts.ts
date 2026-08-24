@@ -863,8 +863,8 @@ export function getSynchronizedIngredientsExplanation(params: {
       safety = hasPreservativeWarning || isSevereScore ? "hazard" : "caution";
       nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "फ्लेवर एन्हांसर (INS 627/631/635)";
       purpose = isHindi
-        ? "कृत्रिम स्वाद बढ़ाने वाले केमिकल तत्व (अति-सेवन की लत लगाते हैं)"
-        : "Chemical flavor enhancer (Stimulates overconsumption)";
+        ? "स्वाद बढ़ाने के लिए (नियमित अधिक सेवन भूख नियंत्रण के लिए अनुकूल नहीं माना जाता)"
+        : "Chemical flavor enhancer (Regular high intake is not considered ideal for appetite regulation)";
       return { ...item, nameHi, purpose, safety };
     }
 
@@ -886,8 +886,8 @@ export function getSynchronizedIngredientsExplanation(params: {
       safety = "hazard";
       nameHi = nameHi && !nameHi.includes("सामग्री") ? nameHi : "सिंथेटिक कृत्रिम रंग (INS Dye)";
       purpose = isHindi
-        ? "रासायनिक फूड कलर (एलर्जी, बच्चों में अतिसक्रियता व स्वास्थ्य जोखिम)"
-        : "Synthetic coal-tar / ammonia dye (Allergy & hyperactivity risk)";
+        ? "आकर्षक रंग देने के लिए (नियमित सेवन बच्चों में एलर्जी और हाइपरएक्टिविटी के जोखिम से जोड़ा जाता है)"
+        : "Synthetic food coloring (Regular intake is associated with allergy and hyperactivity risk in children)";
       return { ...item, nameHi, purpose, safety };
     }
 
@@ -896,8 +896,8 @@ export function getSynchronizedIngredientsExplanation(params: {
       safety = "hazard";
       nameHi = "फॉस्फोरिक एसिड (INS 338)";
       purpose = isHindi
-        ? "दांतों के इनेमल और हड्डियों से कैल्शियम सोखने वाला एसिड"
-        : "Enamel & bone calcium depleting acidulant";
+        ? "तीखा स्वाद देने के लिए (अत्यधिक सेवन दांतों के इनेमल और कैल्शियम संतुलन के लिए अच्छा नहीं माना जाता)"
+        : "Tangy acidulant (High intake is associated with potential erosion of dental enamel and calcium balance)";
       return { ...item, nameHi, purpose, safety };
     }
 

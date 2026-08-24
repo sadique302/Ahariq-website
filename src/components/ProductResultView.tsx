@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FoodProduct, Language, CleanerAlternative, IndianHazardWarning } from "../types";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import { getDynamicHazardSummary, getSynchronizedIngredientsExplanation } from "../services/openFoodFacts";
+import { formatSafeHazardWarning } from "../utils/hazardFormatter";
 import {
   ArrowLeft,
   Bookmark,
@@ -54,20 +55,29 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   const [activeTab, setActiveTab] = useState<"overview" | "ingredients" | "nutrition" | "alternatives">("overview");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [speakingCardIndex, setSpeakingCardIndex] = useState<number | null>(null);
+  const speechTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Clean up any playing speech synthesis when unmounting or switching products/language
   useEffect(() => {
     return () => {
+      if (speechTimeoutRef.current) {
+        clearTimeout(speechTimeoutRef.current);
+      }
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
     };
   }, [product, language]);
 
-  // Voice playback logic for Indian Hazard Cards (Single short sentence, doctor-like tone)
+  // Voice playback logic with crisp male voice, restored natural rate (0.95-1.0), and full volume clarity
   const speakHazardWarning = (warning: IndianHazardWarning, index: number) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
+    }
+
+    if (speechTimeoutRef.current) {
+      clearTimeout(speechTimeoutRef.current);
+      speechTimeoutRef.current = null;
     }
 
     // If already speaking this card, stop playback
@@ -80,64 +90,87 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
     // Stop any previous speech
     window.speechSynthesis.cancel();
 
-    // Determine 1 concise line based on card type & selected language
+    // Determine safe, clear and authoritative text based on card type & language
     let textToSpeak = "";
     if (warning.type === "added_sugar") {
       textToSpeak = isHindi
-        ? "इसमें 5 चम्मच चीनी है, ये रोज़ पियोगे तो शुगर का ख़तरा है।"
-        : "It has 5 spoons of sugar, daily drinking can increase diabetes risk.";
-    } else if (warning.type === "preservatives" || warning.type === "artificial_colours") {
-      textToSpeak = isHindi
-        ? "इसमें केमिकल मिलाया है, जो बच्चों के लिए ठीक नहीं है।"
-        : "It contains added chemicals, not good for kids.";
+        ? "सोचिए, इस छोटे से पैकेट में पूरे पाँच चम्मच चीनी है। रोज़ एक पैकेट मतलब एक महीने में डेढ़ किलो चीनी! इसका अधिक सेवन मोटापे और डायबिटीज़ के जोखिम से जोड़ा जाता है।"
+        : "Imagine, this small pack has five full spoons of sugar! Having one daily means 1.5 kilos of sugar in a month; excess intake is associated with obesity and diabetes risk.";
     } else if (warning.type === "palm_oil" || warning.type === "trans_fat") {
       textToSpeak = isHindi
-        ? "इसमें सस्ता पाम ऑयल है, जो दिल और नसों के लिए ठीक नहीं है।"
-        : "It contains cheap palm oil, which is harmful for heart health.";
+        ? "इसमें रिफाइंड पामोलिन तेल है जो तलने के लिए इस्तेमाल होता है। इसमें सैचुरेटेड फैट अधिक होता है जो अधिक मात्रा में दिल के लिए अच्छा नहीं माना जाता।"
+        : "Contains refined palmolein oil used for frying. High in saturated fats which in excess is not considered good for heart health.";
     } else if (warning.type === "sodium") {
       textToSpeak = isHindi
-        ? "इसमें ज़रूरत से ज़्यादा नमक है, जो हाई ब्लड प्रेशर का कारण बनता है।"
-        : "It has very high sodium, which increases high blood pressure risk.";
+        ? "इसमें अधिक मात्रा में सोडियम है जो स्वाद और प्रिजर्वेशन के लिए है। इसका लगातार अधिक सेवन हाई ब्लड प्रेशर के जोखिम से जोड़ा जाता है।"
+        : "Contains high sodium used for flavor enhancement and preservation. Regular excess intake is associated with risk of high blood pressure.";
     } else if (warning.type === "maida") {
       textToSpeak = isHindi
-        ? "इसमें रिफाइंड मैदा है जिसमें पोषण नहीं है, ये पाचन को ख़राब करता है।"
-        : "It contains refined maida with zero nutrition, which harms gut digestion.";
+        ? "इसमें रिफाइंड मैदा है जो बेस और टेक्सचर देने के लिए है। इसमें फाइबर कम होता है जिसका अधिक सेवन पाचन और वजन के लिए अनुकूल नहीं माना जाता।"
+        : "Contains refined wheat flour used for texture. Lacking fiber, high consumption is not considered optimal for digestion and weight management.";
+    } else if (warning.type === "preservatives" || warning.type === "artificial_colours") {
+      textToSpeak = isHindi
+        ? "इसमें फूड एडिटिव्स और केमिकल्स हैं जो शेल्फ लाइफ बढ़ाने के लिए हैं। इनका नियमित अधिक सेवन पेट और पाचन के लिए अच्छा नहीं माना जाता।"
+        : "Contains food additives and preservatives to increase shelf life. Regular high intake is not considered ideal for digestive health.";
     } else {
       textToSpeak = isHindi
-        ? "इसमें पोषण बिल्कुल नहीं है, सिर्फ़ पानी और रंग है।"
-        : "It has almost zero nutrition, just water and color.";
+        ? "इसमें प्रोसेस्ड खाद्य घटक हैं जो स्वाद और शेल्फ-लाइफ के लिए हैं। इनका नियमित अधिक सेवन सेहत के लिए अनुकूल नहीं माना जाता।"
+        : "Contains formulated food ingredients. Regular excess consumption is not considered optimal for health.";
     }
 
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-    // Set voice language
-    if (isHindi) {
-      utterance.lang = "hi-IN";
-    } else {
-      utterance.lang = "en-IN";
-    }
-
-    // Try finding matching Indian voice on device/browser
+    // Select crisp, authoritative MALE voice (Hindi Male first, then Indian English Male)
     const voices = window.speechSynthesis.getVoices();
+    const femaleKeywords = ["female", "woman", "girl", "swara", "lekha", "heera", "priya", "zira", "veena", "sangeeta", "neerja", "shweta", "aditi", "kalpana", "sheetal", "ananya", "kavya"];
+    const maleKeywords = ["male", "man", "madhur", "hemant", "rishi", "prabhat", "ravi", "mohit", "neil", "david", "george", "guy", "mark", "google"];
+
+    let selectedVoice: SpeechSynthesisVoice | null = null;
     if (isHindi) {
-      const hiVoice = voices.find(
-        (v) => v.lang === "hi-IN" || v.lang.startsWith("hi") || v.name.toLowerCase().includes("hindi")
+      const hiVoices = voices.filter(v => v.lang.toLowerCase().startsWith("hi") || v.name.toLowerCase().includes("hindi"));
+      const hiMale = hiVoices.find(v =>
+        maleKeywords.some(kw => v.name.toLowerCase().includes(kw)) ||
+        (!femaleKeywords.some(kw => v.name.toLowerCase().includes(kw)) && !v.name.toLowerCase().includes("female"))
       );
-      if (hiVoice) utterance.voice = hiVoice;
-    } else {
-      const enInVoice = voices.find(
-        (v) => v.lang === "en-IN" || (v.lang.startsWith("en") && v.name.toLowerCase().includes("india"))
-      );
-      if (enInVoice) {
-        utterance.voice = enInVoice;
+      if (hiMale) {
+        selectedVoice = hiMale;
+      } else if (hiVoices.length > 0) {
+        selectedVoice = hiVoices[0];
       } else {
-        const enVoice = voices.find((v) => v.lang.startsWith("en"));
-        if (enVoice) utterance.voice = enVoice;
+        const enInVoices = voices.filter(v => v.lang.toLowerCase().startsWith("en-in") || v.lang.toLowerCase().startsWith("en_in") || v.name.toLowerCase().includes("india"));
+        const enInMale = enInVoices.find(v =>
+          maleKeywords.some(kw => v.name.toLowerCase().includes(kw)) ||
+          !femaleKeywords.some(kw => v.name.toLowerCase().includes(kw))
+        );
+        selectedVoice = enInMale || enInVoices[0] || null;
+      }
+    } else {
+      const enInVoices = voices.filter(v => v.lang.toLowerCase().startsWith("en-in") || v.lang.toLowerCase().startsWith("en_in") || v.name.toLowerCase().includes("india"));
+      const enInMale = enInVoices.find(v =>
+        maleKeywords.some(kw => v.name.toLowerCase().includes(kw)) ||
+        !femaleKeywords.some(kw => v.name.toLowerCase().includes(kw))
+      );
+      if (enInMale) {
+        selectedVoice = enInMale;
+      } else {
+        const enVoices = voices.filter(v => v.lang.toLowerCase().startsWith("en"));
+        const enMale = enVoices.find(v =>
+          maleKeywords.some(kw => v.name.toLowerCase().includes(kw)) ||
+          !femaleKeywords.some(kw => v.name.toLowerCase().includes(kw))
+        );
+        selectedVoice = enMale || enInVoices[0] || enVoices[0] || null;
       }
     }
 
-    utterance.rate = 0.95; // Calm, doctor-like tone
-    utterance.pitch = 1.0;
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.rate = 0.95; // Original clear, natural pace
+    utterance.pitch = 0.95; // Deep, crisp male pitch
+    utterance.volume = 1.0; // Maximum loudness and clarity
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang;
+    } else {
+      utterance.lang = isHindi ? "hi-IN" : "en-IN";
+    }
 
     utterance.onend = () => {
       setSpeakingCardIndex(null);
@@ -490,8 +523,16 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
             </div>
 
             {/* Radial Score Gauge Badge */}
-            <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 flex-shrink-0 w-28">
-              <div className="relative w-18 h-18 flex items-center justify-center">
+            <div
+              className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all flex-shrink-0 w-32 ${
+                product.healthScore < 40
+                  ? "bg-red-950/90 border-red-600 shadow-md ring-2 ring-red-500/50"
+                  : isDark
+                  ? "bg-zinc-900 border-zinc-800"
+                  : "bg-gray-50 border-gray-200"
+              }`}
+            >
+              <div className="relative w-20 h-20 flex items-center justify-center">
                 {/* SVG Progress Circle */}
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                   <path
@@ -502,7 +543,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
                   <path
-                    className={theme.ring}
+                    className={`${theme.ring} ${product.healthScore < 40 ? "animate-pulse stroke-red-500" : ""}`}
                     strokeDasharray={`${product.healthScore}, 100`}
                     strokeWidth="3.5"
                     strokeLinecap="round"
@@ -512,19 +553,35 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-black tracking-tighter leading-none text-[#000000] dark:text-white">
+                  <span
+                    className={`text-2xl sm:text-3xl font-black tracking-tighter leading-none ${
+                      product.healthScore < 40 ? "text-red-500 animate-pulse font-mono" : "text-[#000000] dark:text-white"
+                    }`}
+                  >
                     {product.healthScore}
                   </span>
                   <span className="text-[9px] font-black text-gray-500 dark:text-zinc-400 uppercase tracking-tight">/100</span>
                 </div>
               </div>
-              <span className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 mt-1">
-                {product.healthScore >= 70
-                  ? isHindi ? "सुरक्षित एवं शुद्ध" : "Clean Grade"
-                  : product.healthScore >= 40
-                  ? isHindi ? "सीमित सेवन" : "Moderate"
-                  : isHindi ? "हानिकारक तत्व" : "Ultra Processed"}
-              </span>
+
+              {/* Prominent Red Blinking 10-Point Score for Red Alert (<40) */}
+              {product.healthScore < 40 ? (
+                <div className="mt-1.5 flex flex-col items-center">
+                  <div className="px-2 py-0.5 rounded-full bg-red-600 text-white font-mono font-black text-xs animate-pulse flex items-center gap-1 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                    <span>{(product.healthScore / 10).toFixed(1)} / 10</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-red-300 mt-0.5">
+                    {isHindi ? "उच्च जोखिम (Red Alert)" : "High Risk (Red Alert)"}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-[10px] font-bold text-gray-700 dark:text-zinc-300 mt-1">
+                  {product.healthScore >= 70
+                    ? isHindi ? "सुरक्षित एवं शुद्ध" : "Clean Grade"
+                    : isHindi ? "सीमित सेवन" : "Moderate"}
+                </span>
+              )}
             </div>
           </div>
 
@@ -626,94 +683,139 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   </div>
                 </div>
               ) : (
-                product.warnings.map((warning, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-2xl border transition-all ${
-                      warning.severity === "high"
-                        ? isDark
-                          ? "bg-red-950/20 border-red-800/40"
-                          : "bg-red-50/80 border-red-200"
-                        : isDark
-                        ? "bg-amber-950/20 border-amber-800/40"
-                        : "bg-amber-50/80 border-amber-200"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        {warning.type === "palm_oil" ? (
-                          <Droplet className="w-5 h-5 text-red-500 flex-shrink-0" />
-                        ) : warning.type === "maida" ? (
-                          <Wheat className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                        ) : warning.type === "added_sugar" ? (
-                          <Zap className="w-5 h-5 text-red-500 flex-shrink-0" />
-                        ) : (
-                          <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                        )}
-                        <div>
-                          <h4 className="font-bold text-sm text-[#000000] dark:text-white">
-                            {isHindi ? warning.titleHi : warning.titleEn}
-                          </h4>
-                          {warning.tagValue && (
-                            <span className="inline-block mt-0.5 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/10 dark:bg-white/10 text-gray-800 dark:text-zinc-200">
-                              {warning.tagValue}
-                            </span>
+                product.warnings.map((warning, index) => {
+                  const isHighSeverity = warning.severity === "high";
+                  const sugarVal =
+                    parseFloat(product.nutritionPer100g?.sugar || product.nutritionPer100g?.addedSugar || "0") ||
+                    (warning.tagValue?.match(/\d+/)?.[0] ? parseFloat(warning.tagValue.match(/\d+/)![0]) : 34);
+                  const numCubes = Math.max(1, Math.min(12, Math.round(sugarVal / 4) || 5));
+                  const safeDesc = formatSafeHazardWarning(warning, product.name, sugarVal);
+
+                  return (
+                    <div
+                      key={index}
+                      className={`p-4 rounded-2xl border transition-all ${
+                        isHighSeverity
+                          ? isDark
+                            ? "bg-red-950/95 border-red-800 text-white shadow-md"
+                            : "bg-[#7F1D1D] text-white border-[#991B1B] shadow-md"
+                          : isDark
+                          ? "bg-amber-950/30 border-amber-800/50 text-amber-100"
+                          : "bg-amber-50 border-amber-200 text-amber-950"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {warning.type === "palm_oil" ? (
+                            <Droplet className={`w-5 h-5 flex-shrink-0 ${isHighSeverity ? "text-red-300" : "text-red-500"}`} />
+                          ) : warning.type === "maida" ? (
+                            <Wheat className={`w-5 h-5 flex-shrink-0 ${isHighSeverity ? "text-amber-300" : "text-amber-500"}`} />
+                          ) : warning.type === "added_sugar" ? (
+                            <Zap className={`w-5 h-5 flex-shrink-0 ${isHighSeverity ? "text-amber-300" : "text-red-500"}`} />
+                          ) : (
+                            <AlertTriangle className={`w-5 h-5 flex-shrink-0 ${isHighSeverity ? "text-amber-300" : "text-amber-500"}`} />
                           )}
+                          <div>
+                            <h4 className={`font-black text-sm tracking-tight ${isHighSeverity ? "text-white" : "text-[#000000] dark:text-white"}`}>
+                              {isHindi ? warning.titleHi : warning.titleEn}
+                            </h4>
+                            {warning.tagValue && (
+                              <span
+                                className={`inline-block mt-0.5 text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                                  isHighSeverity
+                                    ? "bg-black/40 text-red-100 border border-white/15"
+                                    : "bg-black/10 dark:bg-white/10 text-gray-800 dark:text-zinc-200"
+                                }`}
+                              >
+                                {warning.tagValue}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          {/* Voice Doctor Note Speaker Button */}
+                          <button
+                            id={`hazard-voice-btn-${index}`}
+                            type="button"
+                            onClick={() => speakHazardWarning(warning, index)}
+                            className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition-all flex items-center gap-1 cursor-pointer select-none active:scale-95 ${
+                              speakingCardIndex === index
+                                ? "bg-emerald-600 text-white border-emerald-500 shadow-sm animate-pulse"
+                                : isHighSeverity
+                                ? "bg-black/35 hover:bg-black/55 text-white border-white/20"
+                                : isDark
+                                ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700 hover:border-zinc-600"
+                                : "bg-white hover:bg-zinc-100 text-zinc-700 border-zinc-300 shadow-2xs"
+                            }`}
+                            title={
+                              speakingCardIndex === index
+                                ? isHindi ? "आवाज बंद करें" : "Stop voice note"
+                                : isHindi ? "डॉक्टर की आवाज में सुनें" : "Listen (Doctor's Note)"
+                            }
+                            aria-label={
+                              speakingCardIndex === index
+                                ? isHindi ? "आवाज बंद करें" : "Stop audio note"
+                                : isHindi ? "आवाज में सुनें" : "Listen to hazard note"
+                            }
+                          >
+                            {speakingCardIndex === index ? (
+                              <>
+                                <VolumeX className="w-3.5 h-3.5 text-white" />
+                                <span className="text-[10px] font-bold">{isHindi ? "रोकें" : "Stop"}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className={`w-3.5 h-3.5 ${isHighSeverity ? "text-amber-300" : "text-emerald-600 dark:text-emerald-400"}`} />
+                                <span className="text-[10px] font-bold">{isHindi ? "सुनें" : "Listen"}</span>
+                              </>
+                            )}
+                          </button>
+
+                          <span
+                            className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                              isHighSeverity
+                                ? "bg-black/50 text-red-200 border border-red-500/60"
+                                : "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300"
+                            }`}
+                          >
+                            {isHighSeverity ? (isHindi ? "उच्च जोखिम" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        {/* Voice Doctor Note Speaker Button */}
-                        <button
-                          id={`hazard-voice-btn-${index}`}
-                          type="button"
-                          onClick={() => speakHazardWarning(warning, index)}
-                          className={`px-2 py-1 rounded-lg border text-xs font-bold transition-all flex items-center gap-1 cursor-pointer select-none active:scale-95 ${
-                            speakingCardIndex === index
-                              ? "bg-emerald-600 text-white border-emerald-700 shadow-sm animate-pulse"
-                              : isDark
-                              ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700 hover:border-zinc-600"
-                              : "bg-white hover:bg-zinc-100 text-zinc-700 border-zinc-300 shadow-2xs"
-                          }`}
-                          title={
-                            speakingCardIndex === index
-                              ? isHindi ? "आवाज बंद करें" : "Stop voice note"
-                              : isHindi ? "डॉक्टर की आवाज में सुनें" : "Listen (Doctor's Note)"
-                          }
-                          aria-label={
-                            speakingCardIndex === index
-                              ? isHindi ? "आवाज बंद करें" : "Stop audio note"
-                              : isHindi ? "आवाज में सुनें" : "Listen to hazard note"
-                          }
-                        >
-                          {speakingCardIndex === index ? (
-                            <>
-                              <VolumeX className="w-3.5 h-3.5 text-white" />
-                              <span className="text-[10px] font-bold">{isHindi ? "रोकें" : "Stop"}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                              <span className="text-[10px] font-bold">{isHindi ? "सुनें" : "Listen"}</span>
-                            </>
-                          )}
-                        </button>
 
-                        <span
-                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                            warning.severity === "high"
-                              ? "bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300"
-                              : "bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300"
-                          }`}
-                        >
-                          {warning.severity === "high" ? (isHindi ? "उच्च जोखिम" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
-                        </span>
-                      </div>
+                      {/* Visual Sugar Cubes Graphic (for Added Sugar hazards) */}
+                      {warning.type === "added_sugar" && (
+                        <div className="mt-2.5 p-2.5 rounded-xl bg-black/30 border border-white/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {Array.from({ length: numCubes }).map((_, cIdx) => (
+                                <div
+                                  key={cIdx}
+                                  className="w-5 h-5 rounded-xs bg-gradient-to-br from-white via-zinc-100 to-zinc-300 border border-white/90 shadow-xs flex items-center justify-center select-none"
+                                  title={`Sugar Cube ${cIdx + 1} (~4g)`}
+                                >
+                                  <span className="text-[9px] font-black text-zinc-800 opacity-60">🧊</span>
+                                </div>
+                              ))}
+                            </div>
+                            <span className="text-xs font-black text-amber-300">
+                              {sugarVal > 0 ? `${sugarVal}g = ${numCubes} cubes` : "34g = 5 cubes"}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-bold text-red-200">
+                            {isHindi ? "(1 क्यूब ≈ 4g चीनी)" : "(1 cube ≈ 4g sugar)"}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Legally Safe Description */}
+                      <p className={`text-xs mt-2 leading-relaxed font-medium ${isHighSeverity ? "text-red-100" : "text-gray-800 dark:text-zinc-300"}`}>
+                        {isHindi ? safeDesc.descriptionHi : safeDesc.descriptionEn}
+                      </p>
                     </div>
-                    <p className="text-xs mt-2 text-[#111827] dark:text-zinc-300 leading-relaxed font-medium">
-                      {isHindi ? warning.descriptionHi : warning.descriptionEn}
-                    </p>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
