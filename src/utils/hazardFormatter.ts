@@ -69,10 +69,23 @@ export function formatSafeHazardWarning(warning: IndianHazardWarning, productNam
       };
     }
 
-    default: {
+    case "glyphosate": {
       return {
-        descriptionHi: `इसमें प्रोसेस्ड खाद्य घटक हैं जो स्वाद और शेल्फ-लाइफ के लिए हैं, इनका लगातार अधिक सेवन स्वास्थ्य के लिए अनुकूल नहीं माना जाता।`,
-        descriptionEn: `Contains formulated food ingredients used for flavor and shelf-life; regular high consumption is not considered optimal for health.`
+        descriptionHi: warning.descriptionHi || `भारतीय मसालों में कीटनाशक अवशेषों की जांच FSSAI द्वारा अनिवार्य है। एवरेस्ट बैच टेस्टेड है, पर बाजार के कुछ नमूनों में ETO अवशेष की शिकायतें मिली हैं।`,
+        descriptionEn: warning.descriptionEn || `FSSAI mandates pesticide residue monitoring in Indian spices. Everest is batch-tested, though global market surveillance has flagged ETO residue concerns in specific lots.`
+      };
+    }
+
+    default: {
+      if (warning.descriptionHi && warning.descriptionEn) {
+        return {
+          descriptionHi: warning.descriptionHi,
+          descriptionEn: warning.descriptionEn
+        };
+      }
+      return {
+        descriptionHi: `इसमें सामग्री गुणवत्ता मानकों की जांच की गई है, संतुलित मात्रा में उपयोग स्वास्थ्य के लिए अनुकूल माना जाता है।`,
+        descriptionEn: `Quality safety metrics audited; balanced usage is recommended for optimal wellness.`
       };
     }
   }

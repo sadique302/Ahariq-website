@@ -1,15 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { FoodProduct, Language } from "../types";
+import { FoodProduct, Language, UserProfile } from "../types";
 import {
   Bookmark,
   Trash2,
   Share2,
-  ShoppingBag,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowRight,
-  TrendingUp,
-  ScanLine
+  ScanLine,
+  User,
+  LogIn
 } from "lucide-react";
 import { ContactSupport } from "./ContactSupport";
 
@@ -20,6 +17,8 @@ interface SavedListScreenProps {
   onOpenScanner: () => void;
   language: Language;
   isDark: boolean;
+  user?: UserProfile;
+  onOpenAuth?: () => void;
 }
 
 export const SavedListScreen: React.FC<SavedListScreenProps> = ({
@@ -29,11 +28,13 @@ export const SavedListScreen: React.FC<SavedListScreenProps> = ({
   onOpenScanner,
   language,
   isDark,
+  user,
+  onOpenAuth,
 }) => {
   const isHindi = language === "hi";
   const [filterType, setFilterType] = useState<"all" | "clean" | "avoid">("all");
 
-  // Calculate Pantry Health Index
+  // Calculate Pantry Health Score
   const pantryHealthScore = useMemo(() => {
     if (savedProducts.length === 0) return 0;
     const total = savedProducts.reduce((acc, p) => acc + p.healthScore, 0);
@@ -54,7 +55,7 @@ export const SavedListScreen: React.FC<SavedListScreenProps> = ({
     const cleanItems = savedProducts.filter((p) => p.healthScore >= 70);
     const avoidItems = savedProducts.filter((p) => p.healthScore < 40);
 
-    const message = `🛒 *AharIQ Clean Indian Grocery List* 🛒\n\n✅ *Clean Purchases (${cleanItems.length}):*\n${cleanItems.map(c => `• ${c.name} (${c.brand})`).join("\n") || "None yet"}\n\n❌ *Avoid Buying (${avoidItems.length}):*\n${avoidItems.map(a => `• ⚠️ ${a.name} (${a.warnings.map(w => w.titleEn).join(", ")})`).join("\n") || "None"}\n\n📲 Generated via AharIQ - Indian Food Health Companion`;
+    const message = `🛒 *AharIQ Clean Grocery List* 🛒\n\n✅ *Clean Purchases (${cleanItems.length}):*\n${cleanItems.map(c => `• ${c.name} (${c.brand})`).join("\n") || "None yet"}\n\n❌ *Avoid Buying (${avoidItems.length}):*\n${avoidItems.map(a => `• ⚠️ ${a.name}`).join("\n") || "None"}\n\n📲 Generated via AharIQ App`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
@@ -63,19 +64,49 @@ export const SavedListScreen: React.FC<SavedListScreenProps> = ({
   return (
     <div
       id="saved-list-screen-view"
-      className={`min-h-screen pb-24 transition-colors w-full max-w-full overflow-x-hidden ${
-        isDark ? "bg-stone-950 text-stone-100" : "bg-stone-100/90 text-stone-900"
+      className={`min-h-screen pb-28 transition-colors w-full max-w-full overflow-x-hidden ${
+        isDark ? "bg-[#090C10] text-zinc-100" : "bg-[#F8FAFC] text-[#0F172A]"
       }`}
     >
-      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-4 w-full">
-        {/* Top Title & Pantry Score Card */}
+      <div className="max-w-2xl mx-auto px-4 sm:px-5 py-4 sm:py-5 space-y-4 w-full">
+        {/* User Privacy & Isolation Header Pill */}
+        <div
+          className={`px-3.5 py-2 rounded-2xl border flex items-center justify-between text-xs transition-all ${
+            isDark ? "bg-[#161C24] border-slate-800 text-slate-300" : "bg-white border-slate-200/90 text-slate-600 shadow-2xs"
+          }`}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <User className="w-3.5 h-3.5" />
+            </div>
+            <span className="truncate font-semibold">
+              {user?.isLoggedIn
+                ? `${user.name || user.email || "User"} (${isHindi ? "निजी सहेजी गई लिस्ट" : "Private Saved Items"})`
+                : isHindi
+                ? "गेस्ट मोड (केवल इस डिवाइस पर)"
+                : "Guest Mode (Local Device)"}
+            </span>
+          </div>
+
+          {!user?.isLoggedIn && onOpenAuth && (
+            <button
+              onClick={onOpenAuth}
+              className="text-[#059669] dark:text-[#34D399] font-bold text-xs hover:underline flex items-center gap-1 flex-shrink-0 cursor-pointer"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>{isHindi ? "लॉगिन करें" : "Sign In"}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Title & WhatsApp Export Button */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-[#22c55e]" />
+              <Bookmark className="w-5 h-5 text-[#059669]" />
               <span>{isHindi ? "मेरी लिस्ट (Mere List)" : "My Grocery List"}</span>
             </h1>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-slate-400 mt-0.5">
               {isHindi ? "सहेजे गए सुरक्षित एवं वर्जित उत्पाद" : "Saved staples & watchlist items"}
             </p>
           </div>
@@ -84,182 +115,192 @@ export const SavedListScreen: React.FC<SavedListScreenProps> = ({
             <button
               id="export-shopping-list-btn"
               onClick={handleExportShoppingList}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>{isHindi ? "व्हाट्सएप लिस्ट भेजें" : "Export to WhatsApp"}</span>
+              <span>{isHindi ? "शेयर करें" : "WhatsApp"}</span>
             </button>
           )}
         </div>
 
-        {/* Pantry Health Index Header Card */}
+        {/* Clean Pantry Score Card */}
         {savedProducts.length > 0 && (
           <div
-            className={`p-4 rounded-3xl border flex items-center justify-between gap-4 ${
-              isDark ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200 shadow-xs"
+            className={`p-3.5 rounded-2xl border flex items-center justify-between gap-4 ${
+              isDark ? "bg-[#161C24] border-slate-800" : "bg-white border-slate-200/90 shadow-2xs"
             }`}
           >
             <div>
-              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider">
-                {isHindi ? "आपकी रसोई का शुद्धता स्कोर" : "Pantry Clean Quotient"}
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                {isHindi ? "रसोई का शुद्धता स्कोर" : "Pantry Clean Score"}
               </span>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-3xl font-black text-[#22c55e]">
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-2xl font-black text-[#059669] dark:text-[#34D399]">
                   {pantryHealthScore}
                 </span>
-                <span className="text-xs text-stone-400">/ 100</span>
+                <span className="text-xs text-slate-400">/ 100</span>
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     pantryHealthScore >= 70
-                      ? "bg-[#22c55e]/20 text-[#15803d] dark:text-[#22c55e]"
-                      : "bg-amber-500/20 text-amber-700 dark:text-amber-300"
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
                   }`}
                 >
-                  {pantryHealthScore >= 70 ? (isHindi ? "शुद्ध एवं संतुलित" : "High Clean Pantry") : (isHindi ? "सुधार योग्य" : "Needs Clean Swaps")}
+                  {pantryHealthScore >= 70
+                    ? isHindi ? "शुद्ध एवं संतुलित" : "Clean Pantry"
+                    : isHindi ? "सुधार योग्य" : "Needs Swaps"}
                 </span>
               </div>
             </div>
 
-            <div className="text-right">
-              <span className="text-xs font-semibold text-stone-500">
-                {savedProducts.length} {isHindi ? "सहेजे उत्पाद" : "Saved Products"}
-              </span>
-              <p className="text-[10px] text-[#22c55e] font-bold">
-                {savedProducts.filter((p) => p.healthScore >= 70).length} {isHindi ? "क्लीन उत्पाद" : "Clean choices"}
-              </p>
-            </div>
+            <span className="text-xs text-slate-400 font-semibold">
+              {savedProducts.length} {isHindi ? "आइटम" : "Items"}
+            </span>
           </div>
         )}
 
-        {/* Filter Pills: All, Clean Options, Avoid Items */}
-        <div
-          className={`flex p-1 rounded-2xl border text-xs font-semibold ${
-            isDark ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200"
-          }`}
-        >
-          <button
-            onClick={() => setFilterType("all")}
-            className={`flex-1 py-2 rounded-xl transition-all text-center cursor-pointer ${
-              filterType === "all"
-                ? "bg-[#22c55e] text-white shadow-xs"
-                : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-100"
+        {/* Filter Tabs */}
+        {savedProducts.length > 0 && (
+          <div
+            className={`flex p-1 rounded-2xl border text-xs font-semibold ${
+              isDark ? "bg-[#161C24] border-slate-800" : "bg-white border-slate-200"
             }`}
           >
-            {isHindi ? "सभी उत्पाद" : "All Items"} ({savedProducts.length})
-          </button>
-          <button
-            onClick={() => setFilterType("clean")}
-            className={`flex-1 py-2 rounded-xl transition-all text-center cursor-pointer ${
-              filterType === "clean"
-                ? "bg-[#22c55e] text-white shadow-xs"
-                : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-100"
-            }`}
-          >
-            {isHindi ? "हरी सूची (Clean)" : "Clean Pantry"} ({savedProducts.filter((p) => p.healthScore >= 70).length})
-          </button>
-          <button
-            onClick={() => setFilterType("avoid")}
-            className={`flex-1 py-2 rounded-xl transition-all text-center cursor-pointer ${
-              filterType === "avoid"
-                ? "bg-[#22c55e] text-white shadow-xs"
-                : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-100"
-            }`}
-          >
-            {isHindi ? "बचने की सूची (Avoid)" : "Watchlist"} ({savedProducts.filter((p) => p.healthScore < 70).length})
-          </button>
-        </div>
+            <button
+              onClick={() => setFilterType("all")}
+              className={`flex-1 py-1.5 rounded-xl transition-all text-center cursor-pointer ${
+                filterType === "all"
+                  ? "bg-[#059669] text-white shadow-2xs font-bold"
+                  : "text-slate-500"
+              }`}
+            >
+              {isHindi ? "सभी" : "All"} ({savedProducts.length})
+            </button>
+            <button
+              onClick={() => setFilterType("clean")}
+              className={`flex-1 py-1.5 rounded-xl transition-all text-center cursor-pointer ${
+                filterType === "clean"
+                  ? "bg-[#059669] text-white shadow-2xs font-bold"
+                  : "text-slate-500"
+              }`}
+            >
+              {isHindi ? "सुरक्षित (Clean)" : "Clean"} (
+              {savedProducts.filter((p) => p.healthScore >= 70).length})
+            </button>
+            <button
+              onClick={() => setFilterType("avoid")}
+              className={`flex-1 py-1.5 rounded-xl transition-all text-center cursor-pointer ${
+                filterType === "avoid"
+                  ? "bg-[#059669] text-white shadow-2xs font-bold"
+                  : "text-slate-500"
+              }`}
+            >
+              {isHindi ? "वॉचलिस्ट (Avoid)" : "Avoid"} (
+              {savedProducts.filter((p) => p.healthScore < 70).length})
+            </button>
+          </div>
+        )}
 
-        {/* Product Items List (16px gap) */}
+        {/* Saved Items Feed */}
         {filteredList.length === 0 ? (
           <div
-            className={`p-10 rounded-3xl border text-center space-y-3 ${
-              isDark ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200"
+            className={`p-8 rounded-3xl border text-center space-y-3 ${
+              isDark ? "bg-[#161C24] border-slate-800" : "bg-white border-slate-200"
             }`}
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] flex items-center justify-center mx-auto">
-              <ShoppingBag className="w-7 h-7" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+              <Bookmark className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-sm">
               {isHindi ? "आपकी लिस्ट अभी खाली है" : "Your list is currently empty"}
             </h3>
-            <p className="text-xs text-stone-500 max-w-xs mx-auto">
+            <p className="text-xs text-slate-400 max-w-xs mx-auto">
               {isHindi
-                ? "किराना उत्पाद को स्कैन करें और 'मेरे लिस्ट में डालो' बटन दबाकर सहेजें।"
-                : "Scan Indian packaged groceries and tap 'Mere List Mein Daalo' to add them here."}
+                ? "किसी भी प्रोडक्ट के पेज पर बुकमार्क आइकन दबाकर उसे अपनी व्यक्तिगत लिस्ट में जोड़ें।"
+                : "Tap the bookmark icon on any product page to save it to your private list."}
             </p>
             <button
               onClick={onOpenScanner}
-              className="px-4 py-2 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-md shadow-[#22c55e]/20 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
             >
               <ScanLine className="w-4 h-4" />
-              <span>{isHindi ? "उत्पाद स्कैन करें" : "Scan Products Now"}</span>
+              <span>{isHindi ? "बारकोड स्कैन करें" : "Scan Barcode"}</span>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filteredList.map((product) => {
-              const isGreen = product.healthScore >= 70;
-              const isYellow = product.healthScore >= 40 && product.healthScore < 70;
+          <div className="space-y-2.5">
+            {filteredList.map((item) => {
+              const isGreen = item.healthScore >= 70;
+              const isYellow = item.healthScore >= 40 && item.healthScore < 70;
 
               return (
                 <div
-                  key={product.id}
-                  className={`p-4 rounded-2xl border flex items-center gap-4 transition-all ${
-                    isDark ? "bg-stone-900 border-stone-800" : "bg-white border-stone-200/80 shadow-xs"
+                  key={item.id}
+                  className={`p-3.5 rounded-2xl border flex items-center gap-3.5 transition-all ${
+                    isDark ? "bg-[#161C24] border-slate-800/80" : "bg-white border-slate-200/80 shadow-2xs"
                   }`}
                 >
                   <div
-                    onClick={() => onSelectProduct(product)}
-                    className="w-14 h-14 rounded-2xl bg-stone-100 dark:bg-stone-800 overflow-hidden flex-shrink-0 border border-stone-200 dark:border-stone-700 cursor-pointer"
+                    onClick={() => onSelectProduct(item)}
+                    className="w-13 h-13 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
                   >
                     <img
-                      src={product.imageUrl}
-                      alt={product.name}
+                      src={item.imageUrl}
+                      alt={item.name}
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
                   </div>
 
                   <div
-                    onClick={() => onSelectProduct(product)}
+                    onClick={() => onSelectProduct(item)}
                     className="flex-1 min-w-0 cursor-pointer"
                   >
-                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                      {product.brand}
+                    <span className="text-[11px] font-medium text-slate-400 block truncate">
+                      {item.brand}
                     </span>
-                    <h4 className="font-medium text-sm text-stone-900 dark:text-stone-100 truncate">
-                      {isHindi ? product.nameHindi : product.name}
+                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                      {isHindi ? item.nameHindi || item.name : item.name}
                     </h4>
-                    <span
-                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${
-                        isGreen
-                          ? "bg-[#22c55e]/15 text-[#15803d] dark:text-[#22c55e]"
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          isGreen ? "bg-emerald-500" : isYellow ? "bg-amber-500" : "bg-red-500"
+                        }`}
+                      />
+                      <span
+                        className={`text-xs font-semibold ${
+                          isGreen
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : isYellow
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {isGreen
+                          ? isHindi ? "सुरक्षित" : "Clean"
                           : isYellow
-                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
-                          : "bg-rose-500/15 text-rose-700 dark:text-rose-300"
-                      }`}
-                    >
-                      {product.verdict}
-                    </span>
+                          ? isHindi ? "मध्यम" : "Moderate"
+                          : isHindi ? "बचें" : "Avoid"}
+                      </span>
+                    </div>
                   </div>
 
+                  {/* Health Score & Remove Button */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <div
-                      className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs text-white ${
-                        isGreen
-                          ? "bg-[#22c55e]"
-                          : isYellow
-                          ? "bg-amber-500"
-                          : "bg-rose-600"
+                      className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center font-black text-white ${
+                        isGreen ? "bg-[#10B981]" : isYellow ? "bg-amber-500" : "bg-red-500"
                       }`}
                     >
-                      {product.healthScore}
+                      <span className="text-xs font-black leading-none">{item.healthScore}</span>
+                      <span className="text-[6px] font-bold uppercase tracking-wider opacity-85 mt-0.5">/100</span>
                     </div>
 
                     <button
-                      onClick={() => onRemoveProduct(product.id)}
-                      className="p-2 rounded-xl text-stone-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                      title="Remove from List"
+                      onClick={() => onRemoveProduct(item.id)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                      title={isHindi ? "लिस्ट से हटाएं" : "Remove from list"}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -270,7 +311,6 @@ export const SavedListScreen: React.FC<SavedListScreenProps> = ({
           </div>
         )}
 
-        {/* Contact Support Section */}
         <ContactSupport language={language} isDark={isDark} />
       </div>
     </div>

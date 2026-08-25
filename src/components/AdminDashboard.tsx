@@ -723,7 +723,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 >
                   <div className="flex items-center justify-between text-amber-600 dark:text-amber-400">
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      {isHindi ? "कुल स्कैन" : "AI Scans"}
+                      {isHindi ? "कुल स्कैन" : "Total Scans"}
                     </span>
                     <ScanLine className="w-5 h-5" />
                   </div>

@@ -145,30 +145,52 @@ export function calculateHealthScoreFromOFF(productData: any): {
 
   // 1. Soft Drink / Soda Heavy Penalty (Fanta, Coke, Pepsi, etc.)
   if (isSodaOrCola) {
-    score = 26; // Hard ceiling for carbonated sugary beverages
+    score = 16; // Hard ceiling for carbonated sugary beverages & colas
     warnings.push({
       type: "added_sugar",
       severity: "high",
-      titleEn: "High Liquid Fructose / Sugar Beverage",
-      titleHi: "अत्यधिक घुली हुई चीनी / कोल्ड्रिंक",
+      titleEn: "Extreme Liquid Sugar (10.6g / 100ml)",
+      titleHi: "अत्यधिक घुली हुई चीनी (35g प्रति केन)",
       descriptionEn:
-        "Carbonated soft drinks contain 10-12g concentrated liquid sugar per 100ml. Triggers rapid liver fat accumulation and insulin resistance.",
+        "Carbonated soft drinks contain approx 10.6g concentrated liquid sugar per 100ml (35g in a 330ml can). Bypasses satiety triggers and surges blood glucose.",
       descriptionHi:
-        "कोल्ड्रिंक्स में 100ml में लगभग 10-12 ग्राम चीनी होती है। यह लिवर में फैट और डायबिटीज का जोखिम तेजी से बढ़ाती है।",
-      tagValue: "10-12g Liquid Sugar/100ml",
+        "1 केन में लगभग 8-9 चम्मच चीनी होती है। यह खून में मिलकर तुरंत फैटी लिवर, इंसुलिन रेजिस्टेंस और वजन बढ़ाती है।",
+      tagValue: "35g Sugar per Can",
     });
 
-    warnings.push({
-      type: "artificial_colours",
-      severity: "high",
-      titleEn: "Synthetic Food Color & Acidity Regulators",
-      titleHi: "सिंथेटिक कृत्रिम रंग (INS 110/102) व एसिड्स",
-      descriptionEn:
-        "Contains artificial food colorings (like Sunset Yellow FCF / Tartrazine) and acidity regulator (INS 330/331) linked to tooth enamel erosion and hyper-activity.",
-      descriptionHi:
-        "चमकदार रंग और तीखे स्वाद के लिए रासायनिक रंगों और प्रिजर्वेटिव्स का इस्तेमाल किया जाता है।",
-      tagValue: "INS 110 / Acidity Regulators",
-    });
+    if (productName.includes("cola") || productName.includes("pepsi") || productName.includes("coke") || productName.includes("thums up")) {
+      warnings.push({
+        type: "artificial_colours",
+        severity: "high",
+        titleEn: "Caramel IV Synthetic Colour (INS 150d)",
+        titleHi: "कैरामेलाइज़्ड रंग IV (INS 150d)",
+        descriptionEn: "Processed under high heat with ammonia and sulfites, producing trace 4-MEI chemical compounds.",
+        descriptionHi: "अमोनिया प्रक्रिया से बना रासायनिक काला रंग जिसमें 4-MEI कंपाउंड्स के अंश होते हैं।",
+        tagValue: "INS 150d Chemical Color",
+      });
+
+      warnings.push({
+        type: "preservatives",
+        severity: "high",
+        titleEn: "Phosphoric Acid (INS 338)",
+        titleHi: "फॉस्फोरिक एसिड (INS 338)",
+        descriptionEn: "Highly acidic compound (pH ~2.5) that erodes dental enamel and depletes bone calcium.",
+        descriptionHi: "अत्यधिक एसिडिक जो दांतों के इनेमल को गलाता है और हड्डियों से कैल्शियम सोखता है।",
+        tagValue: "Acidity Regulator 338",
+      });
+    } else {
+      warnings.push({
+        type: "artificial_colours",
+        severity: "high",
+        titleEn: "Synthetic Food Color & Acidity Regulators",
+        titleHi: "सिंथेटिक कृत्रिम रंग (INS 110/102) व एसिड्स",
+        descriptionEn:
+          "Contains artificial food colorings (like Sunset Yellow FCF / Tartrazine) and acidity regulator (INS 330/331) linked to tooth enamel erosion and hyper-activity.",
+        descriptionHi:
+          "चमकदार रंग और तीखे स्वाद के लिए रासायनिक रंगों और प्रिजर्वेटिव्स का इस्तेमाल किया जाता है।",
+        tagValue: "INS 110 / Acidity Regulators",
+      });
+    }
   }
 
   // 2. Palm Oil / Palmolein Check

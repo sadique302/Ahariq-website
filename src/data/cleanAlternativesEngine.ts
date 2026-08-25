@@ -462,6 +462,54 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         tags: ["100% Jaggery", "Natural Snack", "Iron Rich"]
       }
     ]
+  },
+
+  // 12. SPICES & MASALAS (Everest, MDH, Catch, Garam Masala)
+  spices_masalas: {
+    id: "spices_masalas",
+    category_id: "spices_masalas",
+    category_name: "Spices & Masalas (Everest, MDH, 24 Mantra)",
+    target_products: [
+      "Everest",
+      "MDH",
+      "Catch",
+      "Garam Masala",
+      "Masala",
+      "Spices",
+      "Goldiee",
+      "Badshah",
+      "Turmeric",
+      "Coriander Powder",
+      "Chilli Powder"
+    ],
+    alternatives: [
+      {
+        id: "alt_24mantra_garam_masala",
+        name: "24 Mantra Organic Handpicked Garam Masala",
+        brand: "24 Mantra Organic",
+        score: 95,
+        price: "₹45",
+        priceEst: "₹45",
+        benefit: "100% Organic, Zero Chemical Pesticides",
+        benefitHi: "100% जैविक मसाले, शून्य केमिकल या ETO स्टरलाइजेशन",
+        reasonEn: "Certified Organic whole spices, zero chemical pesticide fumigation, unadulterated whole aroma.",
+        reasonHi: "100% जैविक मसाले, बिना किसी केमिकल फ्यूमिगेशन के।",
+        tags: ["100% Organic", "Zero ETO Residue"]
+      },
+      {
+        id: "alt_organictattva_garam_masala",
+        name: "Organic Tattva Garam Masala",
+        brand: "Organic Tattva",
+        score: 94,
+        price: "₹50",
+        priceEst: "₹50",
+        benefit: "Pesticide Free, Single Origin Spices",
+        benefitHi: "कीटनाशक मुक्त, प्रामाणिक साबुत मसाले",
+        reasonEn: "Non-irradiated pure whole spices; zero artificial enhancers.",
+        reasonHi: "शुद्ध प्राकृतिक साबुत मसाले, बिना किसी केमिकल ट्रीटमेंट के।",
+        tags: ["Pesticide Free", "Unadulterated"]
+      }
+    ]
   }
 };
 
@@ -516,42 +564,32 @@ export function detectProductCategoryId(input: {
     .join(" ")
     .toLowerCase();
 
-  // 0. Bottled Water, Mineral Water & Hydration (Bisleri, Kinley, Aquafina, etc.)
+  // 1. Cold Drinks, Colas, Sodas & Carbonated Beverages (Coke, Pepsi, Fanta, Sprite, Thums Up, etc.) - Priority over general water!
   if (
-    text.includes("bisleri") ||
-    text.includes("kinley") ||
-    text.includes("aquafina") ||
-    text.includes("himalayan water") ||
-    text.includes("bailey") ||
-    text.includes("rail neer") ||
-    text.includes("vedica") ||
-    text.includes("qua") ||
-    text.includes("mineral water") ||
-    text.includes("packaged drinking water") ||
-    text.includes("spring water") ||
-    text.includes("drinking water") ||
-    (input.category && input.category.toLowerCase().includes("water"))
+    text.includes("pepsi") ||
+    text.includes("coca-cola") ||
+    text.includes("coke") ||
+    text.includes("fanta") ||
+    text.includes("sprite") ||
+    text.includes("thums up") ||
+    text.includes("mirinda") ||
+    text.includes("mountain dew") ||
+    text.includes("7up") ||
+    text.includes("limca") ||
+    text.includes("sting") ||
+    text.includes("cold drink") ||
+    text.includes("soda") ||
+    text.includes("cola") ||
+    text.includes("carbonated beverage") ||
+    text.includes("carbonated drink") ||
+    text.includes("soft drink") ||
+    text.includes("aerated") ||
+    text.includes("fizzy")
   ) {
-    return "pure_water";
+    return "cold_drink";
   }
 
-  // 1. Instant Noodles & Pasta (Maggi, Yippee, Top Ramen, etc.)
-  if (
-    text.includes("maggi") ||
-    text.includes("yippee") ||
-    text.includes("noodle") ||
-    text.includes("noodles") ||
-    text.includes("ramen") ||
-    text.includes("pasta") ||
-    text.includes("macaroni") ||
-    text.includes("top ramen") ||
-    text.includes("wai wai") ||
-    text.includes("hakka")
-  ) {
-    return "instant_noodles";
-  }
-
-  // 2. Energy Drink & Malt Drinks (Bournvita, Horlicks, Boost, etc.)
+  // 2. Energy Drink & Malt Drinks (Bournvita, Horlicks, Boost, Red Bull, etc.)
   if (
     text.includes("bournvita") ||
     text.includes("horlicks") ||
@@ -568,7 +606,23 @@ export function detectProductCategoryId(input: {
     return "energy_drink";
   }
 
-  // 3. Potato Chips & Crisps (Lays, Kurkure, Namkeen, etc.)
+  // 3. Instant Noodles & Pasta (Maggi, Yippee, Top Ramen, etc.)
+  if (
+    text.includes("maggi") ||
+    text.includes("yippee") ||
+    text.includes("noodle") ||
+    text.includes("noodles") ||
+    text.includes("ramen") ||
+    text.includes("pasta") ||
+    text.includes("macaroni") ||
+    text.includes("top ramen") ||
+    text.includes("wai wai") ||
+    text.includes("hakka")
+  ) {
+    return "instant_noodles";
+  }
+
+  // 4. Potato Chips & Crisps (Lays, Kurkure, Namkeen, etc.)
   if (
     text.includes("lays") ||
     text.includes("kurkure") ||
@@ -584,27 +638,6 @@ export function detectProductCategoryId(input: {
     text.includes("nachos")
   ) {
     return "potato_chips";
-  }
-
-  // 4. Cold Drinks & Sodas (Coke, Pepsi, Fanta, Sprite, etc.)
-  if (
-    text.includes("coca-cola") ||
-    text.includes("coke") ||
-    text.includes("pepsi") ||
-    text.includes("fanta") ||
-    text.includes("sprite") ||
-    text.includes("thums up") ||
-    text.includes("mirinda") ||
-    text.includes("mountain dew") ||
-    text.includes("7up") ||
-    text.includes("limca") ||
-    text.includes("sting") ||
-    text.includes("cold drink") ||
-    text.includes("soda") ||
-    text.includes("carbonated") ||
-    text.includes("soft drink")
-  ) {
-    return "cold_drink";
   }
 
   // 5. Biscuits & Cookies (Parle-G, Oreo, Good Day, etc.)
@@ -673,21 +706,102 @@ export function detectProductCategoryId(input: {
     return "chocolates_sweets";
   }
 
+  // 9. Spices & Masalas (Everest, MDH, Catch, Garam Masala, Turmeric)
+  if (
+    text.includes("masala") ||
+    text.includes("everest") ||
+    text.includes("mdh") ||
+    text.includes("catch") ||
+    text.includes("garam masala") ||
+    text.includes("spices") ||
+    text.includes("turmeric") ||
+    text.includes("haldi") ||
+    text.includes("dhaniya") ||
+    text.includes("mirch powder") ||
+    text.includes("chilli powder")
+  ) {
+    return "spices_masalas";
+  }
+
+  // 10. Bottled Plain Water & Mineral Water (Bisleri, Kinley, Aquafina, etc.) - ONLY if not soda/cola
+  const isPureWaterItem =
+    text.includes("bisleri") ||
+    text.includes("kinley") ||
+    text.includes("aquafina") ||
+    text.includes("himalayan water") ||
+    text.includes("bailey") ||
+    text.includes("rail neer") ||
+    text.includes("vedica") ||
+    text.includes("qua") ||
+    text.includes("pure mineral water") ||
+    text.includes("packaged drinking water") ||
+    text.includes("natural spring water");
+
+  if (isPureWaterItem) {
+    return "pure_water";
+  }
+
   // Broad category fallbacks
   if (input.category) {
     const cat = input.category.toLowerCase();
-    if (cat.includes("water")) return "pure_water";
     if (cat.includes("noodle") || cat.includes("instant")) return "instant_noodles";
     if (cat.includes("chip") || cat.includes("snack") || cat.includes("namkeen")) return "potato_chips";
     if (cat.includes("biscuit") || cat.includes("bakery") || cat.includes("cookie")) return "biscuit_cookie";
-    if (cat.includes("drink") || cat.includes("soda") || cat.includes("cola")) return "cold_drink";
+    if (cat.includes("drink") || cat.includes("soda") || cat.includes("cola") || cat.includes("beverage")) return "cold_drink";
     if (cat.includes("oil") || cat.includes("fat") || cat.includes("ghee")) return "cooking_oil";
     if (cat.includes("chocolate") || cat.includes("sweet") || cat.includes("candy")) return "chocolates_sweets";
     if (cat.includes("bread") || cat.includes("toast") || cat.includes("bun")) return "white_bread";
+    if (cat.includes("spice") || cat.includes("masala")) return "spices_masalas";
+    if (cat.includes("water") && !cat.includes("carbonated") && !cat.includes("flavor")) return "pure_water";
   }
 
   return "unknown_category";
 }
+
+/**
+ * Universal Indian healthy fallback alternatives for general snacks/beverages
+ */
+const UNIVERSAL_HEALTHY_FALLBACKS: CleanerAlternative[] = [
+  {
+    id: "alt_nariyal_pani_fallback",
+    name: "Nariyal Pani (Coconut Water)",
+    brand: "Fresh Natural / RAW Pressery",
+    score: 96,
+    price: "₹50",
+    priceEst: "₹50-60",
+    benefit: "100% Pure Natural Hydration, 0% Added Sugar, Natural Electrolytes",
+    benefitHi: "100% शुद्ध ताज़ा नारियल पानी, शून्य अतिरिक्त चीनी, प्राकृतिक इलेक्ट्रोलाइट्स",
+    reasonEn: "100% Pure tender coconut water. Free from artificial chemicals, refined sugars, or preservatives.",
+    reasonHi: "शुद्ध ताज़ा नारियल पानी, शरीर को तुरंत ताजगी व जरूरी खनिज देता है बिना किसी केमिकल के।",
+    tags: ["100% Natural", "Zero Sugar", "Electrolyte Rich"]
+  },
+  {
+    id: "alt_makhana_fallback",
+    name: "Roasted Makhana (Foxnuts)",
+    brand: "Taali / Roasted Desi",
+    score: 95,
+    price: "₹55",
+    priceEst: "₹50-80",
+    benefit: "Oil-Free Roasted Superfood, High Protein, Zero Palm Oil",
+    benefitHi: "हल्के सेंधा नमक में भुना मखाना, 0% पाम ऑयल, हाई प्रोटीन",
+    reasonEn: "High-protein roasted lotus seeds seasoned with pink rock salt and zero refined palm oil.",
+    reasonHi: "सेंधा नमक में भुना मखाना, पामोलिन तेल और हानिकारक मैदा से पूरी तरह मुक्त।",
+    tags: ["Zero Palm Oil", "High Protein", "Superfood"]
+  },
+  {
+    id: "alt_chaas_fallback",
+    name: "Masala Chaas (Buttermilk)",
+    brand: "Fresh Curd / Amul",
+    score: 95,
+    price: "₹20",
+    priceEst: "₹15-25",
+    benefit: "Probiotic Curd, Digestive Cumin, 0% Refined Sugar",
+    benefitHi: "ताज़ा प्रोबायोटिक छाछ, पाचक भुना जीरा व पुदीना, शून्य चीनी",
+    reasonEn: "Traditional probiotic buttermilk seasoned with roasted cumin and mint. Promotes healthy digestion.",
+    reasonHi: "पाचक भुने जीरे वाली ताज़ा प्रोबायोटिक छाछ, पाचन के लिए अमृत समान।",
+    tags: ["Probiotic", "Gut Friendly", "0% Added Sugar"]
+  }
+];
 
 /**
  * Returns clean, healthy alternatives for any product based on Firestore alternatives
@@ -713,6 +827,11 @@ export function getSmartCleanerAlternatives(input: {
     return doc.alternatives;
   }
 
-  // If unknown category, don't force noodles
-  return [];
+  // If beverage or drink-like, return cold drink clean alternatives
+  const text = `${input.name || ""} ${input.brand || ""} ${input.category || ""}`.toLowerCase();
+  if (text.includes("drink") || text.includes("juice") || text.includes("beverage") || text.includes("cola") || text.includes("soda")) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.cold_drink?.alternatives || UNIVERSAL_HEALTHY_FALLBACKS;
+  }
+
+  return UNIVERSAL_HEALTHY_FALLBACKS;
 }

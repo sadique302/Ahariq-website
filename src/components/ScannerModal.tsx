@@ -20,23 +20,15 @@ import {
   Globe,
   Lock,
   ArrowRight,
-  Flame,
-  Dumbbell,
-  Droplets,
-  Wheat,
-  Candy,
 } from "lucide-react";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { decodeBarcodeFromCanvas } from "../utils/barcodeScanner";
 import {
   fetchProductFromOpenFoodFacts,
-  calculateScoreFromManualNutrition,
   getSynchronizedIngredientsExplanation,
   getDynamicHazardSummary,
 } from "../services/openFoodFacts";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
-import { ContributeProductModal } from "./ContributeProductModal";
-import { HeartHandshake } from "lucide-react";
 
 interface ScannerModalProps {
   isOpen: boolean;
@@ -73,24 +65,9 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
   const [scannedCodePreview, setScannedCodePreview] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [notFoundBarcode, setNotFoundBarcode] = useState<string | null>(null);
-  const [isContributeModalOpen, setIsContributeModalOpen] = useState(false);
   const [manualBarcode, setManualBarcode] = useState("");
   const [productAddRequested, setProductAddRequested] = useState(false);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
-
-  // Manual Nutrition Form (Rule 3, 4, 5 when product is not in database)
-  const [manualForm, setManualForm] = useState({
-    name: "",
-    brand: "",
-    energyKcal: "",
-    proteinG: "",
-    fatG: "",
-    carbsG: "",
-    sugarG: "",
-    hasPalmOil: false,
-    hasMaida: false,
-    isVegetarian: true,
-  });
 
   // Ingredient OCR / Text Analysis state
   const [ingredientText, setIngredientText] = useState("");
@@ -215,24 +192,12 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           return;
         }
 
-        // Step 3: If not in OFF or Local DB, halt camera and show Missing Details Contribution Screen
+        // Step 3: If not in OFF or Local DB, halt camera and show friendly Not Found screen
         stopCamera();
         isScanningRef.current = false;
         notFoundBarcodeRef.current = cleanCode;
         setIsScanning(false);
         setNotFoundBarcode(cleanCode);
-        setManualForm({
-          name: "",
-          brand: "",
-          energyKcal: "",
-          proteinG: "",
-          fatG: "",
-          carbsG: "",
-          sugarG: "",
-          hasPalmOil: false,
-          hasMaida: false,
-          isVegetarian: true,
-        });
       } catch (err: any) {
         console.error("Barcode lookup error:", err);
         clearTimeout(failsafeTimer);
@@ -249,35 +214,6 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
     },
     [onProductScanned, onClose, stopCamera, isHindi]
   );
-
-  // Manual Nutrition Form submission (Rule 5: Calculate score out of 100)
-  const handleManualNutritionSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-
-    const energy = parseFloat(manualForm.energyKcal) || 350;
-    const protein = parseFloat(manualForm.proteinG) || 5;
-    const fat = parseFloat(manualForm.fatG) || 12;
-    const carbs = parseFloat(manualForm.carbsG) || 55;
-    const sugar = parseFloat(manualForm.sugarG) || 10;
-
-    const calculatedProduct = calculateScoreFromManualNutrition({
-      name: manualForm.name.trim() || (isHindi ? "ऑडिट किया गया उत्पाद" : "Audited Food Product"),
-      brand: manualForm.brand.trim() || (isHindi ? "पैकेज्ड ब्रांड" : "Packaged Brand"),
-      barcode: notFoundBarcode || "MANUAL_" + Date.now().toString().slice(-6),
-      energyKcal: energy,
-      proteinG: protein,
-      fatG: fat,
-      carbsG: carbs,
-      sugarG: sugar,
-      hasPalmOil: manualForm.hasPalmOil,
-      hasMaida: manualForm.hasMaida,
-      isVegetarian: manualForm.isVegetarian,
-    });
-
-    stopCamera();
-    onProductScanned(calculatedProduct);
-    onClose();
-  };
 
   // Live video frame scanner with BarcodeDetector + Canvas fallback
   const captureAndScanFrame = useCallback(async () => {
@@ -1238,269 +1174,88 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           </div>
         )}
 
-        {/* NOT FOUND OVERLAY & MANUAL NUTRITION AUDIT FORM (RULES 3, 4, 5) */}
+        {/* NOT FOUND OVERLAY */}
         {notFoundBarcode && !isScanning && (
           <div
             id="scanner-product-not-found"
-            className="absolute inset-0 bg-[#09090B]/98 z-30 flex flex-col items-center justify-start p-4 sm:p-6 text-center backdrop-blur-xl animate-in fade-in duration-150 overflow-y-auto"
+            className="absolute inset-0 bg-[#09090B]/98 z-30 flex flex-col items-center justify-center p-4 sm:p-6 text-center backdrop-blur-xl animate-in fade-in duration-150 overflow-y-auto"
           >
-            <div className="w-full max-w-lg space-y-4 my-auto py-2">
+            <div className="w-full max-w-md space-y-4 my-auto py-4">
               {/* Header */}
               <div className="flex flex-col items-center">
-                <div className="w-14 h-14 rounded-3xl bg-amber-500/15 border-2 border-amber-500/30 text-amber-400 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/10">
-                  <AlertCircle className="w-7 h-7" />
+                <div className="w-16 h-16 rounded-3xl bg-amber-500/15 border-2 border-amber-500/30 text-amber-400 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/15 animate-pulse">
+                  <AlertCircle className="w-8 h-8" />
                 </div>
                 <h4 className="font-black text-xl sm:text-2xl text-white tracking-tight">
-                  Oops! This product is missing details!
+                  {isHindi ? "Oops! यह प्रोडक्ट डेटाबेस में नहीं मिला" : "Oops! Product Not in Database"}
                 </h4>
-                <p className="text-xs sm:text-sm text-zinc-300 mt-2 max-w-md leading-relaxed font-medium">
-                  Help us grow India's own healthy food knowledge base! Every product you add makes it easier for another family.
-                </p>
                 <div className="mt-2.5 flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-amber-400 font-bold">
+                  <span className="px-3.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-amber-400 font-bold">
                     Barcode: {notFoundBarcode}
                   </span>
                 </div>
               </div>
 
-              {/* PRIMARY ACTION: CONTRIBUTE NOW (3 PHOTOS) */}
-              <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-b from-[#10B981]/20 via-[#18181B] to-[#18181B] border-2 border-[#10B981]/50 shadow-2xl space-y-3 text-left">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-xl bg-[#10B981] text-white flex items-center justify-center">
-                      <Camera className="w-4 h-4" />
-                    </span>
-                    <span className="font-black text-sm text-white">
-                      {isHindi ? "3 फोटो भेजकर डेटाबेस में जोड़ें" : "Add by uploading 3 packet photos"}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-bold text-[#10B981] bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Recommended
-                  </span>
+              {/* Guidance & Friendly Advice Card */}
+              <div className="p-4 sm:p-5 rounded-3xl bg-[#18181B] border border-zinc-800 shadow-2xl space-y-3 text-left">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>{isHindi ? "उपयोगी सुझाव (Helpful Tips):" : "Helpful Tips:"}</span>
                 </div>
 
-                <p className="text-xs text-zinc-300 leading-relaxed font-medium">
-                  {isHindi
-                    ? "बस 3 फोटो खींचें (1. सामने का पैकेट, 2. सामग्री सूची, 3. न्यूट्रिशन टेबल) और सबमिट करें।"
-                    : "Simply snap 3 photos (1. Front of Pack, 2. Ingredients List, 3. Nutrition Facts Table) to contribute."}
-                </p>
+                <ul className="space-y-2.5 text-xs text-zinc-300 font-medium">
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-400 font-bold leading-none mt-0.5">•</span>
+                    <span>
+                      {isHindi
+                        ? "बारकोड पर पर्याप्त रोशनी रखें और सुनिश्चित करें कि कैमरा साफ हो।"
+                        : "Ensure good lighting and hold the camera steady on the barcode."}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-400 font-bold leading-none mt-0.5">•</span>
+                    <span>
+                      {isHindi
+                        ? "आप ऊपर सर्च बार में ब्रांड (उदा. Britannia, Amul, Haldiram) या नाम लिखकर भी खोज सकते हैं।"
+                        : "You can search directly by brand (e.g. Britannia, Amul) or item name in the search bar."}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 font-bold leading-none mt-0.5">•</span>
+                    <span>
+                      {isHindi
+                        ? "AharIQ का डेटाबेस हज़ारों भारतीय खाद्य पदार्थों के साथ लगातार अपडेट हो रहा है।"
+                        : "AharIQ database is updated continuously with thousands of Indian packaged foods."}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col gap-2.5">
+                <button
+                  type="button"
+                  id="scanner-retry-scan-btn"
+                  onClick={handleRetryScan}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-[#10B981] hover:bg-[#059669] text-white font-black text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-[#10B981]/25 hover:scale-[1.01] active:scale-95"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>{isHindi ? "दूसरा प्रोडक्ट स्कैन करें" : "Scan Another Product"}</span>
+                </button>
 
                 <button
                   type="button"
-                  id="scanner-contribute-now-btn"
-                  onClick={() => setIsContributeModalOpen(true)}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-[#10B981] hover:bg-[#059669] text-white font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-[#10B981]/30 hover:scale-[1.01]"
+                  id="scanner-close-btn"
+                  onClick={() => {
+                    setNotFoundBarcode(null);
+                    stopCamera();
+                    onClose();
+                  }}
+                  className="w-full py-3 px-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  <HeartHandshake className="w-4 h-4" />
-                  <span>Contribute Now</span>
+                  <X className="w-4 h-4" />
+                  <span>{isHindi ? "स्कैनर बंद करें" : "Close Scanner"}</span>
                 </button>
-              </div>
-
-              {/* SECONDARY OPTION: QUICK MANUAL NUTRITION AUDIT FORM */}
-              <div className="pt-2">
-                <div className="flex items-center gap-3 my-2">
-                  <div className="h-px bg-zinc-800 flex-1" />
-                  <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
-                    {isHindi ? "या तुरंत रेटिंग निकालें" : "or Enter Numbers Manually"}
-                  </span>
-                  <div className="h-px bg-zinc-800 flex-1" />
-                </div>
-
-                <form
-                  onSubmit={handleManualNutritionSubmit}
-                  className="bg-[#18181B] border border-zinc-800 rounded-3xl p-4 sm:p-5 text-left space-y-3.5 shadow-2xl"
-                >
-                  {/* 1. Name & Brand */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] font-bold text-zinc-300 mb-1">
-                        {isHindi ? "उत्पाद का नाम (Product Name)*" : "Product Name*"}
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={manualForm.name}
-                        onChange={(e) => setManualForm({ ...manualForm, name: e.target.value })}
-                        placeholder={isHindi ? "उदा. Good Day Cashew" : "e.g. Good Day Butter"}
-                        className="w-full bg-[#09090B] border border-zinc-700 focus:border-[#10B981] rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none transition-colors font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-zinc-300 mb-1">
-                        {isHindi ? "ब्रांड (Brand)*" : "Brand Name*"}
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={manualForm.brand}
-                        onChange={(e) => setManualForm({ ...manualForm, brand: e.target.value })}
-                        placeholder={isHindi ? "उदा. Britannia, Haldiram's" : "e.g. Britannia, Lays"}
-                        className="w-full bg-[#09090B] border border-zinc-700 focus:border-[#10B981] rounded-2xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none transition-colors font-medium"
-                      />
-                    </div>
-                  </div>
-
-                  {/* 2. Macro Nutrients Grid (Per 100g / Serving) */}
-                  <div className="pt-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-[#10B981] flex items-center gap-1">
-                        <span className="text-xs leading-none">🌾</span>
-                        {isHindi ? "पोषण जानकारी (प्रति 100g)" : "Nutrition Facts (Per 100g / Serving)"}
-                      </span>
-                      <span className="text-[10px] text-zinc-400 font-medium">ICMR Norms</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                      {/* Energy */}
-                      <div className="bg-[#09090B] border border-zinc-800 rounded-2xl p-2.5 focus-within:border-[#10B981] transition-colors">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-zinc-400 mb-1">
-                          <span className="flex items-center gap-1 text-orange-400">
-                            <Flame className="w-3 h-3" />
-                            {isHindi ? "ऊर्जा" : "Energy"}
-                          </span>
-                          <span className="text-zinc-500 font-mono">kcal</span>
-                        </div>
-                        <input
-                          type="number"
-                          step="any"
-                          value={manualForm.energyKcal}
-                          onChange={(e) => setManualForm({ ...manualForm, energyKcal: e.target.value })}
-                          placeholder="380"
-                          className="w-full bg-transparent text-sm font-bold text-white placeholder:text-zinc-700 focus:outline-none font-mono"
-                        />
-                      </div>
-
-                      {/* Protein */}
-                      <div className="bg-[#09090B] border border-zinc-800 rounded-2xl p-2.5 focus-within:border-[#10B981] transition-colors">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-zinc-400 mb-1">
-                          <span className="flex items-center gap-1 text-blue-400">
-                            <Dumbbell className="w-3 h-3" />
-                            {isHindi ? "प्रोटीन" : "Protein"}
-                          </span>
-                          <span className="text-zinc-500 font-mono">g</span>
-                        </div>
-                        <input
-                          type="number"
-                          step="any"
-                          value={manualForm.proteinG}
-                          onChange={(e) => setManualForm({ ...manualForm, proteinG: e.target.value })}
-                          placeholder="6.5"
-                          className="w-full bg-transparent text-sm font-bold text-white placeholder:text-zinc-700 focus:outline-none font-mono"
-                        />
-                      </div>
-
-                      {/* Fat */}
-                      <div className="bg-[#09090B] border border-zinc-800 rounded-2xl p-2.5 focus-within:border-[#10B981] transition-colors">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-zinc-400 mb-1">
-                          <span className="flex items-center gap-1 text-amber-400">
-                            <Droplets className="w-3 h-3" />
-                            {isHindi ? "कुल फैट" : "Total Fat"}
-                          </span>
-                          <span className="text-zinc-500 font-mono">g</span>
-                        </div>
-                        <input
-                          type="number"
-                          step="any"
-                          value={manualForm.fatG}
-                          onChange={(e) => setManualForm({ ...manualForm, fatG: e.target.value })}
-                          placeholder="14"
-                          className="w-full bg-transparent text-sm font-bold text-white placeholder:text-zinc-700 focus:outline-none font-mono"
-                        />
-                      </div>
-
-                      {/* Carbs */}
-                      <div className="bg-[#09090B] border border-zinc-800 rounded-2xl p-2.5 focus-within:border-[#10B981] transition-colors">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-zinc-400 mb-1">
-                          <span className="flex items-center gap-1 text-yellow-400">
-                            <Wheat className="w-3 h-3" />
-                            {isHindi ? "कार्ब्स" : "Carbs"}
-                          </span>
-                          <span className="text-zinc-500 font-mono">g</span>
-                        </div>
-                        <input
-                          type="number"
-                          step="any"
-                          value={manualForm.carbsG}
-                          onChange={(e) => setManualForm({ ...manualForm, carbsG: e.target.value })}
-                          placeholder="62"
-                          className="w-full bg-transparent text-sm font-bold text-white placeholder:text-zinc-700 focus:outline-none font-mono"
-                        />
-                      </div>
-
-                      {/* Sugar */}
-                      <div className="bg-[#09090B] border border-zinc-800 rounded-2xl p-2.5 focus-within:border-[#10B981] transition-colors col-span-2 sm:col-span-1">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-zinc-400 mb-1">
-                          <span className="flex items-center gap-1 text-pink-400">
-                            <Candy className="w-3 h-3" />
-                            {isHindi ? "चीनी (Sugar)" : "Sugar"}
-                          </span>
-                          <span className="text-zinc-500 font-mono">g</span>
-                        </div>
-                        <input
-                          type="number"
-                          step="any"
-                          value={manualForm.sugarG}
-                          onChange={(e) => setManualForm({ ...manualForm, sugarG: e.target.value })}
-                          placeholder="18"
-                          className="w-full bg-transparent text-sm font-bold text-white placeholder:text-zinc-700 focus:outline-none font-mono"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3. Ingredient Indicators Checkboxes */}
-                  <div className="pt-2 border-t border-zinc-800/80 flex flex-wrap gap-2">
-                    <label className="flex items-center gap-2 p-2 rounded-xl bg-[#09090B] border border-zinc-800 hover:border-zinc-700 text-xs font-semibold text-zinc-300 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={manualForm.hasPalmOil}
-                        onChange={(e) => setManualForm({ ...manualForm, hasPalmOil: e.target.checked })}
-                        className="accent-[#10B981] rounded w-3.5 h-3.5"
-                      />
-                      <span>{isHindi ? "पाम ऑयल / पामोलिन है" : "Contains Palm Oil"}</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 p-2 rounded-xl bg-[#09090B] border border-zinc-800 hover:border-zinc-700 text-xs font-semibold text-zinc-300 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={manualForm.hasMaida}
-                        onChange={(e) => setManualForm({ ...manualForm, hasMaida: e.target.checked })}
-                        className="accent-[#10B981] rounded w-3.5 h-3.5"
-                      />
-                      <span>{isHindi ? "मैदा (Maida) है" : "Contains Maida"}</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 p-2 rounded-xl bg-[#09090B] border border-zinc-800 hover:border-zinc-700 text-xs font-semibold text-zinc-300 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={manualForm.isVegetarian}
-                        onChange={(e) => setManualForm({ ...manualForm, isVegetarian: e.target.checked })}
-                        className="accent-[#10B981] rounded w-3.5 h-3.5"
-                      />
-                      <span className="text-emerald-400">{isHindi ? "शाकाहारी (Veg)" : "100% Veg"}</span>
-                    </label>
-                  </div>
-
-                  {/* 4. Action Buttons */}
-                  <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
-                    <button
-                      type="submit"
-                      className="flex-1 py-3.5 px-4 rounded-2xl bg-[#10B981] hover:bg-[#059669] text-white font-black text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-[#10B981]/25"
-                    >
-                      <span className="text-sm leading-none">🌾</span>
-                      <span>{isHindi ? "100 में से स्वास्थ्य रेटिंग निकालें" : "Calculate Health Score /100"}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleRetryScan}
-                      className="py-3 px-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>{isHindi ? "दूसरा स्कैन करें" : "Scan Another"}</span>
-                    </button>
-                  </div>
-                </form>
               </div>
             </div>
           </div>
@@ -1631,25 +1386,6 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
             <span>{isHindi ? "जांचें" : "Search"}</span>
           </button>
         </div>
-
-        {/* 3-Photo Contribute Modal */}
-        <ContributeProductModal
-          isOpen={isContributeModalOpen}
-          onClose={() => {
-            setIsContributeModalOpen(false);
-          }}
-          barcode={notFoundBarcode || manualBarcode}
-          initialName={manualForm.name}
-          initialBrand={manualForm.brand}
-          language={language}
-          isDark={isDark}
-          onProductCreated={(createdProduct) => {
-            setIsContributeModalOpen(false);
-            stopCamera();
-            onProductScanned(createdProduct);
-            onClose();
-          }}
-        />
       </div>
     </div>
   );

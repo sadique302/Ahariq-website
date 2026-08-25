@@ -300,19 +300,79 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                 </div>
               </div>
 
-              {/* Footer Note */}
+              {/* Structured Mission & Integrity Card */}
               <div
-                className={`p-3 rounded-2xl border flex items-center justify-between text-xs ${
-                  isDark ? "bg-stone-800 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                className={`p-4 sm:p-5 rounded-2xl border space-y-3 ${
+                  isDark
+                    ? "bg-stone-800/80 border-stone-700 text-stone-100"
+                    : "bg-emerald-50/50 border-emerald-200/90 text-stone-900 shadow-xs"
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-rose-500" />
-                  <span className="font-bold text-[#000000] dark:text-stone-200">
-                    Ahariq (Aahar IQ) • Label Padhna Sikhein
+                {/* Header with Brand & Tagline */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-stone-200 dark:border-stone-700">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#22c55e]/20 text-[#22c55e] flex items-center justify-center flex-shrink-0">
+                      <Heart className="w-4 h-4 text-rose-500 fill-rose-500/20" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm sm:text-base text-stone-900 dark:text-white flex items-center gap-1.5">
+                        <span>Ahariq (Aahar IQ)</span>
+                      </h4>
+                      <p className="text-xs text-[#059669] dark:text-[#34D399] font-bold">
+                        {isHindi ? "लेबल पढ़ना सीखें • सही भोजन चुनें" : "Learn to Read Labels • Choose Healthy"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[#059669] dark:text-[#34D399] text-xs font-black self-start sm:self-auto">
+                    🇮🇳 100% Free & Open
                   </span>
                 </div>
-                <span className="text-[11px] text-[#111827] dark:text-stone-300 font-bold">100% Free & Open 🇮🇳</span>
+
+                {/* 3 Structured Pillars */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
+                  <div className="p-2.5 rounded-xl bg-white dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-start gap-2">
+                    <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-[#059669] dark:text-[#34D399] flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5">
+                      ✓
+                    </div>
+                    <div>
+                      <strong className="block font-bold text-stone-900 dark:text-stone-100">
+                        {isHindi ? "पूर्णतः निःशुल्क" : "100% Free Forever"}
+                      </strong>
+                      <span className="text-[11px] text-stone-600 dark:text-stone-300 leading-tight block mt-0.5">
+                        {isHindi ? "हर भारतीय नागरिक के लिए हमेशा मुफ्त" : "Open public awareness for all Indians"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-start gap-2">
+                    <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-[#059669] dark:text-[#34D399] flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5">
+                      ✓
+                    </div>
+                    <div>
+                      <strong className="block font-bold text-stone-900 dark:text-stone-100">
+                        {isHindi ? "प्रमाणित मानक" : "Scientific Standards"}
+                      </strong>
+                      <span className="text-[11px] text-stone-600 dark:text-stone-300 leading-tight block mt-0.5">
+                        {isHindi ? "FSSAI, WHO व ICMR दिशानिर्देश" : "FSSAI, WHO & ICMR backed rules"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-start gap-2">
+                    <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-[#059669] dark:text-[#34D399] flex items-center justify-center flex-shrink-0 text-[10px] font-bold mt-0.5">
+                      ✓
+                    </div>
+                    <div>
+                      <strong className="block font-bold text-stone-900 dark:text-stone-100">
+                        {isHindi ? "100% निष्पक्ष" : "Zero Brand Bias"}
+                      </strong>
+                      <span className="text-[11px] text-stone-600 dark:text-stone-300 leading-tight block mt-0.5">
+                        {isHindi ? "कोई विज्ञापन या पेड प्रमोशन नहीं" : "No sponsored promotions or ads"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (

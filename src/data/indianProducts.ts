@@ -811,12 +811,12 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     warnings: [
       {
         type: "glyphosate",
-        titleEn: "Sterilization / ETO Watch",
-        titleHi: "कीटनाशक व नसबंदी जांच",
+        titleEn: "Pesticide & Sterilization Audit (ETO)",
+        titleHi: "कीटनाशक व नसबंदी जांच (Pesticide Audit)",
         severity: "low",
         tagValue: "FSSAI Batch Tested",
-        descriptionEn: "Ensure purchasing recent batches compliant with stringent new FSSAI pesticide & ethylene oxide norms.",
-        descriptionHi: "हालिया बैच एफएसएसएआई के कड़े मानकों पर खरे उतरे हैं।"
+        descriptionEn: "FSSAI mandates pesticide residue monitoring in Indian spices. Everest is batch-tested, though global market surveillance has flagged ETO residue concerns in specific lots.",
+        descriptionHi: "भारतीय मसालों में कीटनाशक अवशेषों की जांच FSSAI द्वारा अनिवार्य है। एवरेस्ट बैच टेस्टेड है, पर बाजार के कुछ नमूनों में ETO अवशेष की शिकायतें मिली हैं।"
       }
     ],
     nutritionPer100g: {
@@ -856,6 +856,10 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         name: "24 Mantra Organic Handpicked Garam Masala",
         brand: "24 Mantra Organic",
         score: 95,
+        price: "₹45",
+        priceEst: "₹45",
+        benefit: "100% Organic, Zero Chemical Pesticides",
+        tags: ["100% Organic", "Zero ETO Residue"],
         reasonEn: "Certified Organic whole spices, zero chemical pesticide fumigation, unadulterated whole aroma.",
         reasonHi: "100% जैविक मसाले, बिना किसी केमिकल फ्यूमिगेशन के।"
       }

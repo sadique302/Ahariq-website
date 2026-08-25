@@ -16,7 +16,7 @@
   }
 
   html, body {
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100%;
     width: 100%;
     margin: 0;
@@ -38,7 +38,6 @@
   }
 
   #root {
-    overflow-x: hidden;
     max-width: 100%;
     width: 100%;
     min-height: 100vh;

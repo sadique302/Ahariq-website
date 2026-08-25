@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   Info,
   Lock,
-  Smartphone,
   Crown
 } from "lucide-react";
 import { Language } from "../types";
@@ -18,7 +17,6 @@ interface ContactSupportProps {
   onOpenAbout?: () => void;
   onOpenPrivacy?: () => void;
   onOpenAdmin?: () => void;
-  onOpenInstallPwa?: () => void;
   isOwner?: boolean;
 }
 
@@ -28,7 +26,6 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
   onOpenAbout,
   onOpenPrivacy,
   onOpenAdmin,
-  onOpenInstallPwa,
   isOwner = false,
 }) => {
   const isHindi = language === "hi";
@@ -73,13 +70,13 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
         </div>
       </div>
 
-      {/* Quick Navigation Quick-Links: About Us, Privacy Policy, [Founder Admin if logged in], Install App */}
-      <div className={`grid ${isOwner && onOpenAdmin ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"} gap-2 pt-1`}>
+      {/* Quick Navigation Quick-Links: About Us, Privacy Policy, [Founder Admin if logged in] */}
+      <div className={`grid ${isOwner && onOpenAdmin ? "grid-cols-3" : "grid-cols-2"} gap-2.5 pt-1`}>
         {onOpenAbout && (
           <button
             id="footer-about-us-btn"
             onClick={onOpenAbout}
-            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
                 : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
@@ -94,7 +91,7 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           <button
             id="footer-privacy-btn"
             onClick={onOpenPrivacy}
-            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
                 : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
@@ -110,7 +107,7 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           <button
             id="footer-admin-btn"
             onClick={onOpenAdmin}
-            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50 text-amber-300"
                 : "bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-800"
@@ -118,21 +115,6 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           >
             <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />
             <span className="truncate">{isHindi ? "एडमिन पैनल" : "Founder Panel"}</span>
-          </button>
-        )}
-
-        {onOpenInstallPwa && (
-          <button
-            id="footer-install-btn"
-            onClick={onOpenInstallPwa}
-            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
-              isDark
-                ? "bg-emerald-950/40 border-emerald-800/60 hover:bg-emerald-900/50 text-emerald-300"
-                : "bg-emerald-500 border-emerald-600 hover:bg-emerald-600 text-white shadow-sm shadow-emerald-500/20"
-            }`}
-          >
-            <Smartphone className="w-4 h-4 flex-shrink-0" />
-            <span className="truncate">{isHindi ? "ऐप इनस्टॉल करें" : "Install App"}</span>
           </button>
         )}
       </div>

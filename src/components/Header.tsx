@@ -12,10 +12,11 @@ import {
   Lock,
   Headphones,
   FlaskConical,
+  Dumbbell,
   Heart,
   ExternalLink,
-  Download,
-  Smartphone
+  Smartphone,
+  Download
 } from "lucide-react";
 
 interface HeaderProps {
@@ -27,7 +28,7 @@ interface HeaderProps {
   onOpenAuth: () => void;
   onOpenScanner: () => void;
   savedCount: number;
-  onNavigateTab: (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => void;
+  onNavigateTab: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
   onOpenAbout: () => void;
   onOpenPrivacy: () => void;
   onOpenAdmin?: () => void;
@@ -116,23 +117,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          {/* PWA Install Button (Header Pill) */}
-          {onOpenInstallPwa && (
-            <button
-              id="header-install-pwa-btn"
-              onClick={onOpenInstallPwa}
-              className={`hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer shadow-xs ${
-                isDark
-                  ? "bg-gradient-to-r from-emerald-900/60 to-emerald-800/60 border-emerald-700/60 text-emerald-300 hover:brightness-110"
-                  : "bg-emerald-500 hover:bg-emerald-600 border-emerald-600 text-white shadow-emerald-500/20"
-              }`}
-              title="Install AharIQ as mobile/desktop App"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>{isHindi ? "ऐप इनस्टॉल" : "Install App"}</span>
-            </button>
-          )}
-
           {/* Language Switcher */}
           <button
             id="language-toggle-btn"
@@ -209,28 +193,6 @@ export const Header: React.FC<HeaderProps> = ({
                     : "bg-white border-gray-200 text-[#111827] shadow-xl"
                 }`}
               >
-                {/* Install App in Menu */}
-                {onOpenInstallPwa && (
-                  <button
-                    id="menu-install-pwa-btn"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      onOpenInstallPwa();
-                    }}
-                    className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 bg-gradient-to-r from-[#10B981]/20 to-emerald-500/10 hover:from-[#10B981]/30 hover:to-emerald-500/20 text-[#059669] dark:text-[#34D399] border border-[#10B981]/30 transition-colors text-left cursor-pointer mb-1.5"
-                  >
-                    <Smartphone className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <div>
-                      <span className="block font-black text-[#000000] dark:text-white">
-                        {isHindi ? "📲 ऐप इनस्टॉल करें (PWA)" : "📲 Install AharIQ App"}
-                      </span>
-                      <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
-                        {isHindi ? "होम स्क्रीन पर जोड़ें (1-Tap)" : "Add to home screen"}
-                      </span>
-                    </div>
-                  </button>
-                )}
-
                 {/* Account / Login Option in Menu */}
                 <button
                   id="menu-account-auth-btn"
@@ -339,6 +301,31 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </button>
 
+                {/* Gym IQ Option */}
+                <button
+                  id="menu-gym-iq-btn"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onNavigateTab("gym");
+                  }}
+                  className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 hover:bg-[#10B981]/10 hover:text-[#059669] dark:hover:text-[#10B981] transition-colors text-left cursor-pointer"
+                >
+                  <Dumbbell className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="block font-bold text-[#000000] dark:text-white">
+                        Gym IQ
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500 text-white font-bold">
+                        NEW
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
+                      {isHindi ? "फिटनेस प्रोडक्ट्स व तुलना" : "Fitness Hub & Comparator"}
+                    </span>
+                  </div>
+                </button>
+
                 {/* DART Adulteration Guide Option */}
                 <button
                   id="menu-adulteration-guide-btn"
@@ -358,6 +345,36 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                 </button>
+
+                {/* Install App / PWA Option */}
+                {onOpenInstallPwa && (
+                  <>
+                    <div className="h-px bg-gray-100 dark:bg-zinc-800 my-1" />
+                    <button
+                      id="menu-install-pwa-btn"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onOpenInstallPwa();
+                      }}
+                      className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[#059669] dark:text-[#34D399] border border-emerald-200 dark:border-emerald-800 transition-colors text-left cursor-pointer mt-1"
+                    >
+                      <Download className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="block font-black text-slate-900 dark:text-white">
+                            {isHindi ? "📲 ऐप इनस्टॉल करें" : "📲 Install App"}
+                          </span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#10B981] text-white font-bold">
+                            PWA
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#059669] dark:text-[#34D399] block font-medium">
+                          {isHindi ? "होम स्क्रीन पर 1-टैप में जोड़ें" : "Add to Phone Home Screen"}
+                        </span>
+                      </div>
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

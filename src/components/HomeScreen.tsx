@@ -1,29 +1,20 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { FoodProduct, Language, ProductCategory, UserProfile } from "../types";
+import { FoodProduct, Language, UserProfile } from "../types";
 import {
   ScanLine,
   Search,
   ChevronRight,
-  TrendingUp,
-  ShieldAlert,
+  Clock,
+  Loader2,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
   Flame,
   Wheat,
   Droplet,
-  Cookie,
-  Milk,
-  Baby,
-  HeartHandshake,
-  CheckCircle2,
-  AlertTriangle,
-  ArrowUpRight,
-  Info,
-  Clock,
-  Loader2,
-  Globe,
-  Download,
-  Smartphone,
-  Check,
-  X
+  Dumbbell,
 } from "lucide-react";
 import { PRODUCT_CATEGORIES } from "../data/categories";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
@@ -38,25 +29,23 @@ interface HomeScreenProps {
   language: Language;
   isDark: boolean;
   onNavigateCategory: (categoryName: string) => void;
+  onNavigateTab?: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
   user?: UserProfile;
   onOpenAuth?: () => void;
-  onOpenInstallPwa?: () => void;
   onOpenAbout?: () => void;
   onOpenPrivacy?: () => void;
   onOpenAdmin?: () => void;
 }
 
 const QUICK_SEARCH_TAGS = [
-  { en: "Maggi Noodles", hi: "मैगी नूडल्स" },
+  { en: "Maggi", hi: "मैगी" },
   { en: "Parle-G", hi: "पारले-जी" },
-  { en: "Fortune Oil", hi: "फॉर्च्यून तेल" },
   { en: "Amul Butter", hi: "अमुल बटर" },
+  { en: "Lays", hi: "लेज" },
   { en: "Bournvita", hi: "बोर्नविटा" },
-  { en: "Lays Chips", hi: "लेज चिप्स" },
-  { en: "Kurkure", hi: "कुरकुरे" },
-  { en: "Coca Cola", hi: "कोका कोला" },
-  { en: "Slurrp Farm", hi: "स्लर्प फार्म" },
-  { en: "Aashirvaad Atta", hi: "आशीर्वाद आटा" }
+  { en: "Atta", hi: "आटा" },
+  { en: "Mustard Oil", hi: "सरसों तेल" },
+  { en: "Slurrp Farm", hi: "स्लर्प फार्म" }
 ];
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -66,9 +55,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   language,
   isDark,
   onNavigateCategory,
+  onNavigateTab,
   user,
   onOpenAuth,
-  onOpenInstallPwa,
   onOpenAbout,
   onOpenPrivacy,
   onOpenAdmin,
@@ -79,22 +68,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
       user?.email?.toLowerCase().includes("sadiquehavari") ||
       user?.role === "admin");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isSearching, setIsSearching] = useState(false);
   const [openFoodFactsResults, setOpenFoodFactsResults] = useState<FoodProduct[]>([]);
-  const [isPwaBannerDismissed, setIsPwaBannerDismissed] = useState(() => {
-    return localStorage.getItem("ahariq_pwa_banner_dismissed") === "true";
-  });
-
   const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // "Aaj ka Clean Choice" (Product of the Day)
-  const cleanChoiceOfTheDay = useMemo(() => {
-    return INDIAN_PRODUCTS_DB.find((p) => p.id === "slurrp-farm-millet-noodles") || INDIAN_PRODUCTS_DB[3];
-  }, []);
-
-  // Synchronous Local Matches for immediate feedback
+  // Synchronous Local Matches for immediate responsiveness
   const localMatches = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
@@ -106,16 +87,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       );
     }
 
-    // Comprehensive multi-field search for any search query
     return INDIAN_PRODUCTS_DB.filter((p) => {
       const name = (p.name || "").toLowerCase();
       const hindiName = (p.nameHindi || "").toLowerCase();
       const brand = (p.brand || "").toLowerCase();
       const category = (p.category || "").toLowerCase();
-      const categoryHindi = (p.categoryHindi || "").toLowerCase();
       const barcode = (p.barcode || "").toLowerCase();
-      const summaryEn = (p.summaryEn || "").toLowerCase();
-      const summaryHi = (p.summaryHi || "").toLowerCase();
       const ingredients = (p.ingredientsList || []).join(" ").toLowerCase();
 
       return (
@@ -123,10 +100,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         hindiName.includes(q) ||
         brand.includes(q) ||
         category.includes(q) ||
-        categoryHindi.includes(q) ||
         barcode.includes(q) ||
-        summaryEn.includes(q) ||
-        summaryHi.includes(q) ||
         ingredients.includes(q)
       );
     });
@@ -148,10 +122,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     setIsSearching(true);
     searchDebounceRef.current = setTimeout(async () => {
       try {
-        const offResults = await searchProductsFromOpenFoodFacts(q, 30);
+        const offResults = await searchProductsFromOpenFoodFacts(q, 25);
         setOpenFoodFactsResults(offResults);
         
-        // Track search query telemetry
         trackUserActivity({
           eventType: "SEARCH",
           title: `Searched: "${q}"`,
@@ -163,7 +136,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       } finally {
         setIsSearching(false);
       }
-    }, 450);
+    }, 400);
 
     return () => {
       if (searchDebounceRef.current) {
@@ -172,12 +145,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     };
   }, [searchQuery]);
 
-  // Combined Results (Local DB + Open Food Facts DB with deduplication)
+  // Combined Deduplicated Results
   const allFilteredProducts = useMemo(() => {
     const q = searchQuery.trim();
-    if (!q) {
-      return localMatches;
-    }
+    if (!q) return localMatches;
 
     const combined: FoodProduct[] = [...localMatches];
     const seenBarcodes = new Set(localMatches.map((p) => p.barcode).filter(Boolean));
@@ -187,10 +158,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       const barcodeKey = offItem.barcode;
       const nameKey = (offItem.name || "").toLowerCase().trim();
 
-      if (
-        (!barcodeKey || !seenBarcodes.has(barcodeKey)) &&
-        !seenNames.has(nameKey)
-      ) {
+      if ((!barcodeKey || !seenBarcodes.has(barcodeKey)) && !seenNames.has(nameKey)) {
         if (barcodeKey) seenBarcodes.add(barcodeKey);
         seenNames.add(nameKey);
         combined.push(offItem);
@@ -200,478 +168,331 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     return combined;
   }, [localMatches, openFoodFactsResults, searchQuery]);
 
-  const handleDismissPwaBanner = () => {
-    setIsPwaBannerDismissed(true);
-    localStorage.setItem("ahariq_pwa_banner_dismissed", "true");
-  };
-
   return (
     <div
       id="home-screen-view"
-      className={`min-h-screen pb-24 transition-colors w-full max-w-full overflow-x-hidden ${
-        isDark ? "bg-[#09090B] text-zinc-100" : "bg-[#F8FAFC] text-[#111827]"
+      className={`min-h-screen pb-28 transition-colors w-full max-w-full overflow-x-hidden ${
+        isDark ? "bg-[#090C10] text-zinc-100" : "bg-[#F8FAFC] text-[#0F172A]"
       }`}
     >
-      <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-4 w-full">
-        {/* PWA Install Banner (If not dismissed) */}
-        {!isPwaBannerDismissed && onOpenInstallPwa && (
-          <div
-            id="pwa-home-banner"
-            className={`relative overflow-hidden rounded-2xl p-3 sm:p-3.5 border transition-all flex items-center justify-between gap-3 ${
-              isDark
-                ? "bg-gradient-to-r from-emerald-950/80 via-zinc-900 to-zinc-900 border-emerald-800/60 shadow-lg"
-                : "bg-gradient-to-r from-emerald-50 via-white to-white border-emerald-200 shadow-xs"
-            }`}
-          >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#059669] to-[#10B981] flex items-center justify-center text-white shadow-md shadow-[#10B981]/20 flex-shrink-0">
-                <Smartphone className="w-5 h-5 text-white" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs sm:text-sm font-black text-[#000000] dark:text-white truncate">
-                    {isHindi ? "AharIQ PWA ऐप इनस्टॉल करें" : "Install AharIQ App (PWA)"}
-                  </h4>
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-[#10B981]/20 text-[#059669] dark:text-[#34D399]">
-                    1-Tap
-                  </span>
-                </div>
-                <p className="text-[11px] text-gray-500 dark:text-zinc-400 truncate font-medium">
-                  {isHindi
-                    ? "फास्ट लोडिंग और बिना ब्राउज़र बार के फुल स्क्रीन स्कैनर"
-                    : "Instant access, offline support & full-screen scanner"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <button
-                id="pwa-banner-install-btn"
-                onClick={onOpenInstallPwa}
-                className="px-3 py-1.5 rounded-xl bg-[#10B981] hover:bg-[#059669] text-white font-extrabold text-xs shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>{isHindi ? "इनस्टॉल" : "Install"}</span>
-              </button>
-              <button
-                id="pwa-banner-dismiss-btn"
-                onClick={handleDismissPwaBanner}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
-                title="Dismiss"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Search Bar with Live Open Food Facts Database Search */}
-        <div className="relative">
+      <div className="max-w-2xl mx-auto px-4 sm:px-5 py-4 sm:py-5 space-y-5 w-full">
+        {/* 1. Sleek Search Input with Direct Scan Button */}
+        <div className="space-y-2.5">
           <div className="relative flex items-center">
             {isSearching ? (
-              <Loader2 className="w-5 h-5 absolute left-3.5 text-[#10B981] animate-spin pointer-events-none" />
+              <Loader2 className="w-5 h-5 absolute left-4 text-[#10B981] animate-spin pointer-events-none" />
             ) : (
-              <Search className="w-5 h-5 absolute left-3.5 text-gray-400 pointer-events-none" />
+              <Search className="w-5 h-5 absolute left-4 text-slate-400 pointer-events-none" />
             )}
             <input
               id="home-product-search-input"
               type="text"
               placeholder={
                 isHindi
-                  ? "मैगी, पारले-जी, ब्रिटानिया, अमुल, या कोई भी भारतीय ब्रांड खोजें..."
-                  : "Search Maggi, Parle-G, Britannia, Amul, or any food brand..."
+                  ? "मैगी, पेप्सी, बिस्कुट, तेल या कोई भी खाना खोजें..."
+                  : "Search Maggi, Pepsi, biscuits, oil, milk..."
               }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-11 pr-10 py-3 rounded-2xl text-xs sm:text-sm border transition-all shadow-xs ${
+              className={`w-full pl-12 pr-20 py-3.5 rounded-2xl text-sm border transition-all ${
                 isDark
-                  ? "bg-[#18181B] border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:border-[#10B981]"
-                  : "bg-white border-gray-200 text-[#111827] placeholder:text-gray-400 focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/10"
+                  ? "bg-[#161C24] border-slate-800 text-zinc-100 placeholder:text-slate-500 focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20 shadow-xs"
+                  : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#10B981] focus:ring-3 focus:ring-[#10B981]/15 shadow-xs"
               }`}
             />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 w-6 h-6 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-100 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Quick Search Tag Suggestions */}
-          {!searchQuery && (
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 px-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex-shrink-0">
-                {isHindi ? "ट्रेंडिंग:" : "Popular:"}
-              </span>
-              {QUICK_SEARCH_TAGS.map((tag, idx) => (
+            <div className="absolute right-2 flex items-center gap-1">
+              {searchQuery && (
                 <button
-                  key={idx}
-                  onClick={() => setSearchQuery(tag.en)}
-                  className={`flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer ${
-                    isDark
-                      ? "bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-400"
-                      : "bg-gray-50 border-gray-200 text-gray-700 hover:border-emerald-400 hover:text-emerald-700"
-                  }`}
+                  onClick={() => setSearchQuery("")}
+                  className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
                 >
-                  {isHindi ? tag.hi : tag.en}
+                  ✕
                 </button>
-              ))}
-            </div>
-          )}
-
-          {/* Live Search Indicator */}
-          {isSearching && (
-            <div className="flex items-center gap-2 mt-2 px-2 text-xs font-bold text-[#059669] dark:text-[#34D399] animate-pulse">
-              <Loader2 className="w-3.5 h-3.5 text-[#10B981] animate-spin" />
-              <span>
-                {isHindi
-                  ? "उत्पाद सामग्री और न्यूट्रिशन डेटा खोज रहे हैं..."
-                  : "Searching product ingredients & nutrition data..."}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* HERO CARD: Deep Emerald Gradient Card with Scan Button */}
-        {!searchQuery && (
-          <div
-            id="hero-scan-card"
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#064E3B] via-[#047857] to-[#10B981] p-5 text-white shadow-xl shadow-[#047857]/20"
-          >
-            <div className="absolute -right-6 -bottom-6 w-44 h-44 rounded-full bg-[#10B981]/30 blur-2xl pointer-events-none" />
-            <div className="absolute right-6 top-6 w-20 h-20 rounded-full border border-white/20 pointer-events-none animate-ping duration-1000" />
-
-            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1.5 flex-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 border border-white/30 text-[11px] font-bold text-white backdrop-blur-sm">
-                  <span className="text-sm leading-none">🌾</span>
-                  <span>{isHindi ? "शुद्धता और स्वास्थ्य ऑडिट" : "Instant Health & Adulteration Audit"}</span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight text-white">
-                  {isHindi ? "खाद्य उत्पाद स्कैन करें" : "Scan Indian Food"}
-                </h1>
-                <p className="text-xs text-emerald-50 max-w-md leading-relaxed font-medium">
-                  {isHindi
-                    ? "पाम ऑयल, मैदा, कृत्रिम रंग (INS), अतिरिक्त चीनी व मिलावट का तुरंत पता लगाएं।"
-                    : "Detect Palm Oil, Refined Maida, INS chemical codes, and find clean Indian alternatives."}
-                </p>
-              </div>
-
+              )}
               <button
-                id="hero-scan-product-btn"
+                id="search-inline-scan-btn"
                 onClick={onOpenScanner}
-                className="group flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-[#09090B] font-extrabold text-xs shadow-md hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                title={isHindi ? "बारकोड स्कैन करें" : "Scan Barcode"}
+                className="w-9 h-9 rounded-xl bg-[#059669] hover:bg-[#047857] text-white flex items-center justify-center shadow-xs transition-transform active:scale-95 cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-full bg-[#10B981] text-white flex items-center justify-center group-hover:rotate-12 transition-transform">
-                  <ScanLine className="w-3.5 h-3.5 animate-pulse" />
-                </div>
-                <span>{isHindi ? "स्कैनर शुरू करें" : "Scan Product"}</span>
+                <ScanLine className="w-4 h-4" />
               </button>
             </div>
           </div>
-        )}
 
-        {/* “Lab Tested: Sabse Shuddh Vikalp (LAB VERIFIED)” */}
-        {!searchQuery && cleanChoiceOfTheDay && (
-          <div
-            id="aaj-ka-clean-choice-card"
-            className={`rounded-2xl p-4 border transition-all ${
-              isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
-                <h3 className="text-xs font-black text-[#059669] dark:text-[#34D399] uppercase tracking-wider">
-                  {isHindi
-                    ? "🔬 लैब जाँचित: सबसे शुद्ध विकल्प (LAB VERIFIED)"
-                    : "🔬 Lab Tested: Sabse Shuddh Vikalp (LAB VERIFIED)"}
-                </h3>
-              </div>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-md font-mono font-bold">
-                LAB VERIFIED
-              </span>
-            </div>
-
-            <div
-              onClick={() => onSelectProduct(cleanChoiceOfTheDay)}
-              className="flex items-center gap-3.5 cursor-pointer group"
-            >
-              <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 dark:bg-zinc-800 flex-shrink-0 border border-gray-200 dark:border-zinc-700">
-                <img
-                  src={cleanChoiceOfTheDay.imageUrl}
-                  alt={cleanChoiceOfTheDay.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 block">
-                  {cleanChoiceOfTheDay.brand}
-                </span>
-                <h4 className="font-bold text-sm text-[#000000] dark:text-white truncate group-hover:text-[#10B981] transition-colors mt-0.5">
-                  {isHindi ? cleanChoiceOfTheDay.nameHindi : cleanChoiceOfTheDay.name}
-                </h4>
-                <p className="text-[11px] text-gray-600 dark:text-zinc-400 line-clamp-1 mt-0.5 font-medium">
-                  {isHindi ? cleanChoiceOfTheDay.summaryHi : cleanChoiceOfTheDay.summaryEn}
-                </p>
-              </div>
-
-              {/* Big Audit Score */}
-              <div className="flex flex-col items-end flex-shrink-0">
-                <div className="w-14 h-14 rounded-2xl bg-[#10B981] text-white flex flex-col items-center justify-center shadow-xs">
-                  <span className="text-base font-black leading-none">{cleanChoiceOfTheDay.healthScore}</span>
-                  <span className="text-[8px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Categories Selector Horizontal Pills */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#000000] dark:text-zinc-200">
-              {isHindi ? "श्रेणियां (Categories)" : "Explore Categories"}
-            </h2>
-            {selectedCategory !== "all" && (
-              <button
-                onClick={() => setSelectedCategory("all")}
-                className="text-xs text-[#10B981] font-bold hover:underline cursor-pointer"
-              >
-                {isHindi ? "सभी देखें" : "View All"}
-              </button>
-            )}
-          </div>
-
-          <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
-            {PRODUCT_CATEGORIES.map((cat) => {
-              const isSelected = selectedCategory === cat.id;
+          {/* Quick Category Chips */}
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {PRODUCT_CATEGORIES.slice(0, 7).map((cat) => {
+              const isSelected = selectedCategory === cat.id && !searchQuery;
               return (
                 <button
                   key={cat.id}
                   id={`cat-pill-${cat.id}`}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory(cat.id);
+                  }}
+                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                     isSelected
-                      ? "bg-[#09090B] text-white border-[#09090B] dark:bg-[#10B981] dark:border-[#10B981] shadow-sm"
+                      ? "bg-[#059669] text-white border-[#059669] shadow-2xs font-bold"
                       : isDark
-                      ? "bg-[#18181B] border-zinc-800 text-zinc-300 hover:bg-zinc-800"
-                      : "bg-white border-gray-200 text-[#111827] hover:bg-gray-50"
+                      ? "bg-[#161C24] border-slate-800 text-slate-300 hover:bg-slate-800"
+                      : "bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50 shadow-2xs"
                   }`}
                 >
-                  <span>{isHindi ? cat.nameHi : cat.nameEn}</span>
+                  {isHindi ? cat.nameHi : cat.nameEn}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Recent Scans (Shown when not searching) */}
-        {!searchQuery && recentScans.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#000000] dark:text-zinc-200 flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#10B981]" />
-                <span>{isHindi ? "हालिया स्कैन (Recent Scans)" : "Recently Scanned"}</span>
-              </h2>
-              <span className="text-xs text-gray-500 dark:text-zinc-400 font-bold">
-                {recentScans.length} {isHindi ? "ऑडिट" : "Audited"}
-              </span>
-            </div>
+        {/* 2. Prominent Quick Scan Hero Card (ALWAYS VISIBLE on Home) */}
+        {!searchQuery && (
+          <div
+            id="hero-scan-card"
+            className={`rounded-3xl p-5 sm:p-6 border transition-all relative overflow-hidden ${
+              isDark
+                ? "bg-gradient-to-br from-[#161C24] to-[#12171F] border-slate-800"
+                : "bg-gradient-to-br from-emerald-50/60 via-white to-emerald-50/30 border-emerald-200/80 shadow-xs"
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-700/20">
+                <ScanLine className="w-7 h-7 animate-pulse" />
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {recentScans.slice(0, 4).map((product) => (
-                <div
-                  key={product.id + (product.scannedAt || "")}
-                  onClick={() => onSelectProduct(product)}
-                  className={`p-4 rounded-2xl border flex items-center gap-3.5 cursor-pointer hover:border-[#10B981]/60 transition-all ${
-                    isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
-                  }`}
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-sm text-[#000000] dark:text-zinc-100 truncate">
-                      {isHindi ? product.nameHindi : product.name}
-                    </h4>
-                    <p className="text-[11px] text-gray-500 font-medium">{product.brand}</p>
-                    <span
-                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${
-                        product.verdictType === "green"
-                          ? "bg-emerald-50 text-[#059669] dark:bg-emerald-950/60 dark:text-[#34D399] border border-emerald-200/80 dark:border-emerald-800/60"
-                          : product.verdictType === "yellow"
-                          ? "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60"
-                          : "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-200/80 dark:border-red-800/60"
-                      }`}
-                    >
-                      {product.verdict}
-                    </span>
-                  </div>
-                  <div
-                    className={`w-13 h-13 rounded-2xl flex flex-col items-center justify-center font-black text-white flex-shrink-0 shadow-xs ${
-                      product.healthScore >= 70
-                        ? "bg-[#10B981]"
-                        : product.healthScore >= 40
-                        ? "bg-amber-500"
-                        : "bg-red-600"
-                    }`}
-                  >
-                    <span className="text-sm font-black leading-none">{product.healthScore}</span>
-                    <span className="text-[7px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
-                  </div>
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {isHindi ? "किराना व पैकेट बारकोड स्कैन करें" : "Scan Any Packaged Food"}
+                  </h2>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-[#059669] dark:text-[#34D399]">
+                    {isHindi ? "लाइव स्कैनर" : "Live Scanner"}
+                  </span>
                 </div>
-              ))}
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-md">
+                  {isHindi
+                    ? "पाम ऑयल, छिपी चीनी, हानिकारक प्रिजर्वेटिव्स और स्वास्थ्य स्कोर 0-100 तुरंत जांचें।"
+                    : "Instantly detect palm oil, hidden sugars, harmful additives, and find clean Indian alternatives."}
+                </p>
+
+                <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                  <button
+                    id="hero-scan-product-btn"
+                    onClick={onOpenScanner}
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-md shadow-emerald-900/15 hover:scale-[1.02] active:scale-98 transition-all cursor-pointer"
+                  >
+                    <ScanLine className="w-4 h-4" />
+                    <span>{isHindi ? "कैमरा खोलें और स्कैन करें" : "Open Camera & Scan"}</span>
+                  </button>
+
+                  {onNavigateTab && (
+                    <button
+                      id="hero-gym-iq-btn"
+                      onClick={() => onNavigateTab("gym")}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-[#059669] dark:text-[#34D399] border border-emerald-500/30 font-bold text-sm hover:scale-[1.02] active:scale-98 transition-all cursor-pointer"
+                    >
+                      <Dumbbell className="w-4 h-4" />
+                      <span>{isHindi ? "Gym IQ (तुलना)" : "Gym IQ (Compare)"}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Product Results List (Local + Open Food Facts Live Database) */}
+        {/* 3. User Recent Scans Feed (Shown when user has scanned products) */}
+        {!searchQuery && selectedCategory === "all" && recentScans.length > 0 && (
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#10B981]" />
+                <span>{isHindi ? "हाल ही में स्कैन किए गए उत्पाद" : "Recently Scanned by You"}</span>
+              </h2>
+              <span className="text-xs text-slate-400 font-semibold">
+                {recentScans.length} {isHindi ? "आइटम" : "Items"}
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {recentScans.slice(0, 5).map((product, idx) => {
+                const isGood = product.healthScore >= 70;
+                const isMed = product.healthScore >= 40 && product.healthScore < 70;
+
+                return (
+                  <div
+                    key={(product.id || product.barcode) + idx}
+                    onClick={() => onSelectProduct(product)}
+                    className={`p-3.5 rounded-2xl border flex items-center gap-3.5 cursor-pointer hover:border-[#10B981]/50 transition-all ${
+                      isDark
+                        ? "bg-[#161C24] border-slate-800/80 hover:bg-[#1A222C]"
+                        : "bg-white border-slate-200/80 hover:border-emerald-300 shadow-2xs"
+                    }`}
+                  >
+                    <div className="w-13 h-13 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0 border border-slate-200/60 dark:border-slate-700/60">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[11px] font-medium text-slate-400 block truncate">
+                        {product.brand}
+                      </span>
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        {isHindi ? product.nameHindi || product.name : product.name}
+                      </h4>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span
+                          className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                            isGood ? "bg-emerald-500" : isMed ? "bg-amber-500" : "bg-red-500"
+                          }`}
+                        />
+                        <span
+                          className={`text-xs font-semibold ${
+                            isGood
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : isMed
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {isGood
+                            ? isHindi ? "उत्कृष्ट" : "Excellent"
+                            : isMed
+                            ? isHindi ? "मध्यम" : "Moderate"
+                            : isHindi ? "बचने की सलाह" : "Avoid"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Circular Score Badge */}
+                    <div
+                      className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center font-black text-white flex-shrink-0 shadow-2xs ${
+                        isGood ? "bg-[#10B981]" : isMed ? "bg-amber-500" : "bg-red-500"
+                      }`}
+                    >
+                      <span className="text-sm font-black leading-none">{product.healthScore}</span>
+                      <span className="text-[7px] font-bold uppercase tracking-wider opacity-85 mt-0.5">/100</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 4. Products List (Search Results or Curated Everyday Foods) */}
         <div className="space-y-3 pt-1">
           <div className="flex items-center justify-between px-1">
-            <div>
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-[#000000] dark:text-zinc-100">
-                {searchQuery
-                  ? isHindi
-                    ? `खोज परिणाम (${allFilteredProducts.length})`
-                    : `Search Results (${allFilteredProducts.length})`
-                  : isHindi
-                  ? "हाल ही में जाँचे गए प्रोडक्ट (RECENTLY SCANNED)"
-                  : "Haal hi me Janche Gaye Product (RECENTLY SCANNED)"}
-              </h2>
-              {searchQuery && (
-                <p className="text-[11px] text-gray-500 dark:text-zinc-400 font-medium">
-                  {isHindi
-                    ? "ओपन फूड फैक्ट्स (Open Food Facts) व AharIQ लैब डेटाबेस से लाइव परिणाम"
-                    : "Live results from Open Food Facts India/Global & AharIQ Lab"}
-                </p>
-              )}
-            </div>
-            <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-[#059669] dark:bg-emerald-950/60 dark:text-[#34D399] border border-emerald-200/80 dark:border-emerald-800/60 flex items-center gap-1.5 shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
-              <span>Live Database</span>
-            </span>
+            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {searchQuery
+                ? isHindi
+                  ? `खोज परिणाम (${allFilteredProducts.length})`
+                  : `Search Results (${allFilteredProducts.length})`
+                : isHindi
+                ? "लोकप्रिय भारतीय खाद्य पदार्थ"
+                : "Popular Everyday Foods"}
+            </h3>
+            {searchQuery && (
+              <span className="text-[11px] font-medium text-slate-400">
+                {isHindi ? "टैप करके पोषण देखें" : "Tap to inspect"}
+              </span>
+            )}
           </div>
 
-          {/* Empty State / Not Found in Database */}
+          {/* No search results found */}
           {allFilteredProducts.length === 0 && !isSearching && (
             <div
-              id="search-no-results-card"
-              className={`p-6 rounded-3xl border text-center space-y-3 ${
-                isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200"
+              className={`p-6 rounded-2xl border text-center space-y-3 ${
+                isDark ? "bg-[#161C24] border-slate-800" : "bg-white border-slate-200"
               }`}
             >
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center">
-                <Search className="w-6 h-6" />
-              </div>
-              <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-zinc-100">
-                {isHindi
-                  ? `"${searchQuery}" के लिए कोई परिणाम नहीं मिला`
-                  : `No exact matches for "${searchQuery}"`}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-zinc-400 max-w-sm mx-auto">
-                {isHindi
-                  ? "क्या यह उत्पाद आपके पास मौजूद है? बारकोड स्कैन करें या सामग्री लेबल की फोटो खींचें, हमारा AI तुरंत स्वास्थ्य ऑडिट करेगा!"
-                  : "Have this packaged item in hand? Scan its barcode or take a photo of the ingredients table for instant ICMR health audit!"}
+              <Search className="w-7 h-7 text-slate-400 mx-auto" />
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                {isHindi ? `"${searchQuery}" नहीं मिला` : `No foods found for "${searchQuery}"`}
               </p>
               <button
                 onClick={onOpenScanner}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#059669] text-white text-xs font-bold cursor-pointer"
               >
-                <ScanLine className="w-4 h-4" />
-                <span>{isHindi ? "स्कैनर से फोटो लें / बारकोड स्कैन करें" : "Scan Barcode or Label Photo"}</span>
+                {isHindi ? "बारकोड स्कैन करें" : "Scan Barcode"}
               </button>
             </div>
           )}
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Clean 1-Column List View (Airy & Lightweight like Yuka) */}
+          <div className="space-y-2.5">
             {allFilteredProducts.map((product) => {
               const isGreen = product.healthScore >= 70;
               const isYellow = product.healthScore >= 40 && product.healthScore < 70;
-              const isOFF = product.id.startsWith("off_");
 
               return (
                 <div
                   key={product.id}
                   id={`product-card-${product.id}`}
                   onClick={() => onSelectProduct(product)}
-                  className={`p-4 rounded-2xl border cursor-pointer hover:border-[#10B981]/60 transition-all flex items-center gap-3.5 group ${
-                    isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-gray-200 shadow-xs"
+                  className={`p-3.5 rounded-2xl border cursor-pointer hover:border-[#10B981]/60 transition-all flex items-center gap-3.5 group ${
+                    isDark
+                      ? "bg-[#161C24] border-slate-800/80 hover:bg-[#1A222C]"
+                      : "bg-white border-slate-200/80 hover:border-emerald-300 shadow-2xs"
                   }`}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-gray-200 dark:border-zinc-700 relative">
+                  <div className="w-13 h-13 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0 border border-slate-200/60 dark:border-slate-700/60">
                     <img
                       src={product.imageUrl}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-0.5 left-0.5 w-3.5 h-3.5 bg-white rounded border border-gray-300 flex items-center justify-center shadow-xs">
-                      <div
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          product.isVegetarian ? "bg-[#10B981]" : "bg-amber-800"
-                        }`}
-                      />
-                    </div>
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 truncate">
-                        {product.brand}
-                      </span>
-                      {isOFF && (
-                        <span className="text-[8px] font-bold px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex-shrink-0">
-                          OpenFoodFacts
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-sm text-[#000000] dark:text-zinc-100 truncate group-hover:text-[#10B981] transition-colors mt-0.5">
-                      {isHindi ? product.nameHindi : product.name}
-                    </h3>
+                    <span className="text-[11px] font-medium text-slate-400 block truncate">
+                      {product.brand}
+                    </span>
+                    <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate group-hover:text-[#10B981] transition-colors">
+                      {isHindi ? product.nameHindi || product.name : product.name}
+                    </h4>
 
-                    {/* Key hazard warning pills in Exposr style */}
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {product.warnings.slice(0, 2).map((w, idx) => (
-                        <span
-                          key={idx}
-                          className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-200/80 dark:border-red-800/60"
-                        >
-                          {w.titleEn.split(" ")[0]}
-                        </span>
-                      ))}
-                      {product.warnings.length === 0 && (
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-[#059669] dark:bg-emerald-950/60 dark:text-[#34D399] border border-emerald-200/80 dark:border-emerald-800/60">
-                          100% Clean
-                        </span>
-                      )}
+                    {/* Verdict & Traffic Dot */}
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          isGreen ? "bg-[#10B981]" : isYellow ? "bg-amber-500" : "bg-red-500"
+                        }`}
+                      />
+                      <span
+                        className={`text-xs font-semibold ${
+                          isGreen
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : isYellow
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {isGreen
+                          ? isHindi ? "उत्कृष्ट • सुरक्षित" : "Clean • Safe"
+                          : isYellow
+                          ? isHindi ? "मध्यम • सीमित" : "Moderate"
+                          : isHindi ? "हानिकारक • बचें" : "Poor • Avoid"}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Big Health Audit Score */}
-                  <div className="flex flex-col items-end flex-shrink-0">
-                    <div
-                      className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center font-black text-white shadow-xs ${
-                        isGreen
-                          ? "bg-[#10B981]"
-                          : isYellow
-                          ? "bg-amber-500"
-                          : "bg-red-600"
-                      }`}
-                    >
-                      <span className="text-base sm:text-lg font-black leading-none">{product.healthScore}</span>
-                      <span className="text-[8px] font-black uppercase tracking-wider opacity-90 mt-0.5">/100</span>
-                    </div>
+                  {/* Clean Score Pill */}
+                  <div
+                    className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center font-black text-white flex-shrink-0 shadow-2xs ${
+                      isGreen ? "bg-[#10B981]" : isYellow ? "bg-amber-500" : "bg-red-500"
+                    }`}
+                  >
+                    <span className="text-sm font-black leading-none">{product.healthScore}</span>
+                    <span className="text-[7px] font-bold uppercase tracking-wider opacity-85 mt-0.5">/100</span>
                   </div>
                 </div>
               );
@@ -679,50 +500,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
 
-        {/* "Indian Grocery Reality Check" Educational Mini Banner */}
-        {!searchQuery && (
-          <div
-            className={`p-4 rounded-3xl border ${
-              isDark ? "bg-[#18181B] border-zinc-800" : "bg-emerald-50/70 border-emerald-200"
-            }`}
-          >
-            <div className="flex items-center gap-2 text-[#059669] dark:text-[#34D399] font-black text-sm mb-3">
-              <Info className="w-4 h-4 text-[#10B981]" />
-              <span>{isHindi ? "भारतीय किराना हकीकत (Indian Food Reality Check)" : "Indian Grocery Truths"}</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-[#111827] dark:text-zinc-300">
-              <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
-                <strong className="text-amber-800 dark:text-amber-400 block font-bold text-xs">
-                  {isHindi ? "1. '100% आटा' बिस्कुट का सच" : "1. The '100% Atta' Biscuit Myth"}
-                </strong>
-                <p className="text-[11px] mt-1 leading-relaxed text-[#111827] dark:text-zinc-300">
-                  {isHindi
-                    ? "कई ब्रांड्स में 20% आटा और 80% मैदा व पाम ऑयल होता है।"
-                    : "Many 'digestive' biscuits contain up to 55% Maida and Palmolein shortening."}
-                </p>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
-                <strong className="text-amber-800 dark:text-amber-400 block font-bold text-xs">
-                  {isHindi ? "2. रिफाइंड तेल में हेक्सेन सॉल्वेंट" : "2. Hexane in Refined Cooking Oils"}
-                </strong>
-                <p className="text-[11px] mt-1 leading-relaxed text-[#111827] dark:text-zinc-300">
-                  {isHindi
-                    ? "केमिकल रिफाइनिंग से तेल के प्राकृतिक पोषक तत्व नष्ट हो जाते हैं।"
-                    : "Industrial solvent extraction strips natural antioxidants. Prefer cold-pressed Kacchi Ghani."}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* CONTACT SUPPORT FOOTER SECTION */}
+        {/* Support & Legal Links */}
         <ContactSupport
           language={language}
           isDark={isDark}
           onOpenAbout={onOpenAbout}
           onOpenPrivacy={onOpenPrivacy}
           onOpenAdmin={onOpenAdmin}
-          onOpenInstallPwa={onOpenInstallPwa}
           isOwner={isOwner}
         />
       </div>
