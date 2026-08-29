@@ -19,7 +19,6 @@ import {
   Flame,
   Award,
   Zap,
-  Sparkles,
   Search,
   ChevronRight,
   Droplets,
@@ -1059,7 +1058,7 @@ export const GymIQScreen: React.FC<GymIQScreenProps> = ({
               }`}
             >
               <div className="flex items-start gap-2.5">
-                <Sparkles className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p>{isHindi ? activeGuide.keyTakeawayHi : activeGuide.keyTakeawayEn}</p>
               </div>
             </div>

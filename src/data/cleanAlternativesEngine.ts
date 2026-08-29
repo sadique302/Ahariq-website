@@ -6,6 +6,295 @@ import { CleanerAlternative, CategoryAlternativeDoc } from "../types";
  * Every document ID is the exact category_id (e.g., energy_drink, instant_noodles, white_bread, etc.).
  */
 export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDoc> = {
+  // 0.1 MASS GAINER & WEIGHT GAINERS (Commercial Gainers vs Clean Whole Food Gainer / Whey)
+  mass_gainer: {
+    id: "mass_gainer",
+    category_id: "mass_gainer",
+    category_name: "Mass Gainers & Weight Gainers (MuscleBlaze, Serious Mass, BigMuscles)",
+    target_products: [
+      "Mass Gainer",
+      "Weight Gainer",
+      "Super Gainer",
+      "Serious Mass",
+      "Real Mass",
+      "Mega Mass",
+      "Hyper Gainer",
+      "Bulk Gainer",
+      "MuscleBlaze Super Gainer",
+      "Labrada Mass Gainer",
+      "GNC Bulk 1340",
+      "Dymatize Super Mass",
+      "BigMuscles Real Mass",
+      "Gainer XXL"
+    ],
+    alternatives: [
+      {
+        id: "alt_clean_whey_oats_gainer",
+        name: "Clean Whey + Rolled Oats Gainer Shake",
+        brand: "DIY Clean Whole Food Recipe",
+        score: 97,
+        price: "₹65 / shake",
+        priceEst: "₹60-75",
+        benefit: "45g Clean Whey Protein, 0% Added Maltodextrin, Zero Refined Sugar",
+        benefitHi: "45g शुद्ध व्हे प्रोटीन, 0% माल्टोडेक्सट्रिन, शून्य रिफाइंड चीनी",
+        reasonEn: "Blend 1 scoop Pure Whey + 50g Rolled Oats + 1 Banana + 2 tbsp Natural Peanut Butter + 300ml Milk. Gives 700 clean calories, 45g bioavailable protein with zero cheap filler sugar.",
+        reasonHi: "1 स्कूप शुद्ध व्हे + 50g रोल्ड ओट्स + 1 केला + 2 चम्मच पीनट बटर + 300ml दूध। 700 शुद्ध कैलोरी और 45g प्रोटीन बिना पेट पर चर्बी जमा किए।",
+        tags: ["45g Clean Protein", "0% Maltodextrin", "No Sugar Spike"]
+      },
+      {
+        id: "alt_mb_biozyme_whey",
+        name: "MuscleBlaze Biozyme Performance Whey",
+        brand: "MuscleBlaze",
+        score: 92,
+        price: "₹2,299 / kg",
+        priceEst: "₹2,299",
+        benefit: "25g Pure Protein / Scoop, 50% Higher Absorption, 0g Sugar",
+        benefitHi: "25g शुद्ध प्रोटीन / स्कूप, 50% बेहतर अवशोषण, 0g चीनी",
+        reasonEn: "Clinically tested enzyme formulation with 25g pure whey protein per scoop, replacing high-sugar maltodextrin powders.",
+        reasonHi: "भारतीय पाचन तंत्र के अनुसार 50% बेहतर प्रोटीन अवशोषण। माल्टोडेक्सट्रिन और अतिरिक्त चीनी से पूरी तरह मुक्त।",
+        tags: ["25g Pure Protein", "Enzyme Formula", "Zero Added Sugar"]
+      },
+      {
+        id: "alt_on_gold_whey",
+        name: "Optimum Nutrition (ON) Gold Standard 100% Whey",
+        brand: "Optimum Nutrition",
+        score: 95,
+        price: "₹3,199 / kg",
+        priceEst: "₹3,199",
+        benefit: "24g Whey Isolate Blend, 5.5g Natural BCAAs, 1g Sugar",
+        benefitHi: "24g व्हे आइसोलेट ब्लेंड, 5.5g प्राकृतिक BCAA, केवल 1g शुगर",
+        reasonEn: "World's most awarded 100% Whey Protein with primary whey isolate. Builds pure lean muscle instead of belly fat.",
+        reasonHi: "दुनिया का सबसे भरोसेमंद व्हे प्रोटीन। सिर्फ पेट की चर्बी बढ़ाने की जगह शुद्ध लीन मसल बनाता है।",
+        tags: ["Gold Standard", "24g Protein", "Primary Isolate"]
+      }
+    ]
+  },
+
+  // 0.2 WHEY PROTEIN & PROTEIN POWDERS
+  whey_protein: {
+    id: "whey_protein",
+    category_id: "whey_protein",
+    category_name: "Whey Protein & Protein Powders",
+    target_products: [
+      "Whey Protein",
+      "Whey Isolate",
+      "Protein Powder",
+      "Isolate Protein",
+      "Concentrate Whey",
+      "Hydrolyzed Whey",
+      "MyProtein Whey",
+      "MuscleBlaze Whey",
+      "ON Gold Standard",
+      "As-It-Is Whey",
+      "Avvatar Whey",
+      "Dymatize ISO100",
+      "The Whole Truth Whey",
+      "Nakpro Whey"
+    ],
+    alternatives: [
+      {
+        id: "alt_myprotein_isolate",
+        name: "MyProtein Impact Whey Isolate",
+        brand: "MyProtein",
+        score: 98,
+        price: "₹2,899 / kg",
+        priceEst: "₹2,899",
+        benefit: "90% Pure Protein, 0.6g Carb, Ultra-Low Lactose, Zero Fillers",
+        benefitHi: "90% शुद्ध प्रोटीन, सिर्फ 0.6g कार्ब, शून्य मिलावट",
+        reasonEn: "Labdoor Grade A certified 90% pure protein isolate with exceptional amino acid profile and almost zero lactose.",
+        reasonHi: "लैबडोर द्वारा ग्रेड A प्रमाणित 90% शुद्ध व्हे आइसोलेट। लैक्टोज़ और फैट न के बराबर।",
+        tags: ["90% Pure Protein", "Labdoor Grade A", "Ultra Low Carb"]
+      },
+      {
+        id: "alt_whole_truth_whey",
+        name: "The Whole Truth 100% Clean Whey Isolate",
+        brand: "The Whole Truth",
+        score: 96,
+        price: "₹2,999 / kg",
+        priceEst: "₹2,999",
+        benefit: "0 Artificial Sweeteners / Sucralose, 100% Clean Label Transparency",
+        benefitHi: "शून्य सुक्रालोज़/आर्टिफिशियल स्वीटनर, 100% पारदर्शी इंग्रीडिएंट्स",
+        reasonEn: "Completely free from sucralose, artificial gums, and synthetic flavorings. Pure unadulterated grass-fed whey.",
+        reasonHi: "बिना किसी सुक्रालोज़, गम या सिंथेटिक प्रिजर्वेटिव्स का शुद्ध व्हे प्रोटीन।",
+        tags: ["0 Sucralose", "Clean Label", "Pure Whey"]
+      },
+      {
+        id: "alt_asitis_raw_whey",
+        name: "As-It-Is Nutrition 100% Pure Raw Whey 80%",
+        brand: "As-It-Is Nutrition",
+        score: 94,
+        price: "₹1,699 / kg",
+        priceEst: "₹1,699",
+        benefit: "Raw Unflavored Whey, 24g Protein, Zero Added Flavors or Fillers",
+        benefitHi: "रॉ अनफ्लेवर्ड व्हे, 24g प्रोटीन, शून्य कृत्रिम फ्लेवर",
+        reasonEn: "Budget-friendly 100% raw unflavored whey concentrate without any processing aids, colors, or artificial sweeteners.",
+        reasonHi: "पॉकेट-फ्रेंडली शुद्ध रॉ व्हे प्रोटीन, बिना किसी रंग, स्वाद या प्रिजर्वेटिव के।",
+        tags: ["Raw Unflavored", "Budget Friendly", "Zero Fillers"]
+      }
+    ]
+  },
+
+  // 0.3 PEANUT BUTTER & NUT BUTTERS
+  peanut_butter: {
+    id: "peanut_butter",
+    category_id: "peanut_butter",
+    category_name: "Peanut Butter & Nut Spreads",
+    target_products: [
+      "Peanut Butter",
+      "Peanut Spread",
+      "Pintola",
+      "Sundrop PB",
+      "FunFoods PB",
+      "Skippy PB",
+      "Alpino PB",
+      "MyFitness PB",
+      "Nut Butter",
+      "Almond Butter"
+    ],
+    alternatives: [
+      {
+        id: "alt_pintola_natural_pb",
+        name: "Pintola All-Natural Peanut Butter (100% Peanuts)",
+        brand: "Pintola",
+        score: 97,
+        price: "₹399 / kg",
+        priceEst: "₹380-420",
+        benefit: "100% Roasted Peanuts, 30g Protein, 0% Palm Oil, 0% Added Sugar",
+        benefitHi: "100% भुनी मूंगफली, 30g प्रोटीन, 0% पाम तेल, 0% अतिरिक्त चीनी",
+        reasonEn: "Only 1 single ingredient: 100% slow-roasted peanuts. Zero hydrogenated palm oil, zero stabilizers, and 30g pure plant protein.",
+        reasonHi: "केवल 1 सामग्री: 100% भुनी मूंगफली। शून्य पाम ऑयल और शून्य रिफाइंड चीनी।",
+        tags: ["100% Peanuts", "0% Palm Oil", "30g Protein"]
+      },
+      {
+        id: "alt_whole_truth_dark_pb",
+        name: "The Whole Truth Dark Chocolate Peanut Butter",
+        brand: "The Whole Truth",
+        score: 95,
+        price: "₹450 / 925g",
+        priceEst: "₹450",
+        benefit: "Pure Peanuts & Real Cocoa, No Palm Fat, Jaggery/Dates Sweetened",
+        benefitHi: "शुद्ध मूंगफली व कोको, 0% पाम फैट, बिना रिफाइंड चीनी",
+        reasonEn: "Crafted with bold peanuts, pure cocoa, and dates. Completely free of hydrogenated vegetable fats.",
+        reasonHi: "असली कोको और शुद्ध मूंगफली से निर्मित, पाम फैट और केमिकल प्रिजर्वेटिव्स से मुक्त।",
+        tags: ["Real Cocoa", "No Hydrogenated Fat", "Clean PB"]
+      },
+      {
+        id: "alt_alpino_high_protein_pb",
+        name: "Alpino High Protein Super Peanut Butter",
+        brand: "Alpino",
+        score: 93,
+        price: "₹499 / kg",
+        priceEst: "₹499",
+        benefit: "30g Protein with Whey Isolate Infusion, Zero Trans Fat",
+        benefitHi: "व्हे आइसोलेट युक्त 30g प्रोटीन, शून्य ट्रांस फैट",
+        reasonEn: "Slow roasted peanuts infused with premium whey protein isolate for higher protein per spoon without palm oil.",
+        reasonHi: "व्हे प्रोटीन आइसोलेट से युक्त पौष्टिक पीनट बटर, पाम ऑयल मुक्त।",
+        tags: ["Whey Infused", "30g Protein", "High Energy"]
+      }
+    ]
+  },
+
+  // 0.4 CREATINE & PERFORMANCE SUPPLEMENTS
+  creatine: {
+    id: "creatine",
+    category_id: "creatine",
+    category_name: "Creatine Monohydrate & Performance Enhancers",
+    target_products: [
+      "Creatine",
+      "Creatine Monohydrate",
+      "Creapure",
+      "Micronized Creatine",
+      "MuscleBlaze Creatine",
+      "ON Creatine",
+      "Wellcore Creatine"
+    ],
+    alternatives: [
+      {
+        id: "alt_creapure_creatine",
+        name: "Creapure 100% Pure German Creatine Monohydrate",
+        brand: "Creapure / Verified Clean Lab",
+        score: 99,
+        price: "₹799 / 250g",
+        priceEst: "₹799",
+        benefit: "99.99% Ultra-Pure German Creapure, 0 DCD, 0 Heavy Metals",
+        benefitHi: "99.99% शुद्ध जर्मन क्रियाप्योर, शून्य हैवी मेटल्स",
+        reasonEn: "The worldwide gold standard of creatine manufactured in Germany. Increases ATP cellular energy and lean muscle power.",
+        reasonHi: "जर्मनी में निर्मित 99.99% शुद्ध क्रियाप्योर क्रिएटिन। ताकत और मसल रिकवरी के लिए सर्वश्रेष्ठ।",
+        tags: ["99.99% Pure", "German Creapure", "ATP Power"]
+      },
+      {
+        id: "alt_wellcore_creatine",
+        name: "Wellcore Pure Micronized Creatine Monohydrate",
+        brand: "Wellcore",
+        score: 96,
+        price: "₹649 / 250g",
+        priceEst: "₹649",
+        benefit: "Ultra-Micronized 200 Mesh, Instant Solubility, Zero Sugar",
+        benefitHi: "अल्ट्रा-माइक्रोनाइज्ड 200 मेश, तुरंत घुलनशील, 0g शुगर",
+        reasonEn: "Ultra-fine micronized creatine powder with superior mixability and zero bloating fillers.",
+        reasonHi: "पानी में तुरंत घुलने वाला माइक्रोनाइज्ड क्रिएटिन, बिना किसी हानिकारक फिलर के।",
+        tags: ["Micronized 200 Mesh", "Fast Dissolving", "Zero Fillers"]
+      }
+    ]
+  },
+
+  // 0.5 PROTEIN BARS & GYM SNACKS
+  protein_bar: {
+    id: "protein_bar",
+    category_id: "protein_bar",
+    category_name: "Protein Bars & Fitness Snacks",
+    target_products: [
+      "Protein Bar",
+      "Whey Bar",
+      "Energy Bar",
+      "Yoga Bar Protein",
+      "RiteBite Max Protein",
+      "MuscleBlaze Bar",
+      "The Whole Truth Bar"
+    ],
+    alternatives: [
+      {
+        id: "alt_whole_truth_bar",
+        name: "The Whole Truth 100% Clean Protein Bar",
+        brand: "The Whole Truth",
+        score: 97,
+        price: "₹120 / bar",
+        priceEst: "₹120",
+        benefit: "100% Whole Food Ingredients, 0 Sugar Alcohols/Maltitol, 15g Protein",
+        benefitHi: "100% असली सामग्री (खजूर, बादाम, व्हे), शून्य माल्टिटोल, 15g प्रोटीन",
+        reasonEn: "Contains only 4-5 real ingredients: Whey isolate, almonds, raw dates, and cocoa. 0 Maltitol, 0 Palm Oil.",
+        reasonHi: "केवल 4-5 शुद्ध सामग्री: व्हे प्रोटीन, बादाम, खजूर और कोको। पेट खराब करने वाले माल्टिटोल और पाम ऑयल से मुक्त।",
+        tags: ["100% Whole Food", "0 Maltitol", "No Palm Oil"]
+      },
+      {
+        id: "alt_yoga_bar_20g",
+        name: "Yoga Bar 20g Whey Protein Bar",
+        brand: "Yoga Bar",
+        score: 91,
+        price: "₹110 / bar",
+        priceEst: "₹110",
+        benefit: "20g Whey Protein, Prebiotic Chicory Fiber, Almond Butter",
+        benefitHi: "20g व्हे प्रोटीन, प्रीबायोटिक फाइबर, बादाम बटर",
+        reasonEn: "High protein bar with 20g whey & nut protein and prebiotic fiber for steady gut digestion.",
+        reasonHi: "20g व्हे प्रोटीन और पाचक फाइबर से भरपूर पौष्टिक बार।",
+        tags: ["20g Protein", "Prebiotic Fiber", "No Artificial Sweeteners"]
+      },
+      {
+        id: "alt_amul_protein_lassi_snack",
+        name: "Amul High Protein Lassi / Buttermilk",
+        brand: "Amul",
+        score: 98,
+        price: "₹25 / 200ml",
+        priceEst: "₹25",
+        benefit: "15g Natural Dairy Whey Protein, Active Probiotics, ₹25 Budget",
+        benefitHi: "15g शुद्ध डेयरी व्हे प्रोटीन, प्रोबायोटिक्स, मात्र ₹25 में",
+        reasonEn: "Pocket-friendly 15g dairy protein snack with live gut probiotics and zero palm fat or synthetic sweeteners.",
+        reasonHi: "मात्र ₹25 में 15g शुद्ध प्रोटीन और प्रोबायोटिक्स, किसी भी प्रोसेस्ड बार से बेहतर।",
+        tags: ["15g Protein", "Probiotic Drink", "₹25 Budget Friendly"]
+      }
+    ]
+  },
+
   // 1. ENERGY DRINK / HEALTH MALT DRINKS (Bournvita, Horlicks, Boost, Complan)
   energy_drink: {
     id: "energy_drink",
@@ -564,49 +853,108 @@ export function detectProductCategoryId(input: {
     .join(" ")
     .toLowerCase();
 
-  // 1. Cold Drinks, Colas, Sodas & Carbonated Beverages (Coke, Pepsi, Fanta, Sprite, Thums Up, etc.) - Priority over general water!
+  // 0.1 MASS GAINERS (High priority check before general protein/whey)
   if (
-    text.includes("pepsi") ||
-    text.includes("coca-cola") ||
-    text.includes("coke") ||
-    text.includes("fanta") ||
-    text.includes("sprite") ||
-    text.includes("thums up") ||
-    text.includes("mirinda") ||
-    text.includes("mountain dew") ||
-    text.includes("7up") ||
-    text.includes("limca") ||
-    text.includes("sting") ||
-    text.includes("cold drink") ||
-    text.includes("soda") ||
-    text.includes("cola") ||
-    text.includes("carbonated beverage") ||
-    text.includes("carbonated drink") ||
-    text.includes("soft drink") ||
-    text.includes("aerated") ||
-    text.includes("fizzy")
+    text.includes("mass gainer") ||
+    text.includes("weight gainer") ||
+    text.includes("super gainer") ||
+    text.includes("serious mass") ||
+    text.includes("real mass") ||
+    text.includes("mega mass") ||
+    text.includes("hyper gainer") ||
+    text.includes("bulk 1340") ||
+    text.includes("gainer xxl") ||
+    (text.includes("gainer") && !text.includes("whey isolate"))
   ) {
-    return "cold_drink";
+    return "mass_gainer";
   }
 
-  // 2. Energy Drink & Malt Drinks (Bournvita, Horlicks, Boost, Red Bull, etc.)
+  // 0.2 PEANUT BUTTER & NUT BUTTERS (High priority before general oils/spreads)
   if (
-    text.includes("bournvita") ||
-    text.includes("horlicks") ||
-    text.includes("boost") ||
-    text.includes("complan") ||
-    text.includes("pediasure") ||
-    text.includes("milo") ||
-    text.includes("malt drink") ||
-    text.includes("energy drink") ||
-    text.includes("red bull") ||
-    text.includes("monster energy") ||
-    text.includes("sting energy")
+    text.includes("peanut butter") ||
+    text.includes("peanut spread") ||
+    text.includes("pintola") ||
+    text.includes("alpino") ||
+    text.includes("myfitness") ||
+    text.includes("nut butter") ||
+    text.includes("almond butter")
   ) {
-    return "energy_drink";
+    return "peanut_butter";
   }
 
-  // 3. Instant Noodles & Pasta (Maggi, Yippee, Top Ramen, etc.)
+  // 0.3 CREATINE SUPPLEMENTS
+  if (
+    text.includes("creatine") ||
+    text.includes("creapure") ||
+    text.includes("creamp") ||
+    text.includes("creatine monohydrate")
+  ) {
+    return "creatine";
+  }
+
+  // 0.4 PROTEIN BARS & GYM SNACKS
+  if (
+    text.includes("protein bar") ||
+    text.includes("whey bar") ||
+    text.includes("energy bar") ||
+    text.includes("max protein") ||
+    text.includes("ritebite") ||
+    text.includes("yoga bar")
+  ) {
+    return "protein_bar";
+  }
+
+  // 0.5 WHEY PROTEIN & PROTEIN ISOLATE / CONCENTRATE POWDER
+  if (
+    text.includes("whey") ||
+    text.includes("isolate protein") ||
+    text.includes("protein powder") ||
+    text.includes("concentrate whey") ||
+    text.includes("biozyme") ||
+    text.includes("hydrolyzed whey") ||
+    text.includes("myprotein") ||
+    text.includes("dymatize") ||
+    text.includes("avvatar") ||
+    text.includes("as-it-is") ||
+    text.includes("asitis") ||
+    text.includes("nakpro")
+  ) {
+    return "whey_protein";
+  }
+
+  // 1. SAVORY CRISPY SNACKS & CHIPS & NAMKEEN (Kurkure, Lays, Bingo, Uncle Chipps, Bhujia, Puffs, Namkeen)
+  // HIGH PRIORITY: Must be matched before Cold Drinks because snacks like Kurkure/Lays are manufactured by PepsiCo!
+  const isSavoryCrispySnack =
+    text.includes("kurkure") ||
+    text.includes("lays") ||
+    text.includes("lay's") ||
+    text.includes("chips") ||
+    text.includes("crisps") ||
+    text.includes("crispy") ||
+    text.includes("bingo") ||
+    text.includes("uncle chipps") ||
+    text.includes("pringles") ||
+    text.includes("doritos") ||
+    text.includes("namkeen") ||
+    text.includes("bhujia") ||
+    text.includes("puffcorn") ||
+    text.includes("puff") ||
+    text.includes("puffed") ||
+    text.includes("nachos") ||
+    text.includes("sev") ||
+    text.includes("chivda") ||
+    text.includes("extruded") ||
+    (input.category && (
+      input.category.toLowerCase().includes("snack") ||
+      input.category.toLowerCase().includes("namkeen") ||
+      input.category.toLowerCase().includes("chip")
+    ));
+
+  if (isSavoryCrispySnack) {
+    return "potato_chips";
+  }
+
+  // 2. Instant Noodles & Pasta (Maggi, Yippee, Top Ramen, etc.)
   if (
     text.includes("maggi") ||
     text.includes("yippee") ||
@@ -622,25 +970,7 @@ export function detectProductCategoryId(input: {
     return "instant_noodles";
   }
 
-  // 4. Potato Chips & Crisps (Lays, Kurkure, Namkeen, etc.)
-  if (
-    text.includes("lays") ||
-    text.includes("kurkure") ||
-    text.includes("chips") ||
-    text.includes("crisps") ||
-    text.includes("bingo") ||
-    text.includes("uncle chipps") ||
-    text.includes("pringles") ||
-    text.includes("doritos") ||
-    text.includes("namkeen") ||
-    text.includes("bhujia") ||
-    text.includes("puffcorn") ||
-    text.includes("nachos")
-  ) {
-    return "potato_chips";
-  }
-
-  // 5. Biscuits & Cookies (Parle-G, Oreo, Good Day, etc.)
+  // 3. Biscuits & Cookies (Parle-G, Oreo, Good Day, etc.)
   if (
     text.includes("parle-g") ||
     text.includes("parleg") ||
@@ -660,6 +990,50 @@ export function detectProductCategoryId(input: {
     text.includes("cracker")
   ) {
     return "biscuit_cookie";
+  }
+
+  // 4. Cold Drinks, Colas, Sodas & Carbonated Beverages (Coke, Pepsi, Fanta, Sprite, Thums Up, etc.)
+  if (
+    (text.includes("pepsi") && !text.includes("pepsico")) ||
+    text.includes("pepsi can") ||
+    text.includes("pepsi bottle") ||
+    text.includes("pepsi cola") ||
+    text.includes("coca-cola") ||
+    text.includes("coke") ||
+    text.includes("fanta") ||
+    text.includes("sprite") ||
+    text.includes("thums up") ||
+    text.includes("mirinda") ||
+    text.includes("mountain dew") ||
+    text.includes("7up") ||
+    text.includes("limca") ||
+    text.includes("sting energy") ||
+    text.includes("cold drink") ||
+    text.includes("soda") ||
+    text.includes("cola") ||
+    text.includes("carbonated beverage") ||
+    text.includes("carbonated drink") ||
+    text.includes("soft drink") ||
+    text.includes("aerated") ||
+    text.includes("fizzy")
+  ) {
+    return "cold_drink";
+  }
+
+  // 5. Energy Drink & Malt Drinks (Bournvita, Horlicks, Boost, Red Bull, etc.)
+  if (
+    text.includes("bournvita") ||
+    text.includes("horlicks") ||
+    text.includes("boost") ||
+    text.includes("complan") ||
+    text.includes("pediasure") ||
+    text.includes("milo") ||
+    text.includes("malt drink") ||
+    text.includes("energy drink") ||
+    text.includes("red bull") ||
+    text.includes("monster energy")
+  ) {
+    return "energy_drink";
   }
 
   // 6. White Bread, Pav & Bakery Buns (White Bread, Modern, Harvest Gold)
@@ -827,9 +1201,56 @@ export function getSmartCleanerAlternatives(input: {
     return doc.alternatives;
   }
 
+  // If fitness / gym / protein related, return fitness category alternatives
+  const text = `${input.name || ""} ${input.brand || ""} ${input.category || ""} ${input.ingredientsText || ""}`.toLowerCase();
+  if (
+    text.includes("gainer") ||
+    text.includes("mass") ||
+    text.includes("weight gain") ||
+    text.includes("calorie")
+  ) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.mass_gainer?.alternatives || [];
+  }
+  if (
+    text.includes("protein") ||
+    text.includes("whey") ||
+    text.includes("isolate") ||
+    text.includes("bcaa") ||
+    text.includes("workout") ||
+    text.includes("gym") ||
+    text.includes("fitness") ||
+    text.includes("supplement")
+  ) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.whey_protein?.alternatives || [];
+  }
+  if (text.includes("peanut") || text.includes("butter")) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.peanut_butter?.alternatives || [];
+  }
+  if (text.includes("creatine")) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.creatine?.alternatives || [];
+  }
+
+  // If savory snack, chips, namkeen, or Kurkure, return potato_chips / roasted snack alternatives
+  if (
+    text.includes("kurkure") ||
+    text.includes("chip") ||
+    text.includes("snack") ||
+    text.includes("namkeen") ||
+    text.includes("bhujia") ||
+    text.includes("crisp") ||
+    text.includes("puff")
+  ) {
+    return DEFAULT_CATEGORY_ALTERNATIVES.potato_chips?.alternatives || [];
+  }
+
   // If beverage or drink-like, return cold drink clean alternatives
-  const text = `${input.name || ""} ${input.brand || ""} ${input.category || ""}`.toLowerCase();
-  if (text.includes("drink") || text.includes("juice") || text.includes("beverage") || text.includes("cola") || text.includes("soda")) {
+  if (
+    (text.includes("drink") && !text.includes("food")) ||
+    text.includes("juice") ||
+    text.includes("beverage") ||
+    text.includes("cola") ||
+    text.includes("soda")
+  ) {
     return DEFAULT_CATEGORY_ALTERNATIVES.cold_drink?.alternatives || UNIVERSAL_HEALTHY_FALLBACKS;
   }
 

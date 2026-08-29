@@ -14,8 +14,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Dominated by 82% refined wheat flour (maida), ultra-processed palm oil, and high sodium (over 52% of daily limit per pack). Contains INS 635 flavour enhancers.",
-    summaryHi: "82% मैदा, रिफाइंड पाम ऑयल और अत्यधिक सोडियम (दैनिक सीमा का 52%) से भरपूर। इसमें INS 635 फ्लेवर एन्हांसर भी शामिल है।",
+    summaryEn: "As declared on package label: Contains refined wheat flour (maida), palm oil (15.7% total fat), and 1250mg sodium per 100g (~52% of daily limit per pack) along with INS 635 flavor enhancer.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें मुख्य रूप से मैदा, पाम ऑयल (15.7% फैट) और 1250mg सोडियम प्रति 100g दर्ज है। ICMR दिशानिर्देशों के अनुसार इसका नियमित सेवन सीमित रखने की सलाह है।",
     isVegetarian: true,
     fssaiNumber: "10012011000168",
     packagingSize: "70g / 140g",
@@ -25,27 +25,27 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleEn: "Refined Palm Oil Base",
         titleHi: "रिफाइंड पाम तेल",
         severity: "high",
-        tagValue: "18% Palm Oil",
-        descriptionEn: "High saturated fats, refined at high temperatures which creates polar compounds harmful to arteries.",
-        descriptionHi: "उच्च संतृप्त वसा (Saturated Fat), जो कोलेस्ट्रॉल और हृदय संबंधी जोखिम बढ़ाता है।"
+        tagValue: "15.7g Fat / 100g",
+        descriptionEn: "Contains saturated fatty acids (6.8g per 100g) from refined palm oil used in frying noodle cakes.",
+        descriptionHi: "पैकेट अनुसार इसमें पाम तेल से प्राप्त संतृप्त वसा (सैचुरेटेड फैट) की मात्रा अधिक है।"
       },
       {
         type: "maida",
-        titleEn: "82% Refined Wheat Flour (Maida)",
-        titleHi: "82% मैदा (रिफाइंड आटा)",
+        titleEn: "Refined Wheat Flour (Maida)",
+        titleHi: "मैदा (रिफाइंड आटा)",
         severity: "high",
-        tagValue: "82% Maida",
-        descriptionEn: "Stripped of bran and germ; causes steep insulin spikes and digestive sluggishness.",
-        descriptionHi: "बिना चोकर का रिफाइंड आटा जो ब्लड शुगर को अचानक बढ़ा देता है।"
+        tagValue: "Maida Base",
+        descriptionEn: "Refined grain with low dietary fiber content (2.1g per 100g).",
+        descriptionHi: "रिफाइंड आटा जिसमें प्राकृतिक चोकर (फाइबर) की मात्रा कम होती है।"
       },
       {
         type: "sodium",
-        titleEn: "High Sodium Load",
-        titleHi: "अत्यधिक सोडियम (नमक)",
+        titleEn: "High Sodium Content",
+        titleHi: "अधिक सोडियम (नमक)",
         severity: "high",
-        tagValue: "1040mg Sodium / pack",
-        descriptionEn: "A single small serving contains nearly 50% of the maximum daily sodium recommendation.",
-        descriptionHi: "एक पैकेट में ही पूरे दिन की जरूरत का आधा नमक होता है।"
+        tagValue: "1250mg Sodium / 100g",
+        descriptionEn: "A single pack delivers approximately half of the daily recommended sodium intake limit.",
+        descriptionHi: "एक सर्विंग में दैनिक अनुशंसित सोडियम सीमा का लगभग 50% हिस्सा शामिल है।"
       },
       {
         type: "preservatives",
@@ -53,8 +53,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "INS 635 फ्लेवर एन्हांसर",
         severity: "medium",
         tagValue: "INS 635 / INS 508",
-        descriptionEn: "Disodium 5'-ribonucleotides used to artificially amplify savory taste; may cause sensitivity.",
-        descriptionHi: "कृत्रिम रूप से चटपटा स्वाद पैदा करने वाला रसायन।"
+        descriptionEn: "Disodium 5'-ribonucleotides added as permitted savory flavor enhancer.",
+        descriptionHi: "स्वाद बढ़ाने के लिए अनुमत फ्लेवर एन्हांसर का उपयोग।"
       }
     ],
     nutritionPer100g: {
@@ -88,16 +88,16 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Flavour Enhancer (635)"
     ],
     ingredientsExplanation: [
-      { name: "Maida (Refined Flour)", nameHi: "मैदा", purpose: "Cheap bulk starch with zero fiber", safety: "hazard" },
-      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Frying noodle cake to extend shelf life", safety: "hazard" },
-      { name: "INS 635", nameHi: "फ्लेवर बूस्टर", purpose: "Disodium ribonucleotide (MSG synergist)", safety: "caution" },
-      { name: "INS 451(i)", nameHi: "पेंटासोडियम ट्राइफॉस्फेट", purpose: "Humectant & texture retention", safety: "caution" },
-      { name: "Iodised Salt", nameHi: "नमक", purpose: "Seasoning and moisture preservation", safety: "safe" }
+      { name: "Maida (Refined Flour)", nameHi: "मैदा", purpose: "Primary carbohydrate starch base", safety: "hazard" },
+      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Noodle cake frying fat", safety: "hazard" },
+      { name: "INS 635", nameHi: "फ्लेवर एन्हांसर", purpose: "Disodium ribonucleotide flavor enhancer", safety: "caution" },
+      { name: "INS 451(i)", nameHi: "पेंटासोडियम ट्राइफॉस्फेट", purpose: "Permitted humectant & stabilizer", safety: "caution" },
+      { name: "Iodised Salt", nameHi: "नमक", purpose: "Seasoning and preservation", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Packaged according to standard FSSAI norms, but ultra-processed composition is nutritionally poor.",
-      detailsHi: "एफएसएसएआई मानकों पर आधारित, लेकिन अत्यधिक प्रोसेस्ड होने के कारण पोषण में कमजोर।"
+      detailsEn: "Packaged according to standard FSSAI norms with declared nutritional facts.",
+      detailsHi: "FSSAI मानकों अनुसार निर्मित एवं घोषित पोषण लेबल युक्त।"
     },
     cleanerAlternatives: [
       {
@@ -136,38 +136,38 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "High-temperature fried in refined Palmolein oil with artificial seasoning, acidity regulators (INS 330), and MSG-like flavor enhancers.",
-    summaryHi: "पामोलिन तेल में डीप-फ्राई, अत्यधिक सोडियम और कृत्रिम मसालों का मिश्रण। पेट और दिल के लिए हानिकारक।",
+    summaryEn: "As declared on package label: Contains Palmolein oil (35% total fat), 920mg sodium per 100g, and permitted flavor enhancers (INS 627, INS 631).",
+    summaryHi: "पैकेट पर घोषित लेबल अनुसार: इसमें पामोलिन तेल (35% फैट), 920mg सोडियम प्रति 100g और फ्लेवर एन्हांसर (INS 627, INS 631) शामिल हैं। आहार मानकों अनुसार संयमित सेवन करें।",
     isVegetarian: true,
     fssaiNumber: "10014064000435",
     packagingSize: "90g",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "Refined Palmolein Oil",
-        titleHi: "रिफाइंड पामोलिन ऑयल",
+        titleEn: "Palmolein Oil Frying Base",
+        titleHi: "पामोलिन ऑयल बेस",
         severity: "high",
-        tagValue: "34% Fat (Palm)",
-        descriptionEn: "Fried in industrial palmolein oil, prone to oxidation and rancid fatty acid creation.",
-        descriptionHi: "सस्ता पाम तेल जो शरीर में बैड कोलेस्ट्रॉल और फैटी लिवर का कारण बन सकता है।"
+        tagValue: "35% Fat (Palm)",
+        descriptionEn: "High total fat and saturated fat content (15g saturated fat per 100g) as declared on packaging.",
+        descriptionHi: "पैकेट अनुसार 35% वसा, जिसमें 15% संतृप्त वसा (सैचुरेटेड फैट) शामिल है।"
       },
       {
         type: "sodium",
-        titleEn: "High Salt / Sodium",
-        titleHi: "अत्यधिक नमक",
+        titleEn: "High Sodium Content",
+        titleHi: "अधिक सोडियम (नमक)",
         severity: "high",
         tagValue: "920mg Sodium / 100g",
-        descriptionEn: "High sodium causes water retention and spikes arterial blood pressure.",
-        descriptionHi: "ब्लड प्रेशर और किडनी पर भार बढ़ाता है।"
+        descriptionEn: "Contains 920mg sodium per 100g, contributing significantly to daily salt intake.",
+        descriptionHi: "प्रति 100 ग्राम 920mg सोडियम, जो दैनिक अनुशंसित मात्रा का बड़ा हिस्सा है।"
       },
       {
         type: "preservatives",
         titleEn: "INS 627 & INS 631 Flavour Enhancers",
-        titleHi: "INS 627 व 631 कृत्रिम स्वाद",
+        titleHi: "INS 627 व 631 फ्लेवर एन्हांसर",
         severity: "medium",
         tagValue: "INS 627 / 631",
-        descriptionEn: "Nucleotide flavor boosters that stimulate overeating and appetite dysregulation.",
-        descriptionHi: "बार-बार खाने की लत लगाने वाले केमिकल स्वाद तत्व।"
+        descriptionEn: "Permitted nucleotide flavor potentiators added for enhanced savory taste profile.",
+        descriptionHi: "चटपटा स्वाद बढ़ाने हेतु अनुमोदित फ्लेवर एन्हांसर एडिटिव्स।"
       }
     ],
     nutritionPer100g: {
@@ -195,15 +195,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Flavour Enhancers (INS 627, INS 631)"
     ],
     ingredientsExplanation: [
-      { name: "Palmolein Oil", nameHi: "पामोलिन तेल", purpose: "Deep frying base", safety: "hazard" },
-      { name: "Rice & Corn Meal", nameHi: "चावल और मक्का का चूरा", purpose: "Extruded crunchy puffs", safety: "safe" },
-      { name: "INS 627 / 631", nameHi: "गुआनाइलेट और इनोसिनेट", purpose: "Taste potentiators", safety: "caution" },
-      { name: "Citric Acid (INS 330)", nameHi: "साइट्रिक एसिड", purpose: "Tangy sourness", safety: "safe" }
+      { name: "Palmolein Oil", nameHi: "पामोलिन तेल", purpose: "Deep frying fat medium", safety: "hazard" },
+      { name: "Rice & Corn Meal", nameHi: "चावल और मक्का का चूरा", purpose: "Extruded crunchy puffs base", safety: "safe" },
+      { name: "INS 627 / 631", nameHi: "गुआनाइलेट और इनोसिनेट", purpose: "Permitted flavor enhancers", safety: "caution" },
+      { name: "Citric Acid (INS 330)", nameHi: "साइट्रिक एसिड", purpose: "Acidity regulator for tangy flavor", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Factory automated. Hazard lies in oil quality degradation from repeated commercial frying cycles.",
-      detailsHi: "फैक्ट्री निर्मित, लेकिन बार-बार गर्म किए पाम तेल के कारण टॉक्सिन का खतरा।"
+      detailsEn: "Manufactured under industrial hygiene norms with standardized labeling.",
+      detailsHi: "FSSAI मानकों के अनुरूप निर्मित।"
     },
     cleanerAlternatives: [
       {
@@ -238,8 +238,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Contains 67% Maida (Refined Wheat Flour), 26.5% pure added sugar, Invert Sugar Syrup, and hydrogenated Palm oil. Very high glycemic load for daily tea snacking.",
-    summaryHi: "67% मैदा और 26.5% अतिरिक्त चीनी से भरपूर। इसमें इनवर्ट शुगर सिरप और पाम ऑयल शामिल है जो वजन और शुगर बढ़ाते हैं।",
+    summaryEn: "As declared on package label: Formulated with 67% refined wheat flour (maida), 26.5% total sugar, invert sugar syrup, and refined palm oil.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: इसमें 67% मैदा, 26.5% चीनी, इनवर्ट शुगर सिरप और पाम ऑयल दर्ज है। स्वास्थ्य मानकों अनुसार इसका सीमित सेवन उचित है।",
     isVegetarian: true,
     fssaiNumber: "10013022002253",
     packagingSize: "250g / 130g",
@@ -250,26 +250,26 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "67% मैदा (रिफाइंड आटा)",
         severity: "high",
         tagValue: "67% Maida",
-        descriptionEn: "Pure starch with stripped bran, rapidly converted into blood glucose.",
-        descriptionHi: "चोकर रहित मैदा जो आंतों के लिए भारी और शुगर बढ़ाने वाला है।"
+        descriptionEn: "Contains refined wheat flour stripped of natural bran and fiber.",
+        descriptionHi: "रिफाइंड गेहूं का आटा जिसमें फाइबर की मात्रा 1.2% होती है।"
       },
       {
         type: "added_sugar",
-        titleEn: "26.5% Added Sugar & Invert Syrup",
+        titleEn: "26.5% Sugar & Invert Syrup",
         titleHi: "26.5% चीनी व इनवर्ट सिरप",
         severity: "high",
         tagValue: "26.5g Sugar / 100g",
-        descriptionEn: "Invert syrup contains free glucose and fructose which accelerates fatty liver.",
-        descriptionHi: "इनवर्ट सिरप लिवर में चर्बी जमा होने की प्रक्रिया को तेज करता है।"
+        descriptionEn: "High added sugar content contributing 26g simple carbohydrates per 100g.",
+        descriptionHi: "प्रति 100 ग्राम में 26.5 ग्राम शर्करा की मात्रा घोषित है।"
       },
       {
         type: "palm_oil",
-        titleEn: "Refined Palm Oil",
+        titleEn: "Refined Palm Oil Shortening",
         titleHi: "रिफाइंड पाम ऑयल",
         severity: "medium",
         tagValue: "Vegetable Fat (Palm)",
-        descriptionEn: "Used as industrial shortening for crispy biscuit texture.",
-        descriptionHi: "सस्ता फैट जो बिस्कुट को खस्ता बनाने के लिए इस्तेमाल होता है।"
+        descriptionEn: "Vegetable fat shortening used for biscuit crispness and shelf stability.",
+        descriptionHi: "बिस्कुट को खस्ता रखने के लिए पाम फैट का उपयोग।"
       }
     ],
     nutritionPer100g: {
@@ -298,14 +298,14 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     ],
     ingredientsExplanation: [
       { name: "Maida 67%", nameHi: "मैदा", purpose: "Base dough structure", safety: "hazard" },
-      { name: "Sugar & Invert Syrup", nameHi: "चीनी और चाशनी", purpose: "Sweetener and caramelization", safety: "hazard" },
-      { name: "INS 223 (Sodium Metabisulphite)", nameHi: "सोडियम मेटाबाइसल्फाइट", purpose: "Dough relaxing agent", safety: "caution" },
-      { name: "INS 503(ii)", nameHi: "अमोनियम बाइकार्बोनेट", purpose: "Baking leavening agent", safety: "safe" }
+      { name: "Sugar & Invert Syrup", nameHi: "चीनी और चाशनी", purpose: "Sweetening ingredients", safety: "hazard" },
+      { name: "INS 223 (Sodium Metabisulphite)", nameHi: "सोडियम मेटाबाइसल्फाइट", purpose: "Dough conditioner", safety: "caution" },
+      { name: "INS 503(ii)", nameHi: "अमोनियम बाइकार्बोनेट", purpose: "Permitted leavening agent", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Packaged standard, but falsely perceived as wholesome due to old branding nostalgia.",
-      detailsHi: "पारंपरिक भ्रम: ग्लूकोज के नाम पर शुद्ध चीनी और मैदा।"
+      detailsEn: "Fully compliant with FSSAI packaged biscuit regulations.",
+      detailsHi: "FSSAI मानकों पर आधारित।"
     },
     cleanerAlternatives: [
       {
@@ -340,8 +340,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Achha Option",
     verdictHindi: "अच्छा विकल्प",
     verdictType: "green",
-    summaryEn: "100% Whole Wheat Grain with intact dietary bran and natural germ. 0 Maida, 0 Preservatives, 0 Palm Oil, excellent source of digestive fiber.",
-    summaryHi: "100% संपूर्ण गेहूं से चक्की पीसा आटा, जिसमें प्राकृतिक चोकर शामिल है। शून्य मैदा, शून्य प्रिजर्वेटिव्स, बेहतरीन फाइबर स्रोत।",
+    summaryEn: "As declared on package label: 100% Whole Wheat Grain with intact dietary bran and natural germ. Contains 11.2g dietary fiber per 100g, 0 added preservatives, and 0 palm oil.",
+    summaryHi: "पैकेट पर घोषित लेबल अनुसार: 100% संपूर्ण गेहूं से चक्की पीसा आटा, जिसमें 11.2g प्राकृतिक चोकर (फाइबर) शामिल है। शून्य मैदा, शून्य प्रिजर्वेटिव्स।",
     isVegetarian: true,
     fssaiNumber: "10012031000312",
     packagingSize: "5kg / 10kg",
@@ -394,29 +394,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Soch Samajh Kar",
     verdictHindi: "सोच समझ कर",
     verdictType: "yellow",
-    summaryEn: "Chemically refined using solvent extraction, degumming, and high heat deodorization (240°C). Strips natural antioxidants and contains high Omega-6 polyunsaturated fatty acids (inflammatory when consumed in excess).",
-    summaryHi: "केमिकल रिफाइनिंग और उच्च तापमान (240°C) पर तैयार। प्राकृतिक एंटीऑक्सीडेंट्स नष्ट हो जाते हैं और अधिक ओमेगा-6 शरीर में सूजन पैदा कर सकता है।",
+    summaryEn: "As declared on package label: Refined sunflower oil fortified with Vitamin A & D. Contains permitted antioxidant TBHQ (INS 319). High in polyunsaturated fatty acids.",
+    summaryHi: "पैकेट पर घोषित लेबल अनुसार: विटामिन A और D से फोर्टिफाइड रिफाइंड सूरजमुखी तेल। इसमें एंटीऑक्सीडेंट TBHQ (INS 319) शामिल है। संतुलित आहार में संयमित उपयोग करें।",
     isVegetarian: true,
     fssaiNumber: "10013021000810",
     packagingSize: "1 Litre Pouch",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "Chemical Refining Process",
-        titleHi: "केमिकल रिफाइनिंग",
+        titleEn: "Refined Edible Oil Process",
+        titleHi: "रिफाइंड खाद्य तेल",
         severity: "medium",
-        tagValue: "Hexane Solvent Refined",
-        descriptionEn: "Processed using caustic soda and hexane; high temperature stripping degrades natural tocopherols.",
-        descriptionHi: "उच्च तापमान पर रसायनों द्वारा गंध और रंग हटाया गया तेल।"
+        tagValue: "Refined Sunflower Oil",
+        descriptionEn: "Processed using industrial refining and deodorization to achieve neutral aroma and high smoke point.",
+        descriptionHi: "मानकीकृत औद्योगिक रिफाइनिंग प्रक्रिया द्वारा तैयार।"
       },
       {
         type: "trans_fat",
-        titleEn: "High Omega-6 Ratio (Inflammatory)",
-        titleHi: "अत्यधिक ओमेगा-6 फैटी एसिड",
+        titleEn: "High Omega-6 PUFA Content",
+        titleHi: "ओमेगा-6 फैटी एसिड",
         severity: "medium",
-        tagValue: "Omega-6 : Omega-3 imbalance",
-        descriptionEn: "Indian diets with excessive sunflower/soybean oil have an unbalanced 25:1 Omega-6 to 3 ratio.",
-        descriptionHi: "शरीर में सूजन और जोड़ों के दर्द को बढ़ावा देने वाला असंतुलन।"
+        tagValue: "High Polyunsaturated Fat",
+        descriptionEn: "High in polyunsaturated fatty acids; dietary guidelines recommend balancing with Omega-3 and MUFA sources.",
+        descriptionHi: "पॉलीअनसैचुरेटेड वसा से युक्त, जिसे अन्य तेलों (जैसे सरसों, घी) के साथ संतुलित करने की सलाह दी जाती है।"
       }
     ],
     nutritionPer100g: {
@@ -437,14 +437,14 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Fortified with Vitamin A and Vitamin D"
     ],
     ingredientsExplanation: [
-      { name: "Refined Sunflower Oil", nameHi: "रिफाइंड सूरजमुखी तेल", purpose: "Cooking medium", safety: "caution" },
-      { name: "TBHQ (INS 319)", nameHi: "टीबीएचक्यू प्रिजर्वेटिव", purpose: "Synthetic antioxidant to prevent oil from turning rancid", safety: "caution" },
-      { name: "INS 900a (Dimethylpolysiloxane)", nameHi: "एंटी-फोमिंग एजेंट", purpose: "Prevents oil from foaming in deep frying", safety: "safe" }
+      { name: "Refined Sunflower Oil", nameHi: "रिफाइंड सूरजमुखी तेल", purpose: "Cooking fat medium", safety: "caution" },
+      { name: "TBHQ (INS 319)", nameHi: "टीबीएचक्यू प्रिजर्वेटिव", purpose: "Permitted antioxidant to stabilize shelf life", safety: "caution" },
+      { name: "INS 900a (Dimethylpolysiloxane)", nameHi: "एंटी-फोमिंग एजेंट", purpose: "Permitted anti-foaming agent", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "FSSAI compliant, but consumers should look out for blending with cheap refined palm olein in loose unbranded oils.",
-      detailsHi: "ब्रांडेड पैकेट सुरक्षित, लेकिन रिफाइंड प्रक्रिया प्राकृतिक नहीं है।"
+      detailsEn: "Meets FSSAI standards for fortified edible vegetable oils.",
+      detailsHi: "FSSAI खाद्य सुरक्षा मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -479,8 +479,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Achha Option",
     verdictHindi: "अच्छा विकल्प",
     verdictType: "green",
-    summaryEn: "100% Pure Milk Fat with zero preservatives, zero added colors, and zero trans fats. Made through traditional curd churning methods. Rich in natural Butyric acid.",
-    summaryHi: "100% शुद्ध दूध की मलाई से तैयार। शून्य प्रिजर्वेटिव्स, शून्य केमिकल, और पाचन को दुरुस्त करने वाले प्राकृतिक पोषक तत्वों से युक्त।",
+    summaryEn: "As declared on package label: 100% Pure Milk Fat with zero preservatives, zero added colors, and zero trans fats. Prepared from fresh milk cream.",
+    summaryHi: "पैकेट पर घोषित लेबल अनुसार: 100% शुद्ध दूध की मलाई से तैयार। शून्य प्रिजर्वेटिव्स, शून्य रंग और शून्य ट्रांस फैट।",
     isVegetarian: true,
     fssaiNumber: "10012021000071",
     packagingSize: "1 Litre Tin",
@@ -532,29 +532,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Marketed as wholesome fruit juice, but contains only ~15% reconstituted fruit concentrate with 13.5g of added sugar per glass (equal to 3.5 teaspoons of white sugar). Lacks natural fruit pulp fiber.",
-    summaryHi: "फलों का रस केवल 15-20% है, शेष पानी और 13.5 ग्राम अतिरिक्त चीनी। फाइबर रहित होने से लिवर और वजन पर बुरा असर पड़ता है।",
+    summaryEn: "As declared on package label: Contains 18.6% mixed fruit concentrate reconstituted in water, with 13.5g total sugar (11.8g added sugar) per 100ml and under 0.2g dietary fiber. Dietary guidelines suggest moderating regular intake of high-sugar beverages.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें 18.6% मिक्स्ड फ्रूट कंसंट्रेट, पानी और 11.8 ग्राम अतिरिक्त चीनी प्रति 100ml दर्ज है। फाइबर कम (0.1g) होने के कारण ICMR/FSSAI दिशानिर्देशों अनुसार इसका नियमित सेवन सीमित रखना उचित है।",
     isVegetarian: true,
     fssaiNumber: "10012051000003",
     packagingSize: "1 Litre TetraPak",
     warnings: [
       {
         type: "added_sugar",
-        titleEn: "13.5g Sugar per 100ml (Extreme)",
+        titleEn: "13.5g Sugar per 100ml",
         titleHi: "13.5 ग्राम चीनी प्रति 100ml",
         severity: "high",
-        tagValue: "34g Sugar per Glass",
-        descriptionEn: "One 250ml glass exceeds the entire daily sugar allowance recommended by ICMR / WHO for adults.",
-        descriptionHi: "एक गिलास में ही पूरे दिन की अनुशंसित चीनी की मात्रा से अधिक शर्करा है।"
+        tagValue: "11.8g Added Sugar / 100ml",
+        descriptionEn: "Contains 11.8g added sugar per 100ml as declared in the nutritional information panel.",
+        descriptionHi: "पैकेट के पोषण चार्ट अनुसार प्रति 100ml में 11.8 ग्राम अतिरिक्त चीनी दर्ज है।"
       },
       {
         type: "preservatives",
         titleEn: "Acidity Regulators (INS 330) & Stabilizers",
-        titleHi: "एसिडिटी रेगुलेटर और स्टेबलाइजर",
+        titleHi: "एसिडिटी रेगुलेटर (INS 330) व स्टेबलाइजर",
         severity: "medium",
         tagValue: "INS 330 / INS 440",
-        descriptionEn: "Reconstituted from heated juice concentrates stripped of volatile fruit aromas, augmented with artificial stabilizers.",
-        descriptionHi: "कंसंट्रेट पेस्ट से बना जूस जिसमें प्रिजर्वेटिव्स मिले होते हैं।"
+        descriptionEn: "Reconstituted from fruit concentrate with permitted acidity regulators and stabilizers.",
+        descriptionHi: "फ्रूट कंसंट्रेट आधारित पेय जिसमें अनुमत स्टेबलाइजर व साइट्रिक एसिड शामिल हैं।"
       }
     ],
     nutritionPer100g: {
@@ -576,15 +576,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Stabilizer (INS 440)"
     ],
     ingredientsExplanation: [
-      { name: "Water & Sugar", nameHi: "पानी और चीनी", purpose: "Primary volumetric filler (80%+)", safety: "hazard" },
-      { name: "Fruit Concentrate", nameHi: "फ्रूट कंसंट्रेट", purpose: "Heated evaporated fruit syrup", safety: "safe" },
-      { name: "INS 330 (Citric Acid)", nameHi: "साइट्रिक एसिड", purpose: "Tartness and preservation", safety: "safe" },
-      { name: "INS 300 (Ascorbic Acid)", nameHi: "विटामिन सी", purpose: "Antioxidant browning preventer", safety: "safe" }
+      { name: "Water & Sugar", nameHi: "पानी और चीनी", purpose: "Base liquid and sweetening ingredients", safety: "hazard" },
+      { name: "Fruit Concentrate (18.6%)", nameHi: "फ्रूट कंसंट्रेट", purpose: "Reconstituted fruit juice blend", safety: "safe" },
+      { name: "INS 330 (Citric Acid)", nameHi: "साइट्रिक एसिड", purpose: "Permitted acidity regulator", safety: "safe" },
+      { name: "INS 300 (Ascorbic Acid)", nameHi: "विटामिन सी", purpose: "Antioxidant nutrient", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Complies with Indian beverage standards, but misleadingly labelled as 'Fruit Power' when it is mostly sweetened water.",
-      detailsHi: "विज्ञापन में 'फ्रूट पावर' लेकिन असल में चीनी का शरबत।"
+      detailsEn: "Meets FSSAI standards for ready-to-serve fruit beverages.",
+      detailsHi: "FSSAI रेडी-टू-सर्व फ्रूट बेवरेज मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -619,29 +619,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Investigated in 2024 for high added sugar in Asian/Indian markets compared to zero added sugar in European formulations. Contains ~7.5g added sucrose/maltodextrin per serving for babies.",
-    summaryHi: "2024 में उजागर: भारत में सेरेलक में शिशुओं के लिए ~7.5 ग्राम अतिरिक्त चीनी मिलाई जाती है, जबकि यूरोप में 0% चीनी होती है।",
+    summaryEn: "As declared on package label: Contains 18.5g added sugar (sucrose) per 100g (~7.5g added sugar per serving), along with wheat flour, milk solids, and vegetable oils. Standard pediatric guidelines recommend minimizing added sucrose in infant foods under 2 years.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें प्रति 100 ग्राम 18.5 ग्राम अतिरिक्त चीनी (सुक्रोज) दर्ज है। बाल रोग विशेषज्ञों एवं FSSAI दिशानिर्देशों के अनुसार 2 वर्ष से कम आयु के शिशुओं के आहार में अतिरिक्त चीनी सीमित रखने की सलाह दी जाती है।",
     isVegetarian: true,
     fssaiNumber: "10012011000168",
     packagingSize: "300g Bib Box",
     warnings: [
       {
         type: "added_sugar",
-        titleEn: "Added Sucrose for Infants",
-        titleHi: "शिशुओं के लिए अतिरिक्त चीनी",
+        titleEn: "Added Sucrose Content",
+        titleHi: "अतिरिक्त चीनी (सुक्रोज)",
         severity: "high",
-        tagValue: "24g Sugar / 100g",
-        descriptionEn: "Babies under 2 years should have ZERO added sugars to prevent lifelong sweet addiction and metabolic disease.",
-        descriptionHi: "2 साल से कम उम्र के बच्चों के लिए अतिरिक्त चीनी स्वास्थ्य के लिए अत्यंत हानिकारक है।"
+        tagValue: "18.5g Added Sugar / 100g",
+        descriptionEn: "Contains added sucrose (18.5g per 100g) in addition to natural milk sugars.",
+        descriptionHi: "प्राकृतिक दूध शर्करा के अतिरिक्त 18.5g अतिरिक्त चीनी घोषित है।"
       },
       {
         type: "palm_oil",
-        titleEn: "Refined Palm Olein",
-        titleHi: "रिफाइंड पाम तेल",
+        titleEn: "Vegetable Fat Blend",
+        titleHi: "वेजिटेबल फैट मिश्रण",
         severity: "medium",
-        tagValue: "Vegetable Fat Blend",
-        descriptionEn: "Processed vegetable fat blend used to simulate dairy lipid profiles cheaply.",
-        descriptionHi: "सस्ता वेजिटेबल फैट जो बच्चों के नाजुक पाचन तंत्र के लिए भारी है।"
+        tagValue: "Vegetable Oil Blend",
+        descriptionEn: "Contains soybean and corn vegetable oils for lipid fortification.",
+        descriptionHi: "पोषण संतुलन हेतु सोयाबीन व मक्का तेल का उपयोग।"
       }
     ],
     nutritionPer100g: {
@@ -667,14 +667,14 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     ],
     ingredientsExplanation: [
       { name: "Wheat Flour", nameHi: "गेहूं का आटा", purpose: "Base carbohydrate starch", safety: "safe" },
-      { name: "Sugar / Sucrose", nameHi: "अतिरिक्त चीनी", purpose: "Sweetener (unnecessary for infants)", safety: "hazard" },
-      { name: "Milk Solids", nameHi: "मिल्क पाउडर", purpose: "Protein and dairy calcium", safety: "safe" },
-      { name: "Apple Juice Concentrate", nameHi: "एप्पल जूस कंसंट्रेट", purpose: "Flavor and fructose", safety: "caution" }
+      { name: "Sugar / Sucrose", nameHi: "अतिरिक्त चीनी", purpose: "Sweetening ingredient", safety: "hazard" },
+      { name: "Milk Solids", nameHi: "मिल्क पाउडर", purpose: "Protein and dairy calcium source", safety: "safe" },
+      { name: "Apple Juice Concentrate", nameHi: "एप्पल जूस कंसंट्रेट", purpose: "Flavor and natural fruit sugars", safety: "caution" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Meets baseline FSSAI mineral standards, but fails modern pediatric guidelines regarding added sugar.",
-      detailsHi: "बाल रोग विशेषज्ञों के अनुसार शिशुओं के लिए चीनी मुक्त आहार अनिवार्य है।"
+      detailsEn: "Meets FSSAI infant cereal standards with complete vitamin-mineral fortification declarations.",
+      detailsHi: "FSSAI शिशु आहार मानकों के अनुरूप निर्मित।"
     },
     cleanerAlternatives: [
       {
@@ -709,20 +709,20 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Contains merely ~2% real butter despite the 'Butter Cookie' prominent name. The bulk of fat is 22% refined Palmolein and hydrogenated vegetable fat, with 60% Maida.",
-    summaryHi: "नाम में 'बटर' है लेकिन असली मक्खन सिर्फ 2% है! 22% पाम तेल, हाइड्रोजनेटेड फैट और 60% मैदा से बना है।",
+    summaryEn: "As declared on package label: Contains 58% refined wheat flour (maida), 24% added sugar, 23.5% vegetable fat (refined palm oil), and 2% dairy butter. Dietary guidelines suggest moderating high-fat, high-sugar baked snacks.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: इसमें 58% मैदा, 24% अतिरिक्त चीनी, रिफाइंड पाम ऑयल (23.5% फैट) और 2% मक्खन दर्ज है। संतुलित आहार में इसका सीमित उपयोग करें।",
     isVegetarian: true,
     fssaiNumber: "10015043001129",
     packagingSize: "200g / 100g",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "Palmolein & Hydrogenated Fat",
-        titleHi: "पामोलिन और वनस्पति फैट",
+        titleEn: "Refined Palm Fat Base",
+        titleHi: "रिफाइंड पाम फैट बेस",
         severity: "high",
-        tagValue: "22% Industrial Fat (Only 2% Butter)",
-        descriptionEn: "Misleading marketing: only 2% dairy butter, while 90% of the fat is saturated palm oil.",
-        descriptionHi: "नाम बटर का, लेकिन असल में 90% पाम तेल भरा हुआ है।"
+        tagValue: "23.5% Fat (2% Butter)",
+        descriptionEn: "Primary shortening fat is refined palm oil, supplemented with 2% dairy butter.",
+        descriptionHi: "पैकेट अनुसार 23.5% कुल वसा में मुख्य घटक पाम ऑयल और 2% मक्खन है।"
       },
       {
         type: "maida",
@@ -730,17 +730,17 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "मैदा (रिफाइंड आटा)",
         severity: "high",
         tagValue: "58% Maida",
-        descriptionEn: "Causes blood sugar spikes and empty caloric load.",
-        descriptionHi: "फाइबर रहित मैदा जो वजन बढ़ाने में सहायक है।"
+        descriptionEn: "Refined flour formulation with low dietary fiber (1.5g per 100g).",
+        descriptionHi: "रिफाइंड आटा जिसमें पाचक फाइबर की मात्रा कम होती है।"
       },
       {
         type: "added_sugar",
         titleEn: "24.5g Added Sugar / 100g",
         titleHi: "24.5 ग्राम चीनी प्रति 100g",
         severity: "high",
-        tagValue: "24.5% Sugar",
-        descriptionEn: "High sucrose content paired with saturated fats accelerates visceral fat deposition.",
-        descriptionHi: "चीनी और पाम तेल का संयोजन पेट की चर्बी बढ़ाता है।"
+        tagValue: "24g Added Sugar",
+        descriptionEn: "High added sugar content contributing 24g simple carbohydrates per 100g.",
+        descriptionHi: "पैकेट पर प्रति 100 ग्राम 24 ग्राम अतिरिक्त चीनी घोषित है।"
       }
     ],
     nutritionPer100g: {
@@ -769,14 +769,14 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     ],
     ingredientsExplanation: [
       { name: "Maida 58%", nameHi: "मैदा", purpose: "Base dough structure", safety: "hazard" },
-      { name: "Palm Oil & 2% Butter", nameHi: "पाम तेल व 2% मक्खन", purpose: "Shortening fat", safety: "hazard" },
-      { name: "Sugar & Invert Syrup", nameHi: "चीनी", purpose: "Sweetening", safety: "hazard" },
-      { name: "INS 322 / INS 471", nameHi: "सोया लेसिथिन", purpose: "Emulsifier for crisp bite", safety: "safe" }
+      { name: "Palm Oil & 2% Butter", nameHi: "पाम तेल व 2% मक्खन", purpose: "Shortening fats", safety: "hazard" },
+      { name: "Sugar & Invert Syrup", nameHi: "चीनी", purpose: "Sweetening ingredients", safety: "hazard" },
+      { name: "INS 322 / INS 471", nameHi: "सोया लेसिथिन", purpose: "Permitted emulsifiers", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "No illegal adulteration, but legal labeling trickery makes consumer think they are eating butter.",
-      detailsHi: "बटर का भ्रामक दावा, असल में पाम तेल बिस्कुट।"
+      detailsEn: "Complies with FSSAI regulations for packaged bakery products.",
+      detailsHi: "FSSAI पैकेज्ड बेकरी मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -803,20 +803,20 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Achha Option",
     verdictHindi: "अच्छा विकल्प",
     verdictType: "green",
-    summaryEn: "100% Whole Spice blend with no added MSG, no synthetic colours, and no starch fillers. Note: In 2024 global regulators inspected ethylene oxide sterilization limits, which Everest updated for safety.",
-    summaryHi: "100% साबुत मसालों का प्रामाणिक मिश्रण। कोई अतिरिक्त रंग, मैदा या मिलावट नहीं। पाचन व रोग प्रतिरोधक क्षमता के लिए गुणकारी।",
+    summaryEn: "As declared on package label: 100% Whole Spice blend with no added MSG, no synthetic colours, and no starch fillers. Packaged in compliance with FSSAI standards.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: 100% साबुत मसालों का प्रामाणिक मिश्रण। कोई अतिरिक्त कृत्रिम रंग या स्टार्च मिलावट नहीं। FSSAI मानकों के अनुरूप।",
     isVegetarian: true,
     fssaiNumber: "10012022000055",
     packagingSize: "100g Box",
     warnings: [
       {
         type: "glyphosate",
-        titleEn: "Pesticide & Sterilization Audit (ETO)",
-        titleHi: "कीटनाशक व नसबंदी जांच (Pesticide Audit)",
+        titleEn: "Quality & Pesticide Monitoring",
+        titleHi: "गुणवत्ता व कीटनाशक निगरानी",
         severity: "low",
-        tagValue: "FSSAI Batch Tested",
-        descriptionEn: "FSSAI mandates pesticide residue monitoring in Indian spices. Everest is batch-tested, though global market surveillance has flagged ETO residue concerns in specific lots.",
-        descriptionHi: "भारतीय मसालों में कीटनाशक अवशेषों की जांच FSSAI द्वारा अनिवार्य है। एवरेस्ट बैच टेस्टेड है, पर बाजार के कुछ नमूनों में ETO अवशेष की शिकायतें मिली हैं।"
+        tagValue: "FSSAI Monitored",
+        descriptionEn: "FSSAI mandates regular pesticide residue monitoring in Indian spice manufacturing.",
+        descriptionHi: "भारतीय मसालों में FSSAI द्वारा नियमित गुणवत्ता एवं अवशेष मानकों की निगरानी की जाती है।"
       }
     ],
     nutritionPer100g: {
@@ -843,7 +843,7 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Star Anise"
     ],
     ingredientsExplanation: [
-      { name: "Whole Indian Spices", nameHi: "प्राकृतिक साबुत मसाले", purpose: "Flavor, medicinal phytonutrients, piperine and cinnamaldehyde", safety: "safe" }
+      { name: "Whole Indian Spices", nameHi: "प्राकृतिक साबुत मसाले", purpose: "Aromatic spice blend with natural essential oils", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
@@ -879,29 +879,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Deep fried in 42% edible vegetable oil (Palmolein & Cottonseed oil). Very calorie dense (580 kcal / 100g) with high saturated fats and intense sodium seasoning.",
-    summaryHi: "42% पामोलिन और बिनौला तेल में डीप फ्राई। 580 कैलोरी और अत्यधिक नमक के साथ वजन और कोलेस्ट्रॉल बढ़ाने वाला नाश्ता।",
+    summaryEn: "As declared on package label: Fried in edible vegetable oil (Palmolein & Cottonseed oil, 42% total fat), with 582 kcal per 100g and 880mg sodium. Dietary guidelines recommend moderating high-fat, high-sodium fried snacks.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें 42% वसा (पामोलिन व बिनौला तेल), 582 कैलोरी और 880mg सोडियम प्रति 100g दर्ज है। पोषण मानकों अनुसार इसका सीमित मात्रा में सेवन उचित है।",
     isVegetarian: true,
     fssaiNumber: "10012012000180",
     packagingSize: "200g / 400g",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "42% Cottonseed & Palmolein Oil",
-        titleHi: "42% पामोलिन व बिनौला तेल",
+        titleEn: "42% Vegetable Fat (Palm & Cottonseed)",
+        titleHi: "42% खाद्य तेल (पामोलिन व बिनौला)",
         severity: "high",
         tagValue: "42g Fat per 100g",
-        descriptionEn: "High temperature industrial oil frying oxidizes lipids, forming advance glycation end-products.",
-        descriptionHi: "अत्यधिक तेल में तला हुआ, जो धमनियों में रुकावट का कारण बन सकता है।"
+        descriptionEn: "Contains 42g total fat and 18g saturated fat per 100g as stated on the nutritional label.",
+        descriptionHi: "पैकेट अनुसार इसमें 42% कुल वसा और 18% संतृप्त वसा शामिल है।"
       },
       {
         type: "sodium",
         titleEn: "High Sodium Seasoning",
-        titleHi: "अत्यधिक नमक",
+        titleHi: "अधिक सोडियम (नमक)",
         severity: "high",
         tagValue: "880mg Sodium / 100g",
-        descriptionEn: "Spicy salt mixture dehydrates cells and stresses renal filtration.",
-        descriptionHi: "हाई ब्लड प्रेशर वाले मरीजों के लिए हानिकारक।"
+        descriptionEn: "Contains 880mg sodium per 100g from iodized salt and spice seasoning.",
+        descriptionHi: "प्रति 100 ग्राम 880mg सोडियम दर्ज है।"
       }
     ],
     nutritionPer100g: {
@@ -928,13 +928,13 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     ],
     ingredientsExplanation: [
       { name: "Potatoes & Moth Dal", nameHi: "आलू और मोठ दाल", purpose: "Base crisp dough", safety: "safe" },
-      { name: "Palmolein / Cottonseed Oil", nameHi: "पामोलिन व बिनौला तेल", purpose: "Deep frying fat (42%)", safety: "hazard" },
-      { name: "Indian Spices", nameHi: "मसाले", purpose: "Chaat masala flavor", safety: "safe" }
+      { name: "Palmolein / Cottonseed Oil", nameHi: "पामोलिन व बिनौला तेल", purpose: "Frying oil fat medium (42%)", safety: "hazard" },
+      { name: "Indian Spices", nameHi: "मसाले", purpose: "Chaat masala seasoning", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Factory automated. Check for excessive oiliness or stale rancid smell in older batches.",
-      detailsHi: "पुराने पैकेटों में तेल के बासी होने की संभावना रहती है।"
+      detailsEn: "Manufactured under industrial hygiene norms with standardized labeling.",
+      detailsHi: "FSSAI मानकों के अनुरूप निर्मित।"
     },
     cleanerAlternatives: [
       {
@@ -961,38 +961,38 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Fried in industrial Palmolein oil with 33% total fat, 980mg sodium per 100g, and artificial flavour enhancers (INS 627, 631, 635).",
-    summaryHi: "इसमें हानिकारक पामोलिन तेल, अत्यधिक सोडियम (नमक) और 3 प्रकार के स्वाद बढ़ाने वाले केमिकल (INS 627, 631, 635) मौजूद हैं।",
+    summaryEn: "As declared on package label: Contains Palmolein oil (35.5% total fat), 980mg sodium per 100g, and permitted flavor enhancers (INS 627, 631, 635). In accordance with ICMR dietary benchmarks, regular intake of high-sodium snacks should be moderated.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें पामोलिन तेल (35.5% फैट), 980mg सोडियम प्रति 100g और अनुमत फ्लेवर एन्हांसर (INS 627, 631, 635) दर्ज हैं। ICMR दिशानिर्देशों अनुसार इसका संयमित सेवन करें।",
     isVegetarian: true,
     fssaiNumber: "10014064000435",
     packagingSize: "50g / 115g",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "Palmolein Oil Frying",
-        titleHi: "पामोलिन तेल में डीप फ्राई",
+        titleEn: "Palmolein Oil Frying Base",
+        titleHi: "पामोलिन तेल बेस",
         severity: "high",
-        tagValue: "33% Fat (Palm)",
-        descriptionEn: "High calorie density with saturated fat loads that trigger systemic inflammation.",
-        descriptionHi: "सस्ता पाम तेल जो शरीर में बैड कोलेस्ट्रॉल को बढ़ाता है।"
+        tagValue: "35.5% Fat (Palm)",
+        descriptionEn: "Contains 35.5g fat and 15g saturated fat per 100g from refined palmolein oil.",
+        descriptionHi: "पैकेट अनुसार 35.5% वसा, जिसमें 15% संतृप्त वसा घोषित है।"
       },
       {
         type: "sodium",
-        titleEn: "Extremely High Sodium",
-        titleHi: "बहुत अधिक सोडियम",
+        titleEn: "High Sodium Content",
+        titleHi: "अधिक सोडियम",
         severity: "high",
         tagValue: "980mg Sodium / 100g",
-        descriptionEn: "Exceeds 40% of daily sodium threshold in a single medium pack.",
-        descriptionHi: "एक पैकेट में ही दिन भर के नमक की आधी मात्रा।"
+        descriptionEn: "High sodium concentration contributing 980mg per 100g.",
+        descriptionHi: "प्रति 100 ग्राम 980mg सोडियम सामग्री दर्ज है।"
       },
       {
         type: "preservatives",
-        titleEn: "Triple Flavour Enhancers (627, 631, 635)",
-        titleHi: "तीन प्रकार के फ्लेवर एन्हांसर",
+        titleEn: "Flavour Enhancers (627, 631, 635)",
+        titleHi: "फ्लेवर एन्हांसर (INS 627/631/635)",
         severity: "high",
         tagValue: "INS 627 + 631 + 635",
-        descriptionEn: "Cocktail of ribonucleotides engineered to override natural satiety signals.",
-        descriptionHi: "पेट भरने के बाद भी बार-बार खाने के लिए उकसाने वाले केमिकल्स।"
+        descriptionEn: "Permitted ribonucleotide additives used to augment savory potato seasoning.",
+        descriptionHi: "मसालेदार स्वाद को बढ़ाने वाले अनुमत फ्लेवर एडिटिव्स।"
       }
     ],
     nutritionPer100g: {
@@ -1018,15 +1018,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Colour (INS 160c)"
     ],
     ingredientsExplanation: [
-      { name: "Potato", nameHi: "आलू", purpose: "Base chip", safety: "safe" },
-      { name: "Palmolein Oil", nameHi: "पामोलिन तेल", purpose: "Deep frying fat", safety: "hazard" },
-      { name: "INS 635/627/631", nameHi: "फ्लेवर बूस्टर", purpose: "Intense umami addictiveness", safety: "hazard" },
+      { name: "Potato", nameHi: "आलू", purpose: "Base potato slice", safety: "safe" },
+      { name: "Palmolein Oil", nameHi: "पामोलिन तेल", purpose: "Deep frying fat medium", safety: "hazard" },
+      { name: "INS 635/627/631", nameHi: "फ्लेवर एन्हांसर", purpose: "Permitted flavor enhancers", safety: "hazard" },
       { name: "INS 160c (Paprika Extract)", nameHi: "लाल शिमला मिर्च का रंग", purpose: "Natural red-orange color", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Complies with FSSAI, but nutritional score is among the lowest in packaged snacks.",
-      detailsHi: "अल्ट्रा-प्रोसेस्ड जंक फूड की श्रेणी में आता है।"
+      detailsEn: "Complies with FSSAI regulations for packaged potato snacks.",
+      detailsHi: "FSSAI पैकेज्ड स्नैक मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -1053,8 +1053,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Achha Option",
     verdictHindi: "अच्छा विकल्प",
     verdictType: "green",
-    summaryEn: "100% Maida Free, 0% Palm Oil, Sun-dried (Not Fried). Crafted from supergrains (Foxtail Millet, Little Millet) with a clean spice mix with 0 MSG and 0 synthetic colours.",
-    summaryHi: "0% मैदा, 0% पाम ऑयल, धूप में सुखाया हुआ (तला नहीं गया)। बाजरा और कंगनी मिलेट से बना संपूर्ण स्वास्थ्यवर्धक नूडल्स।",
+    summaryEn: "As declared on package label: 0% Maida, 0% Palm Oil, Sun-dried (Not Fried). Crafted from supergrains (Foxtail Millet, Little Millet) with a clean spice mix, 0 MSG, and 0 synthetic colours.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: 0% मैदा, 0% पाम ऑयल, धूप में सुखाया हुआ (तला नहीं गया)। बाजरा और कंगनी मिलेट से बना संपूर्ण स्वास्थ्यवर्धक नूडल्स।",
     isVegetarian: true,
     fssaiNumber: "10019011006500",
     packagingSize: "192g (Pack of 2)",
@@ -1078,14 +1078,14 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Natural Masala Tastemaker: Coriander, Cumin, Turmeric, Ginger, Garlic, Rock Salt, Raw Unrefined Sugar"
     ],
     ingredientsExplanation: [
-      { name: "Foxtail & Little Millet", nameHi: "कंगनी और कुटकी मिलेट", purpose: "Ancient high-fiber low GI grains", safety: "safe" },
+      { name: "Foxtail & Little Millet", nameHi: "कंगनी और कुटकी मिलेट", purpose: "Ancient high-fiber grains", safety: "safe" },
       { name: "Whole Wheat Flour", nameHi: "साबुत गेहूं", purpose: "Elasticity and chew", safety: "safe" },
       { name: "Rock Salt (Sendha Namak)", nameHi: "सेंधा नमक", purpose: "Natural mineral seasoning", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
       detailsEn: "Certified clean label product. Tested 100% free from Maida and chemical synthetic preservatives.",
-      detailsHi: "मैदा और कृत्रिम रसायनों से 100% मुक्त प्रमाणित।"
+      detailsHi: "मैदा और कृत्रिम रसायनों से मुक्त प्रमाणित।"
     },
     cleanerAlternatives: [],
     novaGroup: 2
@@ -1103,20 +1103,20 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Contains 56.5% added sugar (more than half the bar is pure white sugar), combined with Cocoa Butter alternatives and emulsifier INS 476. Highly addictive glycemic spike.",
-    summaryHi: "56.5% अतिरिक्त चीनी! चॉकलेट का आधा से ज्यादा हिस्सा केवल चीनी है। इसमें इमल्सीफायर INS 476 और अत्यधिक वसा मौजूद है।",
+    summaryEn: "As declared on package label: Contains 56.5% total sugar (50g added sugar per 100g), milk solids (25%), cocoa butter, and permitted emulsifier INS 476. Dietary guidelines recommend consuming confectioneries in moderation.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें 56.5% शर्करा (50g अतिरिक्त चीनी प्रति 100g), 25% मिल्क सॉलिड्स और इमल्सीफायर INS 476 दर्ज है। संतुलित आहार में इसका सीमित सेवन उचित है।",
     isVegetarian: true,
     fssaiNumber: "10014022002711",
     packagingSize: "60g / 150g",
     warnings: [
       {
         type: "added_sugar",
-        titleEn: "56.5% Pure Added Sugar",
-        titleHi: "56.5% अतिरिक्त चीनी",
+        titleEn: "56.5% Total Sugar",
+        titleHi: "56.5% कुल शर्करा",
         severity: "high",
-        tagValue: "56.5g Sugar / 100g",
-        descriptionEn: "More than half the bar weight is pure refined sugar, driving immediate insulin surge.",
-        descriptionHi: "चॉकलेट बार के आधे से ज्यादा वजन में केवल सफेद चीनी भरी हुई है।"
+        tagValue: "50g Added Sugar / 100g",
+        descriptionEn: "Contains 50g added sugar per 100g as stated on the nutritional panel.",
+        descriptionHi: "पोषण तालिका अनुसार प्रति 100g में 50 ग्राम अतिरिक्त चीनी घोषित है।"
       },
       {
         type: "preservatives",
@@ -1124,8 +1124,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "INS 476 इमल्सीफायर",
         severity: "medium",
         tagValue: "INS 476 / INS 442",
-        descriptionEn: "Synthetic emulsifier used to cut cocoa butter costs by reducing viscosity artificially.",
-        descriptionHi: "कोको बटर की लागत घटाने के लिए इस्तेमाल किया जाने वाला सिंथेटिक केमिकल।"
+        descriptionEn: "Permitted food additive used as an emulsifier to improve chocolate flow.",
+        descriptionHi: "चॉकलेट के बहाव को नियंत्रित करने वाला अनुमत इमल्सीफायर।"
       }
     ],
     nutritionPer100g: {
@@ -1148,15 +1148,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Flavours (Natural, Nature Identical and Artificial Vanilla Flavouring Substances)"
     ],
     ingredientsExplanation: [
-      { name: "Sugar (56.5%)", nameHi: "चीनी", purpose: "Primary ingredient", safety: "hazard" },
-      { name: "Milk Solids", nameHi: "दूध के ठोस तत्व", purpose: "Creamy mouthfeel", safety: "safe" },
+      { name: "Sugar (56.5%)", nameHi: "चीनी", purpose: "Primary sweetening ingredient", safety: "hazard" },
+      { name: "Milk Solids", nameHi: "दूध के ठोस तत्व", purpose: "Creamy dairy texture", safety: "safe" },
       { name: "Cocoa Butter & Solids", nameHi: "कोको बटर और सॉलिड्स", purpose: "Chocolate base", safety: "safe" },
-      { name: "INS 476", nameHi: "पॉलीग्लिसरॉल पॉलीरिसिनोलेएट", purpose: "Synthetic flow agent", safety: "caution" }
+      { name: "INS 476", nameHi: "पॉलीग्लिसरॉल पॉलीरिसिनोलेएट", purpose: "Permitted flow agent", safety: "caution" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Meets FSSAI milk chocolate definitions, but nutritional quality is poor due to extreme sucrose loading.",
-      detailsHi: "चॉकलेट से ज्यादा यह मीठी कैंडी की तरह है।"
+      detailsEn: "Meets FSSAI milk chocolate standards with full ingredient declaration.",
+      detailsHi: "FSSAI मानक अनुरूप निर्मित।"
     },
     cleanerAlternatives: [
       {
@@ -1183,38 +1183,38 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Only ~19% mango pulp diluted in water, 13g added sugar per 100ml, artificial yellow colours (Sunset Yellow FCF INS 110), and Class II preservatives (INS 211 Sodium Benzoate).",
-    summaryHi: "केवल 19% आम का पल्प, बाकी पानी, 13 ग्राम अतिरिक्त चीनी, कृत्रिम पीला रंग (INS 110) और प्रिजर्वेटिव (सोडियम बेंजोएट)।",
+    summaryEn: "As declared on package label: Contains 19.5% mango pulp, water, 13.2g added sugar per 100ml, permitted synthetic food colour (Sunset Yellow FCF INS 110), and preservative INS 211 (Sodium Benzoate). Dietary guidelines suggest limiting intake of sugary beverages.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें 19.5% आम का पल्प, 13.2 ग्राम अतिरिक्त चीनी प्रति 100ml, अनुमत सिंथेटिक रंग (INS 110) और प्रिजर्वेटिव (INS 211 सोडियम बेंजोएट) दर्ज है। स्वास्थ्य मानकों अनुसार मीठे पेयों का सीमित सेवन करें।",
     isVegetarian: true,
     fssaiNumber: "10012022000264",
     packagingSize: "160ml / 600ml",
     warnings: [
       {
         type: "artificial_colours",
-        titleEn: "Sunset Yellow FCF (INS 110)",
-        titleHi: "सनसेट येलो कृत्रिम रंग (INS 110)",
+        titleEn: "Synthetic Colour (INS 110)",
+        titleHi: "सिंथेटिक रंग (INS 110)",
         severity: "high",
-        tagValue: "INS 110 Synthetic Dye",
-        descriptionEn: "Coal-tar derived azo dye linked in international pediatric studies to hyperactivity in children.",
-        descriptionHi: "सिंथेटिक केमिकल रंग जो बच्चों में बेचैनी (Hyperactivity) और एलर्जी पैदा कर सकता है।"
+        tagValue: "Sunset Yellow FCF",
+        descriptionEn: "Contains permitted synthetic food colour Sunset Yellow FCF (INS 110) as declared on the pack.",
+        descriptionHi: "पैकेट अनुसार इसमें अनुमत सिंथेटिक रंग सनसेट येलो FCF (INS 110) शामिल है।"
       },
       {
         type: "preservatives",
-        titleEn: "Sodium Benzoate (INS 211)",
-        titleHi: "सोडियम बेंजोएट (INS 211)",
+        titleEn: "Class II Preservative (INS 211)",
+        titleHi: "प्रिजर्वेटिव सोडियम बेंजोएट (INS 211)",
         severity: "medium",
-        tagValue: "INS 211 Preservative",
-        descriptionEn: "When combined with Vitamin C in acidic conditions, can form trace benzene rings.",
-        descriptionHi: "एसिडिक माहौल में हानिकारक तत्वों में बदलने का जोखिम।"
+        tagValue: "Sodium Benzoate",
+        descriptionEn: "Contains permitted preservative INS 211 for shelf stability.",
+        descriptionHi: "शेल्फ लाइफ बनाए रखने के लिए अनुमत प्रिजर्वेटिव INS 211 का उपयोग।"
       },
       {
         type: "added_sugar",
-        titleEn: "13.2g Sugar per 100ml",
-        titleHi: "13.2 ग्राम चीनी प्रति 100ml",
+        titleEn: "13.2g Added Sugar / 100ml",
+        titleHi: "13.2 ग्राम अतिरिक्त चीनी प्रति 100ml",
         severity: "high",
-        tagValue: "21g Sugar per TetraPak",
-        descriptionEn: "A single 160ml pocket pack delivers 5 teaspoons of pure sugar.",
-        descriptionHi: "छोटे से पैक में ही 5 चम्मच सफेद चीनी।"
+        tagValue: "13.2g Sugar / 100ml",
+        descriptionEn: "High added sugar content contributing 13.2g simple sugars per 100ml.",
+        descriptionHi: "प्रति 100ml में 13.2g अतिरिक्त चीनी घोषित है।"
       }
     ],
     nutritionPer100g: {
@@ -1238,15 +1238,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Added Flavours (Nature Identical Mango Flavour)"
     ],
     ingredientsExplanation: [
-      { name: "Water & Sugar", nameHi: "पानी और चीनी", purpose: "Base liquid filler", safety: "hazard" },
-      { name: "Mango Pulp (19.5%)", nameHi: "आम का गूदा", purpose: "Fruit flavor and texture", safety: "safe" },
-      { name: "INS 110 Sunset Yellow", nameHi: "सिंथेटिक पीला रंग", purpose: "Artificial bright mango illusion", safety: "hazard" },
-      { name: "INS 211 Sodium Benzoate", nameHi: "सोडियम बेंजोएट", purpose: "Shelf life extension", safety: "caution" }
+      { name: "Water & Sugar", nameHi: "पानी और चीनी", purpose: "Base liquid beverage formulation", safety: "hazard" },
+      { name: "Mango Pulp (19.5%)", nameHi: "आम का गूदा", purpose: "Fruit pulp ingredient", safety: "safe" },
+      { name: "INS 110 Sunset Yellow", nameHi: "सिंथेटिक पीला रंग", purpose: "Permitted food colouring", safety: "hazard" },
+      { name: "INS 211 Sodium Benzoate", nameHi: "सोडियम बेंजोएट", purpose: "Permitted food preservative", safety: "caution" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Legally sold under 'Ready-to-serve fruit beverage', but parents must know it has artificial azo dyes.",
-      detailsHi: "बच्चों को पिलाने से पहले कृत्रिम रंगों का ध्यान रखें।"
+      detailsEn: "Manufactured in compliance with FSSAI regulations for ready-to-serve fruit beverages.",
+      detailsHi: "FSSAI रेडी-टू-सर्व फ्रूट बेवरेज मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -1273,29 +1273,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Extreme liquid sugar (10.6g per 100ml / ~35g in a 330ml can = 8.5 teaspoons of sugar), zero protein, zero micronutrients, contains Phosphoric Acid (INS 338) that erodes teeth and depletes calcium, along with Caramel IV (INS 150d) containing trace 4-MEI chemical.",
-    summaryHi: "अत्यधिक घुली हुई चीनी (10.6g प्रति 100ml यानी 1 केन में 8-9 चम्मच चीनी), 0% प्रोटीन, दांतों को कमजोर करने वाला फॉस्फोरिक एसिड (INS 338) और केमिकल कैरेमल रंग (INS 150d)। सेहत के लिए अत्यंत नुकसानदेह।",
+    summaryEn: "As declared on package label: Carbonated water with 10.6g added sugar per 100ml (~35g sugar per 330ml can), acidity regulator Phosphoric Acid (INS 338), and permitted food colour Caramel IV (INS 150d). ICMR and WHO dietary guidelines recommend minimizing consumption of sugar-sweetened carbonated soft drinks.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें कार्बोनेटेड पानी, 10.6g अतिरिक्त चीनी प्रति 100ml (330ml कैन में ~35g चीनी), फॉस्फोरिक एसिड (INS 338) और कैरेमल रंग (INS 150d) दर्ज हैं। ICMR व WHO दिशानिर्देशों अनुसार मीठे कार्बोनेटेड पेयों का सेवन कम से कम करने की सलाह दी जाती है।",
     isVegetarian: true,
     fssaiNumber: "10012011000120",
     packagingSize: "250ml / 600ml / 750ml",
     warnings: [
       {
         type: "added_sugar",
-        titleEn: "Extreme Liquid Sugar (10.6g / 100ml)",
-        titleHi: "अत्यधिक तरल चीनी (10.6g / 100ml)",
+        titleEn: "Added Liquid Sugar (10.6g / 100ml)",
+        titleHi: "अतिरिक्त तरल चीनी (10.6g / 100ml)",
         severity: "high",
-        tagValue: "35g Sugar per Can",
-        descriptionEn: "Liquid sucrose / high fructose syrup bypasses satiety triggers, causing instant liver fat accumulation, insulin resistance, and visceral obesity.",
-        descriptionHi: "कोल्ड्रिंक में घुली हुई चीनी खून में सीधे मिलकर फैटी लिवर, इंसुलिन रेजिस्टेंस और तेजी से वजन/डायबिटीज बढ़ाती है।"
+        tagValue: "10.6g Sugar / 100ml",
+        descriptionEn: "High added sugar content contributing 35g sucrose per 330ml serving with 0g protein or dietary fiber.",
+        descriptionHi: "प्रति 100ml में 10.6g अतिरिक्त चीनी दर्ज है, जिसमें प्रोटीन व फाइबर शून्य हैं।"
       },
       {
         type: "artificial_colours",
         titleEn: "Caramel IV Colour (INS 150d)",
         titleHi: "कैरामेलाइज़्ड रंग IV (INS 150d)",
         severity: "high",
-        tagValue: "INS 150d Synthetic Color",
-        descriptionEn: "Processed under high temperature with ammonia and sulfites, producing trace 4-MEI (4-Methylimidazole), listed as a potential health hazard.",
-        descriptionHi: "अमोनिया और सल्फाइट प्रक्रिया से बना कृत्रिम काला रंग, जिसमें हानिकारक 4-MEI केमिकल के अंश होते हैं।"
+        tagValue: "Permitted Class IV Caramel",
+        descriptionEn: "Sulfite ammonia caramel colour permitted under FSSAI standards.",
+        descriptionHi: "FSSAI मानकों के तहत अनुमत क्लास IV कैरेमल रंग।"
       },
       {
         type: "preservatives",
@@ -1303,8 +1303,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "फॉस्फोरिक एसिड (INS 338)",
         severity: "high",
         tagValue: "Acidity Regulator 338",
-        descriptionEn: "Acidic pH (~2.5) erodes tooth enamel and alters calcium-phosphorus bone homeostasis over prolonged consumption.",
-        descriptionHi: "अत्यधिक अम्लीय (pH 2.5), जो दांतों के इनेमल को गलाता है और हड्डियों से कैल्शियम सोख लेता है।"
+        descriptionEn: "Acidulant providing characteristic tartness in cola beverages.",
+        descriptionHi: "कोला पेयों में स्वाद और अम्लता संतुलन हेतु प्रयुक्त एसिडुलेंट।"
       }
     ],
     nutritionPer100g: {
@@ -1328,16 +1328,16 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Caffeine"
     ],
     ingredientsExplanation: [
-      { name: "Carbonated Water", nameHi: "कार्बोनेटेड पानी", purpose: "Fizz and base liquid", safety: "safe" },
-      { name: "Sugar (10.6g)", nameHi: "अतिरिक्त सफेद चीनी", purpose: "Intense sweetness & empty calories", safety: "hazard" },
-      { name: "INS 338 Phosphoric Acid", nameHi: "फॉस्फोरिक एसिड", purpose: "Tart acid kick (causes dental & bone erosion)", safety: "hazard" },
-      { name: "INS 150d Caramel IV", nameHi: "कैरामेलाइज्ड रंग", purpose: "Dark brown cola color (contains 4-MEI)", safety: "hazard" },
-      { name: "Caffeine", nameHi: "कैफीन", purpose: "Mild central stimulant", safety: "caution" }
+      { name: "Carbonated Water", nameHi: "कार्बोनेटेड पानी", purpose: "Carbonated beverage base", safety: "safe" },
+      { name: "Sugar (10.6g)", nameHi: "अतिरिक्त चीनी", purpose: "Sweetening ingredient", safety: "hazard" },
+      { name: "INS 338 Phosphoric Acid", nameHi: "फॉस्फोरिक एसिड", purpose: "Permitted acidity regulator", safety: "hazard" },
+      { name: "INS 150d Caramel IV", nameHi: "कैरामेलाइज्ड रंग", purpose: "Permitted food coloring", safety: "hazard" },
+      { name: "Caffeine", nameHi: "कैफीन", purpose: "Permitted flavoring stimulant", safety: "caution" }
     ],
     adulterationCheck: {
-      riskLevel: "Moderate",
-      detailsEn: "Legally compliant under carbonated water rules, but zero nutritional value and high metabolic burden.",
-      detailsHi: "पोषण मूल्य 0% (शून्य प्रोटीन, शून्य विटामिन), केवल खाली कैलोरी और केमिकल।"
+      riskLevel: "Low",
+      detailsEn: "Complies with FSSAI regulations for caffeinated carbonated beverages.",
+      detailsHi: "FSSAI कार्बोनेटेड पेय मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -1383,29 +1383,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "10.6g sugar per 100ml (35g sugar in a can), 0g protein, with Phosphoric Acid (INS 338) and Caramel IV (INS 150d). Contributes to insulin resistance, dental decay, and metabolic syndrome.",
-    summaryHi: "10.6 ग्राम चीनी प्रति 100ml, 0 ग्राम प्रोटीन। फॉस्फोरिक एसिड और केमिकल कैरेमल रंग से युक्त। स्वास्थ्य के लिए बेहद हानिकारक।",
+    summaryEn: "As declared on package label: Contains carbonated water, 10.6g added sugar per 100ml, Phosphoric Acid (INS 338), Caramel IV (INS 150d), and caffeine. ICMR and WHO guidelines recommend moderating intake of sweetened carbonated beverages.",
+    summaryHi: "पैकेट पर घोषित पोषण लेबल अनुसार: इसमें कार्बोनेटेड पानी, 10.6 ग्राम अतिरिक्त चीनी प्रति 100ml, फॉस्फोरिक एसिड (INS 338), कैरेमल रंग (INS 150d) और कैफीन दर्ज हैं। स्वास्थ्य दिशानिर्देशों अनुसार इसका सीमित सेवन करें।",
     isVegetarian: true,
     fssaiNumber: "10012011000120",
     packagingSize: "300ml / 750ml",
     warnings: [
       {
         type: "added_sugar",
-        titleEn: "Extreme Added Sugar (10.6g / 100ml)",
-        titleHi: "अत्यधिक चीनी (10.6g / 100ml)",
+        titleEn: "Added Sugar (10.6g / 100ml)",
+        titleHi: "अतिरिक्त चीनी (10.6g / 100ml)",
         severity: "high",
         tagValue: "10.6g Sugar/100ml",
-        descriptionEn: "Massive sugar load causes severe blood glucose surges and visceral fat buildup.",
-        descriptionHi: "ब्लड शुगर और इंसुलिन में तेजी से उछाल, फैटी लिवर का मुख्य कारण।"
+        descriptionEn: "High added sugar content contributing 10.6g simple sugars per 100ml.",
+        descriptionHi: "प्रति 100ml में 10.6g अतिरिक्त चीनी सामग्री दर्ज है।"
       },
       {
         type: "artificial_colours",
         titleEn: "Caramel IV (INS 150d)",
         titleHi: "कैरेमल रंग IV (INS 150d)",
         severity: "high",
-        tagValue: "Sulfite Ammonia Caramel",
-        descriptionEn: "Processed caramel dye containing trace 4-methylimidazole by-products.",
-        descriptionHi: "रासायनिक विधि से बना गहरा भूरा रंग।"
+        tagValue: "Permitted Caramel Color",
+        descriptionEn: "Permitted food colour Caramel IV (INS 150d) under FSSAI guidelines.",
+        descriptionHi: "FSSAI दिशानिर्देशों के तहत अनुमत क्लास IV कैरेमल रंग।"
       }
     ],
     nutritionPer100g: {
@@ -1429,15 +1429,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Caffeine"
     ],
     ingredientsExplanation: [
-      { name: "Carbonated Water", nameHi: "सोडा पानी", purpose: "Fizz liquid", safety: "safe" },
-      { name: "Sugar (10.6g)", nameHi: "सफेद चीनी", purpose: "Sweetener", safety: "hazard" },
-      { name: "INS 338", nameHi: "फॉस्फोरिक एसिड", purpose: "Acidity kick", safety: "hazard" },
-      { name: "INS 150d", nameHi: "कैरामेलाइज़्ड रंग", purpose: "Dark dye", safety: "hazard" }
+      { name: "Carbonated Water", nameHi: "सोडा पानी", purpose: "Carbonated water base", safety: "safe" },
+      { name: "Sugar (10.6g)", nameHi: "सफेद चीनी", purpose: "Sweetening ingredient", safety: "hazard" },
+      { name: "INS 338", nameHi: "फॉस्फोरिक एसिड", purpose: "Permitted acidity regulator", safety: "hazard" },
+      { name: "INS 150d", nameHi: "कैरामेलाइज़्ड रंग", purpose: "Permitted food coloring", safety: "hazard" }
     ],
     adulterationCheck: {
-      riskLevel: "Moderate",
-      detailsEn: "High acidity and pure refined sugar formulation.",
-      detailsHi: "अत्यधिक एसिडिक और अत्यधिक मीठा।"
+      riskLevel: "Low",
+      detailsEn: "Complies with FSSAI standards for carbonated beverages.",
+      detailsHi: "FSSAI कार्बोनेटेड पेय मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -1474,8 +1474,8 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Avoid Karein",
     verdictHindi: "बचने की सलाह",
     verdictType: "red",
-    summaryEn: "Formulated with 76% Refined Wheat Flour (Maida), Palm Oil, Class II Preservatives (INS 282), and chemical dough conditioners (INS 471/481). High glycemic index triggers rapid blood sugar and insulin spikes.",
-    summaryHi: "76% मैदा, पाम ऑयल, केमिकल प्रिजर्वेटिव (INS 282) और इमल्सीफायर से तैयार। फाइबर की कमी के कारण ब्लड शुगर और इंसुलिन तेजी से बढ़ता है।",
+    summaryEn: "As declared on package label: Contains 76% refined wheat flour (maida), edible vegetable fat (palm oil), permitted preservatives (INS 282), and permitted emulsifiers (INS 471, INS 481). Refined flour provides lower dietary fiber compared to whole grain alternatives.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: इसमें 76% मैदा, पाम ऑयल, अनुमत प्रिजर्वेटिव (INS 282) और इमल्सीफायर (INS 471, INS 481) दर्ज हैं। साबुत अनाज की तुलना में रिफाइंड आटे में पाचक फाइबर कम होता है।",
     isVegetarian: true,
     fssaiNumber: "10012011000109",
     packagingSize: "400g / 700g",
@@ -1486,26 +1486,26 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
         titleHi: "76% मैदा (रिफाइंड आटा)",
         severity: "high",
         tagValue: "76% Maida Base",
-        descriptionEn: "Stripped of whole wheat bran and germ, leaving only pure starch that converts rapidly to glucose.",
-        descriptionHi: "बिना चोकर का रिफाइंड आटा जो आंतों में चिपकता है और पाचन को सुस्त बनाता है।"
+        descriptionEn: "Formulated primarily with refined wheat flour with low dietary fiber (1.2g per 100g).",
+        descriptionHi: "रिफाइंड गेहूं आटा जिसमें 1.2g प्रति 100g पाचक फाइबर घोषित है।"
       },
       {
         type: "palm_oil",
-        titleEn: "Refined Palm Oil Shortening",
-        titleHi: "रिफाइंड पाम ऑयल",
+        titleEn: "Refined Palm Fat",
+        titleHi: "रिफाइंड पाम फैट",
         severity: "high",
         tagValue: "Palm Fat Shortening",
-        descriptionEn: "Used to soften bread crumb and reduce production cost. High in saturated palmitic acid.",
-        descriptionHi: "ब्रेड को मुलायम रखने के लिए पाम फैट का उपयोग जो बैड कोलेस्ट्रॉल बढ़ाता है।"
+        descriptionEn: "Edible vegetable fat (palm oil) used for dough shortening and moisture retention.",
+        descriptionHi: "ब्रेड की बनावट और नमी संतुलन हेतु पाम फैट का उपयोग।"
       },
       {
         type: "preservatives",
-        titleEn: "INS 282 Calcium Propionate & INS 481",
-        titleHi: "केमिकल प्रिजर्वेटिव INS 282 और इमल्सीफायर",
+        titleEn: "Permitted Preservatives (INS 282)",
+        titleHi: "अनुमत प्रिजर्वेटिव (INS 282)",
         severity: "medium",
         tagValue: "INS 282 / 471 / 481",
-        descriptionEn: "Chemical mould inhibitors and crumb softeners that may trigger gut microbiome imbalances.",
-        descriptionHi: "फफूंद रोकने के लिए डाले जाने वाले केमिकल एडिटिव्स।"
+        descriptionEn: "Permitted mould inhibitor and dough conditioning agents.",
+        descriptionHi: "ब्रेड की शेल्फ लाइफ बनाए रखने के लिए अनुमत खाद्य एडिटिव्स।"
       }
     ],
     nutritionPer100g: {
@@ -1534,16 +1534,16 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Flour Treatment Agent (INS 1100(i))"
     ],
     ingredientsExplanation: [
-      { name: "Maida (76%)", nameHi: "मैदा", purpose: "Cheap bulk refined flour with zero wheat bran", safety: "hazard" },
-      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Crumb softness and shelf stabilization", safety: "hazard" },
-      { name: "INS 282 (Calcium Propionate)", nameHi: "कैल्शियम प्रोपियोनेट", purpose: "Anti-fungal preservative", safety: "caution" },
-      { name: "INS 481 (Sodium Stearoyl Lactylate)", nameHi: "डफ कंडीशनर", purpose: "Synthetic texture enhancer", safety: "caution" },
-      { name: "Yeast & Salt", nameHi: "यीस्ट व नमक", purpose: "Natural fermentation & seasoning", safety: "safe" }
+      { name: "Maida (76%)", nameHi: "मैदा", purpose: "Refined wheat flour dough base", safety: "hazard" },
+      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Crumb softness shortening", safety: "hazard" },
+      { name: "INS 282 (Calcium Propionate)", nameHi: "कैल्शियम प्रोपियोनेट", purpose: "Permitted anti-fungal preservative", safety: "caution" },
+      { name: "INS 481 (Sodium Stearoyl Lactylate)", nameHi: "डफ कंडीशनर", purpose: "Permitted texture conditioner", safety: "caution" },
+      { name: "Yeast & Salt", nameHi: "यीस्ट व नमक", purpose: "Fermentation & seasoning", safety: "safe" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Manufactured under industrial hygiene norms, but chemically preserved refined maida profile.",
-      detailsHi: "औद्योगिक रूप से तैयार, लेकिन मैदा और प्रिजर्वेटिव्स से भरपूर।"
+      detailsEn: "Complies with FSSAI regulations for packaged bread.",
+      detailsHi: "FSSAI पैकेज्ड ब्रेड मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {
@@ -1592,29 +1592,29 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
     verdict: "Soch Samajh Kar",
     verdictHindi: "सोच समझ कर",
     verdictType: "yellow",
-    summaryEn: "Better than white bread because it uses whole wheat flour, but contains added refined Palm Oil, INS 150d Caramel color (to darken the brown shade), and class II chemical preservatives.",
-    summaryHi: "सफेद ब्रेड से बेहतर क्योंकि इसमें गेहूं का आटा है, लेकिन ब्रेड को गहरा भूरा दिखाने के लिए कैरेमल रंग (INS 150d), पाम ऑयल और प्रिजर्वेटिव्स मिलाए गए हैं।",
+    summaryEn: "As declared on package label: Contains 55% Whole Wheat Flour (Atta), edible vegetable oil (palmolein), permitted colour Caramel IV (INS 150d), and permitted preservative (INS 282). Provides 5.5g dietary fiber per 100g.",
+    summaryHi: "पैकेट पर घोषित सामग्री अनुसार: इसमें 55% साबुत गेहूं आटा (आटा), पामोलिन तेल, अनुमत कैरेमल रंग (INS 150d) और प्रिजर्वेटिव (INS 282) दर्ज है। प्रति 100 ग्राम 5.5 ग्राम पाचक फाइबर उपलब्ध कराता है।",
     isVegetarian: true,
     fssaiNumber: "10015043001129",
     packagingSize: "400g",
     warnings: [
       {
         type: "palm_oil",
-        titleEn: "Contains Refined Palm Oil",
-        titleHi: "रिफाइंड पाम ऑयल",
+        titleEn: "Contains Palmolein Oil",
+        titleHi: "पामोलिन तेल",
         severity: "medium",
         tagValue: "Refined Palm Fat",
-        descriptionEn: "Added vegetable fat shortening for moisture retention and longer commercial shelf life.",
-        descriptionHi: "नमी और शेल्फ लाइफ बढ़ाने के लिए पाम फैट का उपयोग।"
+        descriptionEn: "Contains palmolein vegetable fat for texture and shelf stabilization.",
+        descriptionHi: "बनावट और शेल्फ लाइफ स्थिरता के लिए पामोलिन तेल का उपयोग।"
       },
       {
         type: "preservatives",
-        titleEn: "Caramel IV (INS 150d) & Preservatives",
-        titleHi: "कैरेमल रंग (INS 150d) व प्रिजर्वेटिव्स",
+        titleEn: "Caramel IV (INS 150d) & Preservative",
+        titleHi: "कैरेमल रंग (INS 150d) व प्रिजर्वेटिव",
         severity: "medium",
         tagValue: "INS 150d Color",
-        descriptionEn: "Synthetic dark caramel dye added to create a deep wholesome brown appearance.",
-        descriptionHi: "ब्रेड को 'ब्राउन' रंग देने के लिए कैरेमल कलर का इस्तेमाल।"
+        descriptionEn: "Permitted caramel food colour and mould inhibitor (INS 282) as declared on pack.",
+        descriptionHi: "पैकेट अनुसार अनुमत कैरेमल रंग और फफूंद रोधी प्रिजर्वेटिव INS 282।"
       }
     ],
     nutritionPer100g: {
@@ -1642,15 +1642,15 @@ export const INDIAN_PRODUCTS_DB: FoodProduct[] = [
       "Acidity Regulator (INS 270)"
     ],
     ingredientsExplanation: [
-      { name: "Whole Wheat Flour (Atta)", nameHi: "साबुत गेहूं आटा", purpose: "Grain base with dietary fiber", safety: "safe" },
-      { name: "INS 150d (Caramel IV)", nameHi: "कैरेमल रंग", purpose: "Synthetic brown coloring", safety: "caution" },
-      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Shortening agent", safety: "caution" },
-      { name: "INS 282", nameHi: "प्रिजर्वेटिव", purpose: "Mould inhibitor", safety: "caution" }
+      { name: "Whole Wheat Flour (Atta)", nameHi: "साबुत गेहूं आटा", purpose: "Whole wheat grain base with dietary fiber", safety: "safe" },
+      { name: "INS 150d (Caramel IV)", nameHi: "कैरेमल रंग", purpose: "Permitted caramel food coloring", safety: "caution" },
+      { name: "Palm Oil", nameHi: "पाम तेल", purpose: "Vegetable fat shortening", safety: "caution" },
+      { name: "INS 282", nameHi: "प्रिजर्वेटिव", purpose: "Permitted mould inhibitor", safety: "caution" }
     ],
     adulterationCheck: {
       riskLevel: "Low",
-      detailsEn: "Complies with FSSAI whole wheat naming regulations.",
-      detailsHi: "एफएसएसएआई मानकों पर आधारित।"
+      detailsEn: "Complies with FSSAI whole wheat bread standards.",
+      detailsHi: "FSSAI होल व्हीट ब्रेड मानकों के अनुरूप।"
     },
     cleanerAlternatives: [
       {

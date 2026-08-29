@@ -1,13 +1,13 @@
 import React from "react";
 import {
   Mail,
-  Phone,
   Headphones,
   HeartHandshake,
   ShieldCheck,
   Info,
   Lock,
-  Crown
+  Crown,
+  AlertTriangle
 } from "lucide-react";
 import { Language } from "../types";
 
@@ -16,6 +16,7 @@ interface ContactSupportProps {
   isDark?: boolean;
   onOpenAbout?: () => void;
   onOpenPrivacy?: () => void;
+  onOpenDisclaimer?: () => void;
   onOpenAdmin?: () => void;
   isOwner?: boolean;
 }
@@ -25,6 +26,7 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
   isDark = false,
   onOpenAbout,
   onOpenPrivacy,
+  onOpenDisclaimer,
   onOpenAdmin,
   isOwner = false,
 }) => {
@@ -70,20 +72,51 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
         </div>
       </div>
 
-      {/* Quick Navigation Quick-Links: About Us, Privacy Policy, [Founder Admin if logged in] */}
-      <div className={`grid ${isOwner && onOpenAdmin ? "grid-cols-3" : "grid-cols-2"} gap-2.5 pt-1`}>
+      {/* Trust & Safety Highlights Badge */}
+      <div
+        className={`p-3.5 rounded-2xl border flex items-center gap-3 text-xs ${
+          isDark
+            ? "bg-[#22c55e]/10 border-[#22c55e]/20 text-stone-200"
+            : "bg-[#F0FDF4] border-[#DCFCE7] text-[#15803d]"
+        }`}
+      >
+        <ShieldCheck className="w-4 h-4 text-[#22c55e] flex-shrink-0" />
+        <span className="font-medium">
+          {isHindi
+            ? "सार्वजनिक खाद्य सुरक्षा मानकों (FSSAI/ICMR Guidelines) पर आधारित स्वतंत्र उपभोक्ता विश्लेषण।"
+            : "Independent consumer awareness based on FSSAI & ICMR public food safety benchmarks."}
+        </span>
+      </div>
+
+      {/* Quick Navigation Quick-Links */}
+      <div className={`grid ${isOwner && onOpenAdmin ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"} gap-2.5 pt-1`}>
         {onOpenAbout && (
           <button
             id="footer-about-us-btn"
             onClick={onOpenAbout}
-            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
                 : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
             }`}
           >
-            <Info className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+            <Info className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
             <span className="truncate">{isHindi ? "हमारे बारे में" : "About Us"}</span>
+          </button>
+        )}
+
+        {onOpenDisclaimer && (
+          <button
+            id="footer-disclaimer-btn"
+            onClick={onOpenDisclaimer}
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
+              isDark
+                ? "bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50 text-amber-300"
+                : "bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-800"
+            }`}
+          >
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "अस्वीकरण" : "Disclaimer"}</span>
           </button>
         )}
 
@@ -91,13 +124,13 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           <button
             id="footer-privacy-btn"
             onClick={onOpenPrivacy}
-            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-zinc-800/80 border-zinc-700 hover:bg-zinc-700 text-zinc-100"
                 : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-[#059669]"
             }`}
           >
-            <Lock className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+            <Lock className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
             <span className="truncate">{isHindi ? "गोपनीयता नीति" : "Privacy Policy"}</span>
           </button>
         )}
@@ -107,21 +140,20 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           <button
             id="footer-admin-btn"
             onClick={onOpenAdmin}
-            className={`p-3 rounded-2xl border flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
+            className={`p-2.5 rounded-2xl border flex items-center justify-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
               isDark
                 ? "bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/50 text-amber-300"
                 : "bg-amber-50 border-amber-200 hover:bg-amber-100 text-amber-800"
             }`}
           >
-            <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />
+            <Crown className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
             <span className="truncate">{isHindi ? "एडमिन पैनल" : "Founder Panel"}</span>
           </button>
         )}
       </div>
 
-      {/* 2 Big Action Cards: Email & Phone */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {/* Email Direct Action Button */}
+      {/* Official Support Email Card */}
+      <div>
         <a
           id="contact-email-btn"
           href="mailto:sadiquehavari@gmail.com"
@@ -137,7 +169,7 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
           </div>
           <div className="min-w-0 flex-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#22c55e] block">
-              {isHindi ? "आधिकारिक ईमेल (OFFICIAL EMAIL)" : "OFFICIAL EMAIL"}
+              {isHindi ? "आधिकारिक ईमेल (OFFICIAL SUPPORT EMAIL)" : "OFFICIAL SUPPORT EMAIL"}
             </span>
             <span
               className="text-xs sm:text-sm font-semibold text-[#000000] dark:text-stone-100 group-hover:text-[#15803d] dark:group-hover:text-[#22c55e] transition-colors truncate block mt-0.5"
@@ -150,41 +182,11 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
             </span>
           </div>
         </a>
-
-        {/* Phone Helpline Direct Action Button */}
-        <a
-          id="contact-phone-btn"
-          href="tel:+917355163471"
-          className={`p-4 rounded-2xl border transition-all flex items-center gap-3.5 group cursor-pointer ${
-            isDark
-              ? "bg-stone-800/60 border-stone-700/80 hover:border-[#22c55e] hover:bg-stone-800"
-              : "bg-white border-stone-200 hover:border-[#22c55e] hover:bg-[#F0FDF4] shadow-sm"
-          }`}
-          title="Call +91 7355163471"
-        >
-          <div className="w-11 h-11 rounded-2xl bg-[#22c55e]/20 text-[#22c55e] group-hover:bg-[#22c55e] group-hover:text-white transition-all flex items-center justify-center flex-shrink-0 shadow-xs">
-            <Phone className="w-5 h-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#22c55e] block">
-              {isHindi ? "हेल्पलाइन फ़ोन (HELPLINE PHONE)" : "HELPLINE PHONE"}
-            </span>
-            <span
-              className="text-xs sm:text-sm font-semibold text-[#000000] dark:text-stone-100 group-hover:text-[#15803d] dark:group-hover:text-[#22c55e] transition-colors truncate block mt-0.5"
-              style={{ fontWeight: 600, color: isDark ? undefined : "#000000" }}
-            >
-              +91 7355163471
-            </span>
-            <span className="text-[11px] text-[#22c55e] font-medium block mt-0.5" style={{ fontWeight: 500 }}>
-              {isHindi ? "क्लिक करके कॉल करें →" : "Click to call →"}
-            </span>
-          </div>
-        </a>
       </div>
 
-      {/* Copyright Line */}
+      {/* Copyright & Disclaimer Line */}
       <div className="mt-4 pt-3.5 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#111827] dark:text-stone-300 gap-2">
-        <span className="font-semibold text-[#111827] dark:text-stone-300">© 2026 Ahariq • Promoting Healthier Eating for India</span>
+        <span className="font-semibold text-[#111827] dark:text-stone-300">© 2026 Ahariq • Independent Food Awareness</span>
         <span className="text-[#22c55e] font-bold">
           {isHindi ? "स्वस्थ भारत 🇮🇳" : "Clean Food for India 🇮🇳"}
         </span>

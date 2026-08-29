@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FoodProduct, Language, CleanerAlternative, IndianHazardWarning } from "../types";
+import { UI_TRANSLATIONS } from "../i18n/translations";
 import { getSmartCleanerAlternatives } from "../data/cleanAlternativesEngine";
 import { getDynamicHazardSummary, getSynchronizedIngredientsExplanation } from "../services/openFoodFacts";
 import { formatSafeHazardWarning } from "../utils/hazardFormatter";
+import { getAlternativeRealImage, convertAlternativeToFoodProduct } from "../utils/alternativeImages";
 import {
   ArrowLeft,
   Bookmark,
@@ -53,6 +55,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
   onSelectAlternative,
 }) => {
   const isHindi = language === "hi";
+  const t = UI_TRANSLATIONS[language] || UI_TRANSLATIONS["en"];
   const [activeTab, setActiveTab] = useState<"overview" | "ingredients" | "nutrition" | "alternatives">("overview");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [speakingCardIndex, setSpeakingCardIndex] = useState<number | null>(null);
@@ -645,7 +648,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
           </div>
         </div>
 
-        {/* Navigation Tabs (Overview & Hazards, Ingredients Decoder, Nutrition, Alternatives) */}
+        {/* Navigation Tabs - Swapped order so Alternatives is right next to Hazards */}
         <div
           className={`flex border text-xs font-bold overflow-x-auto no-scrollbar gap-1.5 p-1.5 rounded-2xl ${
             isDark ? "bg-[#161C24] border-slate-800" : "bg-white border-slate-200/80 shadow-xs"
@@ -659,27 +662,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            {isHindi ? "समीक्षा व खतरे" : "Hazards"} ({product.warnings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("ingredients")}
-            className={`flex-1 py-2.5 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
-              activeTab === "ingredients"
-                ? "bg-[#059669] text-white shadow-sm font-bold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            {isHindi ? "सामग्री डिकोडर" : "Ingredients"}
-          </button>
-          <button
-            onClick={() => setActiveTab("nutrition")}
-            className={`flex-1 py-2.5 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
-              activeTab === "nutrition"
-                ? "bg-[#059669] text-white shadow-sm font-bold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            {isHindi ? "पोषण (Nutrition)" : "Nutrition"}
+            {t.hazardsTab || (isHindi ? "समीक्षा व खतरे" : "Hazards")} ({product.warnings.length})
           </button>
           <button
             onClick={() => setActiveTab("alternatives")}
@@ -690,8 +673,28 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
             }`}
           >
             {isCleanChoice
-              ? (isHindi ? "उत्पाद स्थिति (Best)" : "Status (Best)")
-              : `${isHindi ? "स्वस्थ विकल्प" : "Alternatives"} (${cleanAlternatives.length})`}
+              ? (language === "ar" ? "منتج نظيف ومثالي" : language === "fr" ? "Choix 100% Propre" : isHindi ? "उत्पाद स्थिति (Best)" : "Status (Best)")
+              : `${t.alternativesTab || (isHindi ? "स्वस्थ विकल्प" : "Alternatives")} (${cleanAlternatives.length})`}
+          </button>
+          <button
+            onClick={() => setActiveTab("ingredients")}
+            className={`flex-1 py-2.5 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "ingredients"
+                ? "bg-[#059669] text-white shadow-sm font-bold"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            {t.ingredientsTab || (isHindi ? "सामग्री डिकोडर" : "Ingredients")}
+          </button>
+          <button
+            onClick={() => setActiveTab("nutrition")}
+            className={`flex-1 py-2.5 px-3 rounded-xl transition-all whitespace-nowrap text-center cursor-pointer ${
+              activeTab === "nutrition"
+                ? "bg-[#059669] text-white shadow-sm font-bold"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            {t.nutritionTab || (isHindi ? "पोषण (Nutrition)" : "Nutrition")}
           </button>
         </div>
 
@@ -703,7 +706,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
               <div className="flex items-center justify-between px-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                  <span>{isHindi ? "यह उत्पाद क्यों नुकसानदेह हो सकता है?" : "Key Ingredient Warnings & Hazards"}</span>
+                  <span>{isHindi ? "सामग्री व पोषण संबंधी ध्यान देने योग्य बिंदु" : "Key Ingredient & Nutrition Alerts"}</span>
                 </h3>
                 <span className="text-xs font-semibold text-slate-400">
                   {product.warnings.length === 0
@@ -802,7 +805,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {/* Voice Doctor Note Speaker Button */}
+                          {/* Voice Nutrition Audio Note Button */}
                           <button
                             id={`hazard-voice-btn-${index}`}
                             type="button"
@@ -816,8 +819,8 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                             }`}
                             title={
                               speakingCardIndex === index
-                                ? isHindi ? "आवाज बंद करें" : "Stop voice note"
-                                : isHindi ? "डॉक्टर की आवाज में सुनें" : "Listen (Doctor's Note)"
+                                ? isHindi ? "आवाज बंद करें" : "Stop audio explanation"
+                                : isHindi ? "ऑडियो विवरण सुनें" : "Listen (Audio Analysis)"
                             }
                             aria-label="Listen to hazard note"
                           >
@@ -837,11 +840,11 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                           <span
                             className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
                               isHighSeverity
-                                ? "bg-red-500/20 text-red-700 dark:text-red-300 border border-red-500/30"
-                                : "bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30"
+                                ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30"
+                                : "bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/30"
                             }`}
                           >
-                            {isHighSeverity ? (isHindi ? "हानिकारक" : "High Risk") : (isHindi ? "मध्यम" : "Moderate")}
+                            {isHighSeverity ? (isHindi ? "उच्च स्तर • ध्यान दें" : "High Level • Caution") : (isHindi ? "मध्यम स्तर" : "Moderate")}
                           </span>
                         </div>
                       </div>
@@ -946,32 +949,67 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   </div>
                 </div>
 
-                {/* Top Alternative Card Item */}
+                {/* Top Alternative Card Item with Real Image - Fully Clickable */}
                 <div
-                  className={`p-4 rounded-2xl border transition-all ${
-                    isDark ? "bg-[#1B232E] border-slate-700" : "bg-white border-slate-200/90 shadow-xs"
+                  className={`p-4 sm:p-5 rounded-3xl border transition-all ${
+                    isDark ? "bg-[#1B232E] border-slate-700 hover:border-emerald-700/80" : "bg-white border-slate-200/90 hover:border-emerald-300 shadow-xs"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-                          {cleanAlternatives[0].brand}
-                        </span>
-                        {(cleanAlternatives[0].price || cleanAlternatives[0].priceEst) && (
-                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                            {cleanAlternatives[0].price || cleanAlternatives[0].priceEst}
+                  <div
+                    onClick={() => {
+                      const healthyProduct = convertAlternativeToFoodProduct(cleanAlternatives[0], product.category);
+                      onSelectAlternative(healthyProduct);
+                    }}
+                    className="flex flex-col sm:flex-row items-start gap-4 cursor-pointer group"
+                  >
+                    {/* Real Product Image Badge */}
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0 relative shadow-2xs">
+                      <img
+                        src={getAlternativeRealImage(cleanAlternatives[0], product.category)}
+                        alt={cleanAlternatives[0].name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&auto=format&fit=crop&q=80";
+                        }}
+                      />
+                      <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-emerald-600/90 text-white text-[9px] font-bold tracking-tight shadow-xs backdrop-blur-xs">
+                        100% Clean
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                            {cleanAlternatives[0].brand}
                           </span>
-                        )}
+                          {(cleanAlternatives[0].price || cleanAlternatives[0].priceEst) && (
+                            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                              {cleanAlternatives[0].price || cleanAlternatives[0].priceEst}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="px-2.5 py-0.5 rounded-xl bg-[#10B981] text-white font-black text-xs shadow-xs">
+                            {cleanAlternatives[0].score}/100
+                          </div>
+                          <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
+                            +{Math.max(1, cleanAlternatives[0].score - product.healthScore)} Pts
+                          </span>
+                        </div>
                       </div>
 
-                      <h5 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-1">
-                        {cleanAlternatives[0].name}
+                      <h5 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mt-1.5 flex items-center justify-between">
+                        <span>{cleanAlternatives[0].name}</span>
+                        <ChevronRight className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       </h5>
 
                       {/* Benefit Tag */}
                       {(cleanAlternatives[0].benefit || cleanAlternatives[0].benefitHi || (cleanAlternatives[0].tags && cleanAlternatives[0].tags.length > 0)) && (
-                        <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/50 text-[#065F46] dark:text-emerald-300 text-xs font-bold border border-emerald-500/25">
+                        <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/50 text-[#065F46] dark:text-emerald-300 text-xs font-bold border border-emerald-500/25">
                           <Wheat className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
                           <span>
                             {isHindi
@@ -985,26 +1023,23 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                         {isHindi ? cleanAlternatives[0].reasonHi : cleanAlternatives[0].reasonEn}
                       </p>
                     </div>
-
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <div className="px-3 py-1 rounded-xl bg-[#10B981] text-white font-black text-xs shadow-xs">
-                        {cleanAlternatives[0].score}/100
-                      </div>
-                      <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
-                        +{Math.max(1, cleanAlternatives[0].score - product.healthScore)} Pts
-                      </span>
-                    </div>
                   </div>
 
                   <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-2">
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                      {isHindi ? "किराना सुपरमार्केट्स व ब्लिंकिट पर उपलब्ध" : "Available on Blinkit / Zepto / Stores"}
-                    </span>
+                    <button
+                      onClick={() => {
+                        const healthyProduct = convertAlternativeToFoodProduct(cleanAlternatives[0], product.category);
+                        onSelectAlternative(healthyProduct);
+                      }}
+                      className="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer flex items-center gap-1"
+                    >
+                      <span>{isHindi ? "👉 इस स्वस्थ विकल्प की पूरी रिपोर्ट देखें" : "👉 Tap to view full health breakdown"}</span>
+                    </button>
                     <button
                       onClick={() => setActiveTab("alternatives")}
                       className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
                     >
-                      <span>{isHindi ? "विकल्प देखें" : "View Details"}</span>
+                      <span>{isHindi ? "अन्य विकल्प" : "All Alts"}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -1271,24 +1306,59 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                     <div
                       key={idx}
                       className={`p-5 sm:p-6 rounded-3xl border transition-all ${
-                        isDark ? "bg-[#131821] border-slate-800 hover:border-emerald-800/60" : "bg-white border-slate-200/80 hover:border-emerald-300 shadow-xs"
+                        isDark ? "bg-[#131821] border-slate-800 hover:border-emerald-800/80" : "bg-white border-slate-200/80 hover:border-emerald-300 shadow-xs"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-                              {alt.brand}
-                            </span>
-                            {(alt.price || alt.priceEst) && (
-                              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
-                                {alt.price || alt.priceEst}
+                      <div
+                        onClick={() => {
+                          const healthyProduct = convertAlternativeToFoodProduct(alt, product.category);
+                          onSelectAlternative(healthyProduct);
+                        }}
+                        className="flex flex-col sm:flex-row items-start gap-4 cursor-pointer group"
+                      >
+                        {/* Real Alternative Product Image */}
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0 relative shadow-2xs">
+                          <img
+                            src={getAlternativeRealImage(alt, product.category)}
+                            alt={alt.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-emerald-600/90 text-white text-[9px] font-bold tracking-tight shadow-xs backdrop-blur-xs">
+                            100% Clean
+                          </div>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                                {alt.brand}
                               </span>
-                            )}
+                              {(alt.price || alt.priceEst) && (
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
+                                  {alt.price || alt.priceEst}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                              <div className="px-3 py-1 rounded-2xl bg-[#10B981] text-white font-bold text-xs shadow-xs">
+                                {alt.score}/100
+                              </div>
+                              <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
+                                +{Math.max(1, alt.score - product.healthScore)} Pts
+                              </span>
+                            </div>
                           </div>
 
-                          <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-1.5">
-                            {alt.name}
+                          <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mt-1.5 flex items-center justify-between">
+                            <span>{alt.name}</span>
+                            <ChevronRight className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                           </h4>
 
                           {/* Clean Certified Benefit Tag */}
@@ -1321,15 +1391,29 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                             </div>
                           )}
                         </div>
+                      </div>
 
-                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <div className="px-3 py-1 rounded-2xl bg-[#10B981] text-white font-bold text-xs shadow-xs">
-                            {alt.score}/100
-                          </div>
-                          <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
-                            +{Math.max(1, alt.score - product.healthScore)} Pts
-                          </span>
-                        </div>
+                      {/* Clickable Action Footer */}
+                      <div className="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => {
+                            const healthyProduct = convertAlternativeToFoodProduct(alt, product.category);
+                            onSelectAlternative(healthyProduct);
+                          }}
+                          className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>{isHindi ? "👉 पूरा न्यूट्रिशन व घटक विश्लेषण खोलें" : "👉 Tap to view full product details"}</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            const healthyProduct = convertAlternativeToFoodProduct(alt, product.category);
+                            onSelectAlternative(healthyProduct);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                        >
+                          <span>{isHindi ? "विवरण देखें" : "View"}</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
                   ))}

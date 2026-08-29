@@ -30,10 +30,10 @@ import { initSessionTracker, trackUserActivity, getVisitorId } from "./services/
 
 
 export default function App() {
-  // 1. Language State (English / Hindi)
+  // 1. Language State (English / Hindi / Arabic / French / etc.)
   const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem("ahariq_language");
-    return saved === "hi" || saved === "en" ? saved : "en";
+    const saved = localStorage.getItem("ahariq_language") as Language;
+    return saved || "hi";
   });
 
   // 2. Dark Mode State
@@ -50,6 +50,14 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem("ahariq_language", language);
+    // Support RTL direction for Arabic
+    if (language === "ar") {
+      document.documentElement.dir = "rtl";
+      document.documentElement.lang = "ar";
+    } else {
+      document.documentElement.dir = "ltr";
+      document.documentElement.lang = language;
+    }
   }, [language]);
 
   useEffect(() => {
@@ -72,7 +80,7 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState<boolean>(false);
   const [isAboutPrivacyOpen, setIsAboutPrivacyOpen] = useState<boolean>(false);
-  const [aboutPrivacyTab, setAboutPrivacyTab] = useState<"about" | "privacy">(
+  const [aboutPrivacyTab, setAboutPrivacyTab] = useState<"about" | "privacy" | "disclaimer">(
     "about"
   );
   const [isInstallPwaOpen, setIsInstallPwaOpen] = useState<boolean>(false);
@@ -249,6 +257,10 @@ export default function App() {
     setLanguage((prev) => (prev === "en" ? "hi" : "en"));
   };
 
+  const handleSelectLanguage = (lang: string) => {
+    setLanguage(lang as Language);
+  };
+
   const handleToggleDark = () => {
     setIsDark((prev) => !prev);
   };
@@ -356,6 +368,11 @@ export default function App() {
     setIsAboutPrivacyOpen(true);
   };
 
+  const handleOpenDisclaimer = () => {
+    setAboutPrivacyTab("disclaimer");
+    setIsAboutPrivacyOpen(true);
+  };
+
   const handleSelectProduct = (p: FoodProduct, source: string = "card") => {
     setSelectedProduct(p);
     trackUserActivity({
@@ -410,6 +427,7 @@ export default function App() {
         <Header
           language={language}
           onToggleLanguage={handleToggleLanguage}
+          onSelectLanguage={handleSelectLanguage}
           isDark={isDark}
           onToggleDark={handleToggleDark}
           user={user}
@@ -419,6 +437,7 @@ export default function App() {
           onNavigateTab={handleNavigateTab}
           onOpenAbout={handleOpenAbout}
           onOpenPrivacy={handleOpenPrivacy}
+          onOpenDisclaimer={handleOpenDisclaimer}
           onOpenAdmin={() => setIsAdminDashboardOpen(true)}
           onOpenInstallPwa={() => setIsInstallPwaOpen(true)}
         />
@@ -449,6 +468,7 @@ export default function App() {
             onOpenAuth={() => setIsAuthOpen(true)}
             onOpenAbout={handleOpenAbout}
             onOpenPrivacy={handleOpenPrivacy}
+            onOpenDisclaimer={handleOpenDisclaimer}
             onOpenAdmin={() => setIsAdminDashboardOpen(true)}
           />
         ) : currentTab === "saved" ? (

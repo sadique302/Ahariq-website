@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FoodProduct, Language, UserProfile } from "../types";
+import { UI_TRANSLATIONS } from "../i18n/translations";
 import {
   ScanLine,
   Search,
   ChevronRight,
   Clock,
   Loader2,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
@@ -14,9 +14,7 @@ import {
   Flame,
   Wheat,
   Droplet,
-  Dumbbell,
 } from "lucide-react";
-import { PRODUCT_CATEGORIES } from "../data/categories";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { searchProductsFromOpenFoodFacts } from "../services/openFoodFacts";
 import { trackUserActivity } from "../services/analyticsTracker";
@@ -34,6 +32,7 @@ interface HomeScreenProps {
   onOpenAuth?: () => void;
   onOpenAbout?: () => void;
   onOpenPrivacy?: () => void;
+  onOpenDisclaimer?: () => void;
   onOpenAdmin?: () => void;
 }
 
@@ -60,9 +59,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenAuth,
   onOpenAbout,
   onOpenPrivacy,
+  onOpenDisclaimer,
   onOpenAdmin,
 }) => {
   const isHindi = language === "hi";
+  const t = UI_TRANSLATIONS[language] || UI_TRANSLATIONS["en"];
   const isOwner =
     user?.isLoggedIn &&
     (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
@@ -187,63 +188,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <input
               id="home-product-search-input"
               type="text"
-              placeholder={
-                isHindi
-                  ? "मैगी, पेप्सी, बिस्कुट, तेल या कोई भी खाना खोजें..."
-                  : "Search Maggi, Pepsi, biscuits, oil, milk..."
-              }
+              placeholder={t.searchPlaceholder || (isHindi ? "मैगी, पेप्सी, बिस्कुट, तेल खोजें..." : "Search packaged food, drinks, snacks...")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-12 pr-20 py-3.5 rounded-2xl text-sm border transition-all ${
+              className={`w-full pl-12 pr-10 py-3.5 rounded-2xl text-sm border transition-all ${
                 isDark
                   ? "bg-[#161C24] border-slate-800 text-zinc-100 placeholder:text-slate-500 focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20 shadow-xs"
                   : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-[#10B981] focus:ring-3 focus:ring-[#10B981]/15 shadow-xs"
               }`}
             />
-            <div className="absolute right-2 flex items-center gap-1">
-              {searchQuery && (
+            {searchQuery && (
+              <div className="absolute right-3 flex items-center">
                 <button
                   onClick={() => setSearchQuery("")}
                   className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
                 >
                   ✕
                 </button>
-              )}
-              <button
-                id="search-inline-scan-btn"
-                onClick={onOpenScanner}
-                title={isHindi ? "बारकोड स्कैन करें" : "Scan Barcode"}
-                className="w-9 h-9 rounded-xl bg-[#059669] hover:bg-[#047857] text-white flex items-center justify-center shadow-xs transition-transform active:scale-95 cursor-pointer"
-              >
-                <ScanLine className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Category Chips */}
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-            {PRODUCT_CATEGORIES.slice(0, 7).map((cat) => {
-              const isSelected = selectedCategory === cat.id && !searchQuery;
-              return (
-                <button
-                  key={cat.id}
-                  id={`cat-pill-${cat.id}`}
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory(cat.id);
-                  }}
-                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-[#059669] text-white border-[#059669] shadow-2xs font-bold"
-                      : isDark
-                      ? "bg-[#161C24] border-slate-800 text-slate-300 hover:bg-slate-800"
-                      : "bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50 shadow-2xs"
-                  }`}
-                >
-                  {isHindi ? cat.nameHi : cat.nameEn}
-                </button>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
 
@@ -262,41 +225,33 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <ScanLine className="w-7 h-7 animate-pulse" />
               </div>
 
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center justify-center sm:justify-start gap-2">
+              <div className="flex-1 space-y-1.5 w-full">
+                <div className="flex items-center justify-center sm:justify-start">
                   <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                    {isHindi ? "किराना व पैकेट बारकोड स्कैन करें" : "Scan Any Packaged Food"}
+                    {t.tagline || (isHindi ? "किराना व पैकेट बारकोड स्कैन करें" : "Scan Any Packaged Food")}
                   </h2>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-[#059669] dark:text-[#34D399]">
-                    {isHindi ? "लाइव स्कैनर" : "Live Scanner"}
-                  </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-md">
-                  {isHindi
-                    ? "पाम ऑयल, छिपी चीनी, हानिकारक प्रिजर्वेटिव्स और स्वास्थ्य स्कोर 0-100 तुरंत जांचें।"
-                    : "Instantly detect palm oil, hidden sugars, harmful additives, and find clean Indian alternatives."}
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed max-w-md mx-auto sm:mx-0">
+                  {language === "ar"
+                    ? "تحقق فوري من زيت النخيل والسكريات المضافة والمواد الحافظة وتقييم الصحة 0-100."
+                    : language === "fr"
+                    ? "Vérifiez instantanément l'huile de palme, les sucres ajoutés et le score santé 0-100."
+                    : language === "es"
+                    ? "Comprueba al instante el aceite de palma, azúcares añadidos y puntuación de salud 0-100."
+                    : isHindi
+                    ? "पाम ऑयल, अतिरिक्त चीनी, प्रिजर्वेटिव्स और पोषण स्कोर 0-100 तुरंत जांचें।"
+                    : "Instantly check palm oil, added sugars, food additives, and nutrition score 0-100."}
                 </p>
 
-                <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                <div className="pt-2 flex items-center justify-center sm:justify-start">
                   <button
                     id="hero-scan-product-btn"
                     onClick={onOpenScanner}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-md shadow-emerald-900/15 hover:scale-[1.02] active:scale-98 transition-all cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-md shadow-emerald-900/15 hover:scale-[1.02] active:scale-98 transition-all cursor-pointer w-full sm:w-auto"
                   >
                     <ScanLine className="w-4 h-4" />
-                    <span>{isHindi ? "कैमरा खोलें और स्कैन करें" : "Open Camera & Scan"}</span>
+                    <span>{t.scanBarcode || (isHindi ? "कैमरा खोलें और स्कैन करें" : "Open Camera & Scan")}</span>
                   </button>
-
-                  {onNavigateTab && (
-                    <button
-                      id="hero-gym-iq-btn"
-                      onClick={() => onNavigateTab("gym")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-[#059669] dark:text-[#34D399] border border-emerald-500/30 font-bold text-sm hover:scale-[1.02] active:scale-98 transition-all cursor-pointer"
-                    >
-                      <Dumbbell className="w-4 h-4" />
-                      <span>{isHindi ? "Gym IQ (तुलना)" : "Gym IQ (Compare)"}</span>
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -480,7 +435,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           ? isHindi ? "उत्कृष्ट • सुरक्षित" : "Clean • Safe"
                           : isYellow
                           ? isHindi ? "मध्यम • सीमित" : "Moderate"
-                          : isHindi ? "हानिकारक • बचें" : "Poor • Avoid"}
+                          : isHindi ? "कम पोषण • सीमित" : "Poor • Limit"}
                       </span>
                     </div>
                   </div>
@@ -506,6 +461,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           isDark={isDark}
           onOpenAbout={onOpenAbout}
           onOpenPrivacy={onOpenPrivacy}
+          onOpenDisclaimer={onOpenDisclaimer}
           onOpenAdmin={onOpenAdmin}
           isOwner={isOwner}
         />

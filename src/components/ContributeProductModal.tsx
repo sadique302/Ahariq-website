@@ -19,7 +19,6 @@ import {
   TreePalm,
   ShieldAlert,
   Zap,
-  Sparkles,
   Search,
 } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -234,16 +233,18 @@ export const ContributeProductModal: React.FC<ContributeProductModalProps> = ({
               titleEn: "Refined Palm Oil Detected",
               titleHi: "पाम ऑयल (ताड़ का तेल) मौजूद",
               severity: "high",
-              descriptionEn: "High saturated fats linked to higher LDL cholesterol and heart risk.",
-              descriptionHi: "पाम ऑयल में संतृप्त वसा (Saturated Fat) अधिक होती है जो हृदय के लिए हानिकारक है।",
+              tagValue: "Refined Palm Oil",
+              descriptionEn: "High saturated fats linked to higher LDL cholesterol; moderate intake advised.",
+              descriptionHi: "पाम ऑयल में संतृप्त वसा (Saturated Fat) अधिक होती है जिसका अधिक सेवन सीमित रखने की सलाह दी जाती है।",
             },
             {
               type: "maida",
               titleEn: "Refined Flour (Maida) Base",
               titleHi: "मैदा (रिफाइंड गेहूं का आटा)",
               severity: "high",
-              descriptionEn: "High glycemic index causes quick spikes in blood sugar levels.",
-              descriptionHi: "फाइबर रहित मैदा ब्लड शुगर को तेजी से बढ़ाता है।",
+              tagValue: "Refined Flour Base",
+              descriptionEn: "Refined carbohydrate base with low dietary fiber.",
+              descriptionHi: "फाइबर रहित रिफाइंड मैदा जिसमें पाचक फाइबर कम होता है।",
             },
             {
               type: "added_sugar",
@@ -370,7 +371,7 @@ export const ContributeProductModal: React.FC<ContributeProductModalProps> = ({
         <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-zinc-800/80 flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#059669] to-[#10B981] flex items-center justify-center text-white shadow-md shadow-[#10B981]/25 flex-shrink-0">
-              <Sparkles className="w-5 h-5 text-white" />
+              <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -448,10 +449,10 @@ export const ContributeProductModal: React.FC<ContributeProductModalProps> = ({
                 </div>
                 <ul className="text-[11.5px] text-gray-600 dark:text-zinc-400 space-y-1 pl-5 list-disc">
                   <li>
-                    <strong>{isHindi ? "पाम ऑयल व मैदा:" : "Palm Oil & Maida:"}</strong> {isHindi ? "छुपे हुए हानिकारक तेल और मैदा की पहचान" : "Identifies harmful oils and refined flour"}
+                    <strong>{isHindi ? "पाम ऑयल व मैदा:" : "Palm Oil & Maida:"}</strong> {isHindi ? "रिफाइंड तेल और मैदा सामग्री की पहचान" : "Identifies refined oils and maida flour"}
                   </li>
                   <li>
-                    <strong>{isHindi ? "चीनी व सोडियम स्तर:" : "Sugar & Sodium:"}</strong> {isHindi ? "प्रति 100g उच्च या खतरनाक मात्रा का विश्लेषण" : "Detects high sugar spikes and sodium levels"}
+                    <strong>{isHindi ? "चीनी व सोडियम स्तर:" : "Sugar & Sodium:"}</strong> {isHindi ? "प्रति 100g अतिरिक्त चीनी और सोडियम मात्रा का विश्लेषण" : "Analyzes sugar and sodium levels per 100g"}
                   </li>
                   <li>
                     <strong>{isHindi ? "अच्छा है या नहीं:" : "Health Verdict:"}</strong> {isHindi ? "0-100 हेल्थ स्कोर और स्वस्थ विकल्प" : "0-100 score and clean healthy alternatives"}
@@ -467,7 +468,7 @@ export const ContributeProductModal: React.FC<ContributeProductModalProps> = ({
               <div className="relative w-20 h-20 mx-auto">
                 <div className="w-20 h-20 rounded-full border-4 border-emerald-500/20 border-t-[#10B981] animate-spin" />
                 <div className="absolute inset-0 flex items-center justify-center text-[#10B981]">
-                  <Sparkles className="w-8 h-8 animate-pulse" />
+                  <Camera className="w-8 h-8 animate-pulse" />
                 </div>
               </div>
 
@@ -539,7 +540,7 @@ export const ContributeProductModal: React.FC<ContributeProductModalProps> = ({
                   <p className="text-xs text-zinc-300 leading-relaxed">
                     {detectedResult.verdictType === "green"
                       ? isHindi
-                        ? "हाँ, यह एक स्वच्छ और सुरक्षित विकल्प है। इसमें हानिकारक पाम ऑयल या अत्यधिक चीनी नहीं है।"
+                        ? "हाँ, यह एक संतुलित विकल्प है। इसमें पाम ऑयल या अत्यधिक चीनी शामिल नहीं है।"
                         : "Yes! Clean formulation with wholesome ingredients and safe profiles."
                       : detectedResult.verdictType === "yellow"
                       ? isHindi

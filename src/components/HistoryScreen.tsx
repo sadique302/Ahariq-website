@@ -130,7 +130,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                 {redCount}
               </span>
               <p className="text-[10px] font-bold text-red-700 dark:text-red-300 uppercase">
-                {isHindi ? "हानिकारक" : "Avoid"}
+                {isHindi ? "सीमित करें" : "Limit"}
               </p>
             </div>
           </div>

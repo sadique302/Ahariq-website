@@ -1,4 +1,6 @@
-export type Language = "en" | "hi";
+import { SupportedLanguage } from "./i18n/translations";
+
+export type Language = SupportedLanguage;
 
 export type VerdictType = "green" | "yellow" | "red";
 
@@ -193,6 +195,9 @@ export interface UserActivityEvent {
   title: string;
   details?: Record<string, any>;
   deviceType?: "Mobile" | "Desktop" | "Tablet";
+  trafficSource?: string;
+  country?: string;
+  city?: string;
   timestamp: string;
   createdAt?: string;
 }
@@ -210,6 +215,20 @@ export interface UserSessionRecord {
   durationSeconds: number;
   totalActions: number;
   lastAction: string;
+  trafficSource?: string; // "Instagram", "WhatsApp", "Google", "Direct", "Twitter", "Facebook", "Other"
+  referrerUrl?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  isInstagramInAppBrowser?: boolean;
+  country?: string;
+  countryCode?: string;
+  city?: string;
+  region?: string;
+  timezone?: string;
+  browserLanguage?: string;
+  engagementStatus?: "Bounced" | "Browsing" | "Engaged";
+  actionsTrail?: string[];
   recentSearches?: string[];
   recentProductsViewed?: string[];
 }

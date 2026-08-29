@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Language, UserProfile } from "../types";
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from "../i18n/translations";
 import {
   Languages,
+  Globe,
+  ChevronDown,
+  CheckCircle,
   Moon,
   Sun,
   ShieldCheck,
@@ -16,7 +20,8 @@ import {
   Heart,
   ExternalLink,
   Smartphone,
-  Download
+  Download,
+  AlertTriangle
 } from "lucide-react";
 
 interface HeaderProps {
@@ -31,8 +36,10 @@ interface HeaderProps {
   onNavigateTab: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
   onOpenAbout: () => void;
   onOpenPrivacy: () => void;
+  onOpenDisclaimer?: () => void;
   onOpenAdmin?: () => void;
   onOpenInstallPwa?: () => void;
+  onSelectLanguage?: (lang: SupportedLanguage) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -46,12 +53,28 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateTab,
   onOpenAbout,
   onOpenPrivacy,
+  onOpenDisclaimer,
   onOpenAdmin,
   onOpenInstallPwa,
+  onSelectLanguage,
 }) => {
   const isHindi = language === "hi";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const activeLang = SUPPORTED_LANGUAGES.find(l => l.code === (language as string)) || SUPPORTED_LANGUAGES[0];
   const isOwner =
     user?.isLoggedIn &&
     (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
@@ -117,20 +140,73 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          {/* Language Switcher */}
-          <button
-            id="language-toggle-btn"
-            onClick={onToggleLanguage}
-            className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border transition-all cursor-pointer ${
-              isDark
-                ? "bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-200"
-                : "bg-emerald-50 border-emerald-200 hover:bg-emerald-100 text-[#059669]"
-            }`}
-            title="Switch Language / भाषा बदलें"
-          >
-            <Languages className="w-3.5 h-3.5 text-[#10B981]" />
-            <span>{isHindi ? "EN" : "हिन्दी"}</span>
-          </button>
+          {/* Global Multi-Language Selector Dropdown with Globe Icon */}
+          <div className="relative" ref={langMenuRef}>
+            <button
+              id="language-toggle-btn"
+              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
+                isDark
+                  ? "bg-zinc-800/90 border-zinc-700 hover:bg-zinc-700 text-zinc-100 hover:border-emerald-500/50"
+                  : "bg-white border-gray-200 hover:bg-emerald-50/60 text-[#111827] hover:border-emerald-300"
+              }`}
+              title="Select Language / भाषा चुनें"
+            >
+              <Globe className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
+              <span>{activeLang?.nativeName || (isHindi ? "हिन्दी" : "English")}</span>
+              <ChevronDown className="w-3 h-3 text-gray-400" />
+            </button>
+
+            {/* Language Dropdown Menu */}
+            {isLangMenuOpen && (
+              <div
+                className={`absolute right-0 mt-2 w-64 rounded-2xl shadow-2xl border p-2 z-50 animate-in fade-in zoom-in-95 duration-150 ${
+                  isDark ? "bg-[#18181B] border-zinc-700 text-white" : "bg-white border-gray-200 text-gray-900 shadow-xl"
+                }`}
+              >
+                <div className="px-3 py-2 border-b border-gray-100 dark:border-zinc-800 text-[10px] font-bold text-gray-400 dark:text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Choose Language / भाषा</span>
+                  <span className="text-[9px] bg-emerald-500/10 text-[#059669] dark:text-[#34D399] px-1.5 py-0.5 rounded font-mono font-bold">100% Free</span>
+                </div>
+                <div className="max-h-72 overflow-y-auto py-1 space-y-0.5">
+                  {SUPPORTED_LANGUAGES.map((lang) => {
+                    const isSelected = language === lang.code || (language === "hi" && lang.code === "hi") || (language === "en" && lang.code === "en");
+                    return (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          if (onSelectLanguage) {
+                            onSelectLanguage(lang.code);
+                          } else {
+                            if ((lang.code === "hi" && language !== "hi") || (lang.code === "en" && language !== "en")) {
+                              onToggleLanguage();
+                            }
+                          }
+                          setIsLangMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                          isSelected
+                            ? "bg-[#059669] text-white font-bold"
+                            : isDark
+                            ? "hover:bg-zinc-800 text-zinc-300"
+                            : "hover:bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{lang.flag}</span>
+                          <div>
+                            <div className="font-bold leading-tight">{lang.nativeName}</div>
+                            <div className={`text-[10px] ${isSelected ? "text-emerald-100" : "text-gray-400 dark:text-zinc-500"}`}>{lang.region}</div>
+                          </div>
+                        </div>
+                        {isSelected && <CheckCircle className="w-4 h-4 text-white flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Dark Mode Toggle */}
           <button
@@ -261,6 +337,28 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                   </div>
                 </button>
+
+                {/* Disclaimer Option */}
+                {onOpenDisclaimer && (
+                  <button
+                    id="menu-disclaimer-btn"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      onOpenDisclaimer();
+                    }}
+                    className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300 transition-colors text-left cursor-pointer"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <div>
+                      <span className="block font-bold text-[#000000] dark:text-white">
+                        {isHindi ? "अस्वीकरण (Disclaimer)" : "Disclaimer & Notice"}
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
+                        {isHindi ? "कानूनी व चिकित्सीय जानकारी" : "Legal & Educational Notice"}
+                      </span>
+                    </div>
+                  </button>
+                )}
 
                 {/* Privacy Policy Option */}
                 <button

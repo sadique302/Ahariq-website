@@ -554,45 +554,45 @@ export function getDynamicHazardSummary(params: {
 
   // Palm oil & Sodium combo (classic savory snack pattern: Lay's, Kurkure, Bhujia)
   if (hasPalmOil && hasHighSodium) {
-    hindiHazards.push(isPalmolein ? "हानिकारक पामोलिन तेल" : "रिफाइंड पाम ऑयल");
-    hindiHazards.push("अत्यधिक सोडियम (नमक)");
-    englishHazards.push(isPalmolein ? "harmful Palmolein oil" : "refined Palm oil");
-    englishHazards.push("excessive sodium");
+    hindiHazards.push(isPalmolein ? "रिफाइंड पामोलिन तेल (संतृप्त वसा)" : "रिफाइंड पाम ऑयल");
+    hindiHazards.push("अधिक सोडियम (नमक)");
+    englishHazards.push(isPalmolein ? "refined Palmolein oil (saturated fat)" : "refined Palm oil");
+    englishHazards.push("high sodium load");
   } else {
     if (hasPalmOil) {
-      hindiHazards.push(isPalmolein ? "हानिकारक पामोलिन तेल" : "रिफाइंड पाम ऑयल");
-      englishHazards.push(isPalmolein ? "harmful Palmolein oil" : "refined Palm oil");
+      hindiHazards.push(isPalmolein ? "रिफाइंड पामोलिन तेल (संतृप्त वसा)" : "रिफाइंड पाम ऑयल");
+      englishHazards.push(isPalmolein ? "refined Palmolein oil (saturated fat)" : "refined Palm oil");
     }
     if (hasHighSodium) {
-      hindiHazards.push("अत्यधिक सोडियम (नमक)");
+      hindiHazards.push("अधिक सोडियम (नमक)");
       englishHazards.push("high sodium load");
     }
   }
 
   if (hasMaida) {
-    hindiHazards.push("मैदा (रिफाइंड आटा)");
+    hindiHazards.push("मैदा (रिफाइंड गेहूं का आटा)");
     englishHazards.push("refined wheat flour (Maida)");
   }
 
   // Sugar is ONLY added if hasHighSugar is strictly TRUE
   if (hasHighSugar) {
     if (isBeverage) {
-      hindiHazards.push("अत्यधिक घुली हुई चीनी");
-      englishHazards.push("excessive liquid sugar");
+      hindiHazards.push("अतिरिक्त घुली हुई चीनी");
+      englishHazards.push("added liquid sugars");
     } else {
-      hindiHazards.push("अत्यधिक चीनी");
+      hindiHazards.push("अतिरिक्त चीनी");
       englishHazards.push("high added sugar");
     }
   }
 
   if (hasTransFat) {
-    hindiHazards.push("औद्योगिक ट्रांस फैट");
-    englishHazards.push("industrial trans fats");
+    hindiHazards.push("ट्रांस फैट");
+    englishHazards.push("trans fats");
   }
 
   if (hasFlavorEnhancers) {
-    hindiHazards.push("स्वाद बढ़ाने वाले केमिकल (INS 627/631/635)");
-    englishHazards.push("artificial flavour enhancers (INS 627/631/635)");
+    hindiHazards.push("फ्लेवर एन्हांसर (INS 627/631/635)");
+    englishHazards.push("flavour enhancers (INS 627/631/635)");
   } else if (hasAdditives) {
     hindiHazards.push("सिंथेटिक एडिटिव्स व प्रिजर्वेटिव्स");
     englishHazards.push("synthetic additives & preservatives");
@@ -622,26 +622,26 @@ export function getDynamicHazardSummary(params: {
       englishListText = `${initial}, and ${last}`;
     }
 
-    const adviceHi = score < 40 ? "नियमित सेवन से बचें।" : "सीमित मात्रा में ही उपयोग करें।";
-    const adviceEn = score < 40 ? "Best to limit or avoid regular consumption." : "Recommended in moderation.";
+    const adviceHi = score < 40 ? "ICMR/FSSAI दिशानिर्देशों के अनुसार इसका नियमित सेवन सीमित करने की सलाह दी जाती है।" : "संतुलित आहार हेतु संयमित मात्रा में उपयोग करें।";
+    const adviceEn = score < 40 ? "In line with ICMR dietary benchmarks, regular intake should be limited." : "Recommended in moderation as part of a balanced diet.";
 
     return {
-      summaryHi: `स्कोर: ${score}/100। इसमें ${hindiListText} मौजूद है। ${adviceHi}`,
-      summaryEn: `Rated ${score}/100. Contains ${englishListText}. ${adviceEn}`,
+      summaryHi: `पैकेट पर घोषित सामग्री अनुसार: इसमें ${hindiListText} मौजूद है। ${adviceHi}`,
+      summaryEn: `As declared on package label: Contains ${englishListText}. ${adviceEn}`,
     };
   }
 
   // Fallback for general moderate products without recognized specific hazards
   if (score >= 40) {
     return {
-      summaryHi: `स्कोर: ${score}/100। इसमें मध्यम स्तर की प्रोसेस्ड सामग्री है। सीमित मात्रा में उपयोग करें।`,
-      summaryEn: `Rated ${score}/100. Contains moderate processed ingredients. Consume in moderation.`,
+      summaryHi: `पैकेट पर घोषित लेबल अनुसार: मध्यम प्रोसेस्ड सामग्री दर्ज है। संयमित मात्रा में उपयोग करें।`,
+      summaryEn: `As declared on package label: Contains moderately processed ingredients. Consume in moderation.`,
     };
   }
 
   return {
-    summaryHi: `स्कोर: ${score}/100। यह अत्यधिक प्रोसेस्ड खाद्य उत्पाद है। नियमित सेवन से बचने की सलाह है।`,
-    summaryEn: `Rated ${score}/100. Ultra-processed food formulation. Best to avoid regular consumption.`,
+    summaryHi: `पैकेट पर घोषित लेबल अनुसार: अत्यधिक प्रोसेस्ड सामग्री शामिल है। आहार विशेषज्ञों द्वारा सीमित सेवन की सलाह है।`,
+    summaryEn: `As declared on package label: Ultra-processed formulation. Dietary guidelines suggest limited consumption.`,
   };
 }
 
@@ -1490,16 +1490,16 @@ export async function searchProductsFromOpenFoodFacts(
     console.warn("Backend Open Food Facts search proxy timed out/failed, falling back to direct:", e);
   }
 
-  // 2. Direct India Open Food Facts Search (Targeting Indian Market)
+  // 2. Direct World Open Food Facts Search (Global Database with 3M+ products including USA, India, UK)
   try {
-    const directUrlIn = `https://in.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
+    const directUrlWorld = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
       cleanQuery
     )}&search_simple=1&action=process&json=1&page_size=${pageSize}`;
     const res = await fetchWithTimeout(
-      directUrlIn,
+      directUrlWorld,
       {
         headers: {
-          "User-Agent": "AharIQ-IndianFoodScanner/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
+          "User-Agent": "AharIQ-GlobalFoodScanner/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
         },
       },
       3500
@@ -1525,16 +1525,16 @@ export async function searchProductsFromOpenFoodFacts(
       }
     }
   } catch (e) {
-    console.warn("Direct India OFF search failed, trying tagged India search:", e);
+    console.warn("Direct World OFF search failed, trying India specific search:", e);
   }
 
-  // 3. Direct Country India Tagged Search
+  // 3. Direct India Open Food Facts Search (Fallback)
   try {
-    const directUrlWorldIndia = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
+    const directUrlIn = `https://in.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(
       cleanQuery
-    )}&tagtype_0=countries&tag_contains_0=contains&tag_0=india&action=process&json=1&page_size=${pageSize}`;
+    )}&search_simple=1&action=process&json=1&page_size=${pageSize}`;
     const res = await fetchWithTimeout(
-      directUrlWorldIndia,
+      directUrlIn,
       {
         headers: {
           "User-Agent": "AharIQ-IndianFoodScanner/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
@@ -1553,14 +1553,14 @@ export async function searchProductsFromOpenFoodFacts(
             try {
               results.push(mapOpenFoodFactsToAhariq(p, code));
             } catch (err) {
-              console.warn("Failed to map world product:", err);
+              console.warn("Failed to map indian product:", err);
             }
           }
         }
       }
     }
   } catch (e) {
-    console.warn("Direct World OFF search failed:", e);
+    console.warn("Direct India OFF search failed:", e);
   }
 
   return results;

@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Heart,
   Mail,
-  Phone,
   Building2,
   AlertTriangle,
   Flame,
@@ -22,7 +21,7 @@ import { Language } from "../types";
 interface AboutAndPrivacyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialTab?: "about" | "privacy";
+  initialTab?: "about" | "privacy" | "disclaimer";
   language: Language;
   isDark: boolean;
 }
@@ -34,7 +33,7 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
   language,
   isDark,
 }) => {
-  const [activeTab, setActiveTab] = useState<"about" | "privacy">(initialTab);
+  const [activeTab, setActiveTab] = useState<"about" | "privacy" | "disclaimer">(initialTab);
   const isHindi = language === "hi";
 
   React.useEffect(() => {
@@ -69,7 +68,7 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                 Ahariq (आहार IQ)
               </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                {isHindi ? "पारदर्शिता, सुरक्षा, नेतृत्व और मिशन" : "Transparency, Security & Mission"}
+                {isHindi ? "पारदर्शिता, अस्वीकरण, सुरक्षा और मिशन" : "Transparency, Disclaimer, Security & Mission"}
               </p>
             </div>
           </div>
@@ -83,32 +82,45 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
           </button>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="px-4 pt-3 pb-1 border-b border-stone-100 dark:border-stone-800 flex gap-2">
+        {/* Tab Switcher (3 Tabs: About Us, Disclaimer, Privacy Policy) */}
+        <div className="px-3 pt-3 pb-1 border-b border-stone-100 dark:border-stone-800 flex gap-1.5 overflow-x-auto no-scrollbar">
           <button
             id="tab-about-btn"
             onClick={() => setActiveTab("about")}
-            className={`flex-1 py-2.5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`flex-1 min-w-[90px] py-2.5 px-2 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "about"
                 ? "bg-[#22c55e] text-white shadow-md shadow-[#22c55e]/25"
                 : "text-[#1F2937] dark:text-stone-300 hover:text-[#111827] dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
             }`}
           >
-            <Info className="w-4 h-4" />
-            <span>{isHindi ? "हमारे बारे में (About Us)" : "About Us"}</span>
+            <Info className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "हमारे बारे में" : "About Us"}</span>
+          </button>
+
+          <button
+            id="tab-disclaimer-btn"
+            onClick={() => setActiveTab("disclaimer")}
+            className={`flex-1 min-w-[90px] py-2.5 px-2 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              activeTab === "disclaimer"
+                ? "bg-[#22c55e] text-white shadow-md shadow-[#22c55e]/25"
+                : "text-[#1F2937] dark:text-stone-300 hover:text-[#111827] dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "अस्वीकरण" : "Disclaimer"}</span>
           </button>
 
           <button
             id="tab-privacy-btn"
             onClick={() => setActiveTab("privacy")}
-            className={`flex-1 py-2.5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`flex-1 min-w-[90px] py-2.5 px-2 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "privacy"
                 ? "bg-[#22c55e] text-white shadow-md shadow-[#22c55e]/25"
                 : "text-[#1F2937] dark:text-stone-300 hover:text-[#111827] dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
             }`}
           >
-            <Lock className="w-4 h-4" />
-            <span>{isHindi ? "गोपनीयता नीति (Privacy Policy)" : "Privacy Policy"}</span>
+            <Lock className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">{isHindi ? "गोपनीयता" : "Privacy"}</span>
           </button>
         </div>
 
@@ -290,13 +302,6 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                     <Mail className="w-3.5 h-3.5 text-[#22c55e]" />
                     <span>sadiquehavari@gmail.com</span>
                   </a>
-                  <a
-                    href="tel:+917355163471"
-                    className="text-xs font-semibold text-[#000000] dark:text-stone-100 hover:text-[#22c55e] dark:hover:text-[#22c55e] flex items-center gap-1.5"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-[#22c55e]" />
-                    <span>+91 7355163471</span>
-                  </a>
                 </div>
               </div>
 
@@ -371,6 +376,127 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                         {isHindi ? "कोई विज्ञापन या पेड प्रमोशन नहीं" : "No sponsored promotions or ads"}
                       </span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : activeTab === "disclaimer" ? (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              {/* Main Official Legal & Medical Disclaimer Card */}
+              <div
+                className={`p-5 rounded-2xl border-2 ${
+                  isDark
+                    ? "bg-amber-950/30 border-amber-500/50 text-amber-100"
+                    : "bg-[#FFFBEB] border-[#F59E0B]/60 text-[#78350F] shadow-sm"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-2.5 w-full">
+                    <h3 className="font-black text-base sm:text-lg text-amber-950 dark:text-amber-200">
+                      {isHindi ? "महत्वपूर्ण कानूनी एवं चिकित्सीय अस्वीकरण" : "Important Legal & Medical Disclaimer"}
+                    </h3>
+
+                    {/* Exact User-Mandated Legal Statement */}
+                    <div
+                      className={`p-4 rounded-xl border text-sm sm:text-base font-bold leading-relaxed ${
+                        isDark
+                          ? "bg-stone-900/90 border-amber-500/40 text-amber-100"
+                          : "bg-white border-amber-300 text-stone-900 shadow-xs"
+                      }`}
+                    >
+                      <span className="text-amber-600 dark:text-amber-400 block text-[11px] uppercase tracking-wider font-black mb-1.5">
+                        {isHindi ? "आधिकारिक उद्घोषणा (OFFICIAL NOTICE):" : "OFFICIAL NOTICE:"}
+                      </span>
+                      {isHindi
+                        ? "यह ऐप केवल सामान्य पोषण व खाद्य लेबल जागरूकता (Educational & Informational Purpose) के लिए है। यह किसी डॉक्टर, मेडिकल विशेषज्ञ या पेशेवर चिकित्सा सलाह का विकल्प नहीं है।"
+                        : "This application is intended strictly for general nutritional and food label awareness (Educational & Informational Purpose). It is not a substitute for professional medical advice, diagnosis, or treatment from a doctor or healthcare specialist."}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Clear Safeguard Cards */}
+              <div className="space-y-2.5">
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center flex-shrink-0 font-black text-xs mt-0.5">
+                    1
+                  </div>
+                  <div>
+                    <strong className="block text-sm font-bold text-[#000000] dark:text-stone-100">
+                      {isHindi ? "शैक्षिक व पोषण जागरूकता (Educational Purpose)" : "Educational & Informational Purpose"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "Ahariq का उद्देश्य केवल उपभोक्ताओं को पैकेट पर लिखी पोषण तालिका (Nutrition Table), छिपी हुई चीनी, पाम ऑयल और एडिटिव्स के बारे में सार्वजनिक मानकों (FSSAI, WHO व ICMR दिशानिर्देशों) के आधार पर शिक्षित करना है।"
+                        : "Ahariq aims to empower consumers to read food labels, understand nutrition tables, and identify hidden sugars or refined palm oils using public benchmarks (FSSAI, WHO, and ICMR guidelines)."}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 font-black text-xs mt-0.5">
+                    2
+                  </div>
+                  <div>
+                    <strong className="block text-sm font-bold text-[#000000] dark:text-stone-100">
+                      {isHindi ? "चिकित्सक परामर्श आवश्यक (Consult Healthcare Professionals)" : "Consult Medical Professionals"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "यदि आपको कोई चिकित्सीय समस्या (डायबिटीज, हाई बीपी, हृदय रोग), फूड एलर्जी (Food Allergy) है या आप गर्भवती हैं, तो आहार में किसी भी प्रकार के परिवर्तन से पहले हमेशा अपने योग्य चिकित्सक (Doctor) या प्रमाणित डायटीशियन से सलाह लें।"
+                        : "If you have specific medical conditions (diabetes, hypertension, cardiovascular disease), food allergies, or are pregnant, always consult your physician or registered dietitian before modifying your diet."}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 font-black text-xs mt-0.5">
+                    3
+                  </div>
+                  <div>
+                    <strong className="block text-sm font-bold text-[#000000] dark:text-stone-100">
+                      {isHindi ? "सार्वजनिक पैकेजिंग डेटा (Public Label Accuracy)" : "Public Packaging Data Reference"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "सभी विश्लेषण उत्पाद पैकेजिंग पर कंपनी द्वारा मुद्रित सार्वजनिक सामग्री और ओपन डेटाबेस (Open Food Facts) पर आधारित हैं। कंपनियां समय-समय पर फॉर्मूलेशन बदल सकती हैं, अतः हमेशा वास्तविक पैकेट पर छपे लेबल को अंतिम प्रमाण मानें।"
+                        : "Analyses are derived from public ingredient declarations printed on product packaging and open food databases. Manufacturers may update recipes over time, so the physical package label remains the authoritative source."}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    isDark ? "bg-stone-800/60 border-stone-700" : "bg-white border-stone-200 shadow-sm"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 font-black text-xs mt-0.5">
+                    4
+                  </div>
+                  <div>
+                    <strong className="block text-sm font-bold text-[#000000] dark:text-stone-100">
+                      {isHindi ? "100% स्वतंत्र व गैर-वाणिज्यिक (Zero Brand Bias)" : "Independent & Non-Commercial"}
+                    </strong>
+                    <p className="text-xs text-stone-700 dark:text-stone-300 mt-1 leading-relaxed">
+                      {isHindi
+                        ? "Ahariq पूरी तरह से स्वतंत्र उपभोक्ता पहल है। हम किसी भी खाद्य कंपनी से संबद्ध नहीं हैं और न ही किसी ब्रांड का विज्ञापन या पेड प्रमोशन करते हैं।"
+                        : "Ahariq is an independent public awareness initiative with no affiliation to any food brands and zero sponsored advertising."}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -475,13 +601,6 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
             >
               <Mail className="w-3.5 h-3.5 text-[#22c55e]" />
               <span>sadiquehavari@gmail.com</span>
-            </a>
-            <a
-              href="tel:+917355163471"
-              className="text-xs font-semibold text-[#111827] dark:text-stone-200 hover:text-[#22c55e] dark:hover:text-[#22c55e] flex items-center gap-1"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#22c55e]" />
-              <span>+91 7355163471</span>
             </a>
           </div>
 

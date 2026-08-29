@@ -39,58 +39,64 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// API: Open Food Facts Product Search Proxy
+// API: Open Food Facts Product Search Proxy (Global + Indian Databases)
 app.get("/api/openfoodfacts/search", async (req, res) => {
   const query = (req.query.q as string || "").trim();
   const page = req.query.page || "1";
-  const pageSize = req.query.pageSize || "24";
+  const pageSize = req.query.pageSize || "30";
 
   if (!query) {
     return res.json({ success: true, count: 0, products: [] });
   }
 
   try {
-    const searchUrls = [
-      // 1. Direct India Open Food Facts search
-      `https://in.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`,
-      // 2. India tagged country search in Open Food Facts
-      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&tagtype_0=countries&tag_contains_0=contains&tag_0=india&action=process&json=1&page_size=${pageSize}&page=${page}`,
-      // 3. Fallback generic search
-      `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`,
+    const combinedProducts: any[] = [];
+    const seenCodes = new Set<string>();
+
+    // 1. Primary Global Open Food Facts search (Contains 3+ million products across USA, India, UK, Europe, etc.)
+    const globalUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`;
+    
+    // 2. India specific mirror
+    const indiaUrl = `https://in.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=${pageSize}&page=${page}`;
+
+    // Execute searches
+    const fetchPromises = [
+      fetch(globalUrl, {
+        headers: {
+          "User-Agent": "AharIQ-GlobalFoodSafety/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
+          "Accept": "application/json",
+        },
+        signal: AbortSignal.timeout(4500),
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(indiaUrl, {
+        headers: {
+          "User-Agent": "AharIQ-IndianFoodSafety/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
+          "Accept": "application/json",
+        },
+        signal: AbortSignal.timeout(4500),
+      }).then(r => r.ok ? r.json() : null).catch(() => null),
     ];
 
-    for (const url of searchUrls) {
-      try {
-        const fetchRes = await fetch(url, {
-          headers: {
-            "User-Agent": "AharIQ-IndianFoodSafety/1.0 (https://ahariq.vercel.app; support@ahariq.com)",
-            "Accept": "application/json",
-          },
-          signal: AbortSignal.timeout(4500),
-        });
+    const results = await Promise.all(fetchPromises);
 
-        if (fetchRes.ok) {
-          const data = (await fetchRes.json()) as any;
-          if (data && Array.isArray(data.products) && data.products.length > 0) {
-            return res.json({
-              success: true,
-              source: "open_food_facts",
-              count: data.count || data.products.length,
-              page: data.page || 1,
-              products: data.products,
-            });
+    for (const data of results) {
+      if (data && Array.isArray(data.products)) {
+        for (const p of data.products) {
+          const code = p.code || p._id;
+          if (code && !seenCodes.has(code) && (p.product_name || p.product_name_en || p.product_name_hi)) {
+            seenCodes.add(code);
+            combinedProducts.push(p);
           }
         }
-      } catch (err) {
-        // try next search mirror
       }
     }
 
     return res.json({
       success: true,
-      count: 0,
-      products: [],
-      message: "No products found in Open Food Facts matching query",
+      source: "open_food_facts_global",
+      count: combinedProducts.length,
+      page: Number(page) || 1,
+      products: combinedProducts.slice(0, Number(pageSize) || 30),
     });
   } catch (error: any) {
     console.error("Open Food Facts search proxy error:", error);

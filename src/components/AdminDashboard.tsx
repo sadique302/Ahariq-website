@@ -26,7 +26,14 @@ import {
   Filter,
   BarChart3,
   Flame,
-  ArrowRight
+  ArrowRight,
+  Globe,
+  MapPin,
+  Share2,
+  Compass,
+  Timer,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import {
   fetchRealAdminStatsFromCloud,
@@ -76,18 +83,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const [activities, setActivities] = useState<UserActivityEvent[]>([]);
   const [sessions, setSessions] = useState<UserSessionRecord[]>([]);
-  const [activeSubTab, setActiveSubTab] = useState<"overview" | "activities" | "sessions" | "searches" | "users" | "contributions">("activities");
+  const [activeSubTab, setActiveSubTab] = useState<
+    "traffic" | "activities" | "sessions" | "searches" | "overview" | "users" | "contributions"
+  >("traffic");
   const [searchFilter, setSearchFilter] = useState("");
   const [selectedEventType, setSelectedEventType] = useState<string>("ALL");
   const [selectedSessionVisitor, setSelectedSessionVisitor] = useState<string | null>(null);
+  const [trafficSourceFilter, setTrafficSourceFilter] = useState<string>("ALL");
 
   const loadData = async () => {
     setLoading(true);
     try {
       const [adminData, actsData, sessData] = await Promise.all([
         fetchRealAdminStatsFromCloud(),
-        fetchLiveUserActivities(120),
-        fetchLiveUserSessions(100),
+        fetchLiveUserActivities(150),
+        fetchLiveUserSessions(150),
       ]);
       setStats(adminData);
       setActivities(actsData);
@@ -114,6 +124,92 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   }, [isOpen]);
 
+  // Aggregate Traffic Sources breakdown
+  const trafficBreakdown = useMemo(() => {
+    const counts: Record<string, number> = {
+      Instagram: 0,
+      WhatsApp: 0,
+      "Google / Search": 0,
+      Direct: 0,
+      Other: 0,
+    };
+
+    sessions.forEach((s) => {
+      const src = s.trafficSource || "Direct";
+      if (src === "Instagram" || s.isInstagramInAppBrowser || (s.referrerUrl && s.referrerUrl.toLowerCase().includes("instagram"))) {
+        counts.Instagram = (counts.Instagram || 0) + 1;
+      } else if (src === "WhatsApp" || (s.referrerUrl && s.referrerUrl.toLowerCase().includes("whatsapp"))) {
+        counts.WhatsApp = (counts.WhatsApp || 0) + 1;
+      } else if (src.includes("Google") || (s.referrerUrl && s.referrerUrl.toLowerCase().includes("google"))) {
+        counts["Google / Search"] = (counts["Google / Search"] || 0) + 1;
+      } else if (src === "Direct" || !s.referrerUrl || s.referrerUrl.includes("Direct")) {
+        counts.Direct = (counts.Direct || 0) + 1;
+      } else {
+        counts.Other = (counts.Other || 0) + 1;
+      }
+    });
+
+    return counts;
+  }, [sessions]);
+
+  // Aggregate Country & City counts
+  const geoBreakdown = useMemo(() => {
+    const countries: Record<string, number> = {};
+    const cities: Record<string, number> = {};
+
+    sessions.forEach((s) => {
+      const c = s.country || "India";
+      countries[c] = (countries[c] || 0) + 1;
+      if (s.city && s.city.trim() && s.city !== "India") {
+        cities[s.city] = (cities[s.city] || 0) + 1;
+      }
+    });
+
+    const sortedCountries = Object.entries(countries)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
+    const sortedCities = Object.entries(cities)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return { countries: sortedCountries, cities: sortedCities };
+  }, [sessions]);
+
+  // Aggregate Engagement and Bounce metrics
+  const engagementMetrics = useMemo(() => {
+    const total = sessions.length || 1;
+    let bounced = 0;
+    let browsing = 0;
+    let engaged = 0;
+
+    sessions.forEach((s) => {
+      const duration = s.durationSeconds || 0;
+      const actions = s.totalActions || 1;
+      if (s.engagementStatus === "Bounced" || (duration < 15 && actions <= 1)) {
+        bounced++;
+      } else if (s.engagementStatus === "Engaged" || duration > 60 || actions >= 3) {
+        engaged++;
+      } else {
+        browsing++;
+      }
+    });
+
+    const avgSeconds = Math.round(
+      sessions.reduce((acc, s) => acc + (s.durationSeconds || 0), 0) / total
+    );
+
+    return {
+      bounced,
+      bouncedPercent: Math.round((bounced / total) * 100),
+      browsing,
+      browsingPercent: Math.round((browsing / total) * 100),
+      engaged,
+      engagedPercent: Math.round((engaged / total) * 100),
+      avgSeconds,
+    };
+  }, [sessions]);
+
   // Aggregate Top Search Queries
   const topSearches = useMemo(() => {
     const counts: Record<string, { query: string; count: number; lastSearched: string }> = {};
@@ -122,7 +218,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         const q = String(act.details.query).trim().toLowerCase();
         if (q) {
           if (!counts[q]) {
-            counts[q] = { query: act.details.query, count: 0, lastSearched: act.createdAt };
+            counts[q] = { query: act.details.query, count: 0, lastSearched: act.createdAt || "" };
           }
           counts[q].count += 1;
         }
@@ -162,9 +258,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       (act.title && act.title.toLowerCase().includes(searchFilter.toLowerCase())) ||
       (act.userName && act.userName.toLowerCase().includes(searchFilter.toLowerCase())) ||
       (act.userEmail && act.userEmail.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (act.trafficSource && act.trafficSource.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (act.country && act.country.toLowerCase().includes(searchFilter.toLowerCase())) ||
       (act.visitorId && act.visitorId.toLowerCase().includes(searchFilter.toLowerCase()));
 
     return matchesType && matchesVisitor && matchesSearch;
+  });
+
+  // Filter sessions
+  const filteredSessions = sessions.filter((s) => {
+    const isInsta =
+      s.trafficSource === "Instagram" ||
+      s.isInstagramInAppBrowser ||
+      (s.referrerUrl && s.referrerUrl.toLowerCase().includes("instagram"));
+
+    const matchesSource =
+      trafficSourceFilter === "ALL" ||
+      (trafficSourceFilter === "Instagram" && isInsta) ||
+      (trafficSourceFilter === "WhatsApp" && s.trafficSource === "WhatsApp") ||
+      (trafficSourceFilter === "Google" && (s.trafficSource?.includes("Google") || s.referrerUrl?.includes("google"))) ||
+      (trafficSourceFilter === "Direct" && (s.trafficSource === "Direct" || !s.referrerUrl));
+
+    const matchesSearch =
+      !searchFilter ||
+      (s.userName && s.userName.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (s.country && s.country.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (s.city && s.city.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (s.visitorId && s.visitorId.toLowerCase().includes(searchFilter.toLowerCase())) ||
+      (s.lastAction && s.lastAction.toLowerCase().includes(searchFilter.toLowerCase()));
+
+    return matchesSource && matchesSearch;
   });
 
   const filteredUsers = stats.users.filter(
@@ -195,17 +318,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  const formatDuration = (seconds?: number) => {
+    if (!seconds || seconds < 1) return "1s";
+    if (seconds < 60) return `${seconds}s`;
+    const mins = Math.floor(seconds / 60);
+    const remainingSecs = seconds % 60;
+    return `${mins}m ${remainingSecs}s`;
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-5 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-5xl max-h-[92vh] rounded-3xl border shadow-2xl flex flex-col overflow-hidden ${
+        className={`w-full max-w-5xl max-h-[94vh] rounded-3xl border shadow-2xl flex flex-col overflow-hidden ${
           isDark
             ? "bg-[#121214] border-zinc-800 text-zinc-100"
             : "bg-white border-stone-200 text-stone-900"
         }`}
       >
         {/* Top Header */}
-        <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 bg-gradient-to-r from-emerald-500/10 via-transparent to-transparent">
+        <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 bg-gradient-to-r from-emerald-500/10 via-pink-500/5 to-transparent">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-lg shadow-emerald-600/20">
               <ShieldCheck className="w-6 h-6" />
@@ -213,7 +344,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-black tracking-tight">
-                  {isHindi ? "AharIQ स्टार्टअप व यूज़र ट्रैकिंग सेंटर" : "AharIQ Founder & Live Analytics Center"}
+                  {isHindi ? "AharIQ संस्थापक व लाइव यूज़र एनालिटिक्स" : "AharIQ Founder & Live Analytics Center"}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
@@ -253,6 +384,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Navigation Sub-Tabs */}
         <div className="flex border-b border-zinc-200 dark:border-zinc-800 px-3 sm:px-6 pt-2 bg-stone-50 dark:bg-[#18181B] overflow-x-auto no-scrollbar gap-1">
           <button
+            onClick={() => setActiveSubTab("traffic")}
+            className={`px-3.5 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeSubTab === "traffic"
+                ? "border-pink-500 text-pink-600 dark:text-pink-400"
+                : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
+            }`}
+          >
+            📸 {isHindi ? "इंस्टाग्राम व लोकेशन (Traffic)" : "Instagram & Traffic"} ({trafficBreakdown.Instagram || 0})
+          </button>
+
+          <button
             onClick={() => { setActiveSubTab("activities"); setSelectedSessionVisitor(null); }}
             className={`px-3.5 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeSubTab === "activities"
@@ -260,7 +402,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
             }`}
           >
-            ⚡ {isHindi ? "लाइव यूज़र एक्टिविटी" : "Live Activity Feed"} ({activities.length})
+            ⚡ {isHindi ? "लाइव एक्टिविटी स्ट्रीम" : "Live Activity"} ({activities.length})
           </button>
 
           <button
@@ -271,7 +413,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
             }`}
           >
-            🌐 {isHindi ? "विजिटर सेशन्स" : "Visitor Sessions"} ({sessions.length})
+            🌐 {isHindi ? "विजिटर जर्नी" : "Visitor Sessions"} ({sessions.length})
           </button>
 
           <button
@@ -282,7 +424,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
             }`}
           >
-            🔍 {isHindi ? "सर्च व ट्रेंडिंग इनसाइट्स" : "Search & Demand"} ({topSearches.length})
+            🔍 {isHindi ? "सर्च व डिमांड" : "Search & Demand"} ({topSearches.length})
           </button>
 
           <button
@@ -293,7 +435,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
             }`}
           >
-            📊 {isHindi ? "ग्रोथ ओवरव्यू" : "Startup KPIs"}
+            📊 {isHindi ? "ओवरव्यू" : "Startup KPIs"}
           </button>
 
           <button
@@ -304,7 +446,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 : "border-transparent text-stone-500 hover:text-stone-800 dark:text-zinc-400"
             }`}
           >
-            👥 {isHindi ? "रजिस्टर्ड खाते" : "Users"} ({stats.totalUsers})
+            👥 {isHindi ? "खाते" : "Users"} ({stats.totalUsers})
           </button>
 
           <button
@@ -327,6 +469,398 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <p className="text-sm font-semibold text-stone-500">
                 {isHindi ? "Firestore से लाइव यूज़र एक्टिविटी और सेशन्स लोड हो रहे हैं..." : "Connecting to Live User Activity Stream..."}
               </p>
+            </div>
+          ) : activeSubTab === "traffic" ? (
+            /* TRAFFIC SOURCES & GEOGRAPHY DEEP-DIVE */
+            <div className="space-y-5">
+              {/* Traffic Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div
+                  className={`p-4 rounded-2xl border ${
+                    isDark ? "bg-pink-950/20 border-pink-800/40" : "bg-pink-50/80 border-pink-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-pink-600 dark:text-pink-400">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      📸 Instagram
+                    </span>
+                    <Share2 className="w-4 h-4" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-2xl sm:text-3xl font-black text-pink-600 dark:text-pink-400">
+                      {trafficBreakdown.Instagram || 0}
+                    </span>
+                    <span className="text-xs font-semibold text-stone-500">
+                      ({sessions.length > 0 ? Math.round(((trafficBreakdown.Instagram || 0) / sessions.length) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 dark:text-zinc-400 mt-1">
+                    Bio & Story clicks
+                  </p>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border ${
+                    isDark ? "bg-emerald-950/20 border-emerald-800/40" : "bg-emerald-50/80 border-emerald-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      💬 WhatsApp / Direct
+                    </span>
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                      {(trafficBreakdown.WhatsApp || 0) + (trafficBreakdown.Direct || 0)}
+                    </span>
+                    <span className="text-xs font-semibold text-stone-500">
+                      ({sessions.length > 0 ? Math.round((((trafficBreakdown.WhatsApp || 0) + (trafficBreakdown.Direct || 0)) / sessions.length) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 dark:text-zinc-400 mt-1">
+                    Direct shares & web
+                  </p>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border ${
+                    isDark ? "bg-blue-950/20 border-blue-800/40" : "bg-blue-50/80 border-blue-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-blue-600 dark:text-blue-400">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      ⏱️ Avg. App Time
+                    </span>
+                    <Timer className="w-4 h-4" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">
+                      {formatDuration(engagementMetrics.avgSeconds)}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 dark:text-zinc-400 mt-1">
+                    Time spent browsing
+                  </p>
+                </div>
+
+                <div
+                  className={`p-4 rounded-2xl border ${
+                    isDark ? "bg-purple-950/20 border-purple-800/40" : "bg-purple-50/80 border-purple-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-purple-600 dark:text-purple-400">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      🎯 Engaged vs Bounced
+                    </span>
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400">
+                      {engagementMetrics.engagedPercent}%
+                    </span>
+                    <span className="text-[10px] text-stone-500">
+                      (Bounced: {engagementMetrics.bouncedPercent}%)
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-stone-500 dark:text-zinc-400 mt-1">
+                    Searched / Scanned foods
+                  </p>
+                </div>
+              </div>
+
+              {/* Geographic & Source Distribution Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Traffic Source Breakdown Card */}
+                <div
+                  className={`p-4 rounded-2xl border space-y-3 ${
+                    isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-stone-200 shadow-xs"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-black text-sm flex items-center gap-2">
+                      <Share2 className="w-4 h-4 text-pink-500" />
+                      <span>{isHindi ? "ट्रैफ़िक स्रोत (Acquisition Channels)" : "Traffic Channels Breakdown"}</span>
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-600">
+                      SOURCES
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 pt-1">
+                    {Object.entries(trafficBreakdown).map(([source, rawCount]) => {
+                      const count = Number(rawCount) || 0;
+                      const percent = sessions.length > 0 ? Math.round((count / sessions.length) * 100) : 0;
+                      return (
+                        <div key={source} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="flex items-center gap-1.5">
+                              {source === "Instagram" && "📸"}
+                              {source === "WhatsApp" && "💬"}
+                              {source === "Google / Search" && "🔍"}
+                              {source === "Direct" && "🔗"}
+                              {source === "Other" && "🌐"}
+                              <span>{source}</span>
+                            </span>
+                            <span className="font-mono text-stone-500 dark:text-zinc-400">
+                              {count} visits ({percent}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                source === "Instagram"
+                                  ? "bg-gradient-to-r from-pink-500 to-purple-500"
+                                  : source === "WhatsApp"
+                                  ? "bg-emerald-500"
+                                  : source === "Google / Search"
+                                  ? "bg-blue-500"
+                                  : "bg-stone-400"
+                              }`}
+                              style={{ width: `${Math.max(percent, 2)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Country & City Location Card */}
+                <div
+                  className={`p-4 rounded-2xl border space-y-3 ${
+                    isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-stone-200 shadow-xs"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-black text-sm flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-emerald-500" />
+                      <span>{isHindi ? "विजिटर लोकेशन (Country & City)" : "Visitor Top Geographies"}</span>
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600">
+                      GEO-IP
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 pt-1">
+                    {geoBreakdown.countries.length === 0 ? (
+                      <p className="text-xs text-zinc-500 py-4 text-center">
+                        {isHindi ? "अभी तक कोई लोकेशन डेटा नहीं आया।" : "Detecting live locations..."}
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          {geoBreakdown.countries.slice(0, 4).map((c) => (
+                            <div
+                              key={c.name}
+                              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/50 flex items-center justify-between text-xs"
+                            >
+                              <span className="font-bold">🇮🇳 {c.name}</span>
+                              <span className="font-mono text-emerald-600 font-extrabold">{c.count} users</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {geoBreakdown.cities.length > 0 && (
+                          <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800/80">
+                            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1.5">
+                              {isHindi ? "टॉप शहर (Cities)" : "Top Cities"}
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {geoBreakdown.cities.slice(0, 8).map((city) => (
+                                <span
+                                  key={city.name}
+                                  className="px-2 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1"
+                                >
+                                  <MapPin className="w-2.5 h-2.5" />
+                                  <span>{city.name}</span>
+                                  <span className="font-mono text-[9px] opacity-75">({city.count})</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Instagram Visitors Live Stream with Individual Journey Trails */}
+              <div
+                className={`p-4 rounded-2xl border space-y-3 ${
+                  isDark ? "bg-[#18181B] border-zinc-800" : "bg-white border-stone-200 shadow-xs"
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h4 className="font-black text-sm flex items-center gap-2 text-stone-900 dark:text-white">
+                      <span>📸 {isHindi ? "इंस्टाग्राम से आए विजिटर्स की पूरी एक्टिविटी" : "Instagram Visitor Journeys & Action Trails"}</span>
+                    </h4>
+                    <p className="text-xs text-stone-500 dark:text-zinc-400 mt-0.5">
+                      {isHindi
+                        ? "जाने कि इंस्टाग्राम से आए लोगों ने ऐप में क्या किया — सिर्फ खोला और बंद किया या खाना सर्च किया?"
+                        : "See whether Instagram visitors bounced immediately or engaged with search & scanner features."}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setTrafficSourceFilter(trafficSourceFilter === "Instagram" ? "ALL" : "Instagram")}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        trafficSourceFilter === "Instagram"
+                          ? "bg-pink-600 border-pink-600 text-white shadow-xs"
+                          : "bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300"
+                      }`}
+                    >
+                      {trafficSourceFilter === "Instagram" ? "✓ Only Instagram" : "Filter: Instagram Only"}
+                    </button>
+                  </div>
+                </div>
+
+                {filteredSessions.length === 0 ? (
+                  <div className="p-8 text-center border rounded-2xl border-dashed border-zinc-300 dark:border-zinc-800 text-xs text-stone-500 space-y-1.5">
+                    <p className="font-bold">
+                      {isHindi ? "कोई इंस्टाग्राम विजिटर सेशन नहीं मिला।" : "No Instagram visitor records logged yet."}
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      {isHindi
+                        ? "जैसे ही कोई यूजर आपके इंस्टाग्राम बायो/स्टोरी लिंक से ऐप खोलेगा, उसका लाइव रिकॉर्ड यहां आ जाएगा!"
+                        : "When visitors click your Instagram bio or story link, their actions will stream here."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-2">
+                    {filteredSessions.slice(0, 15).map((sess) => {
+                      const isInsta =
+                        sess.trafficSource === "Instagram" ||
+                        sess.isInstagramInAppBrowser ||
+                        (sess.referrerUrl && sess.referrerUrl.toLowerCase().includes("instagram"));
+
+                      const isBounced = sess.engagementStatus === "Bounced" || ((sess.durationSeconds || 0) < 15 && (sess.totalActions || 1) <= 1);
+                      const isEngaged = sess.engagementStatus === "Engaged" || (sess.durationSeconds || 0) > 45 || (sess.totalActions || 1) >= 3;
+
+                      return (
+                        <div
+                          key={sess.id}
+                          className={`p-3.5 rounded-2xl border transition-all space-y-2.5 ${
+                            isDark ? "bg-zinc-900/60 border-zinc-800 hover:border-zinc-700" : "bg-stone-50/70 border-stone-200 hover:border-pink-200"
+                          }`}
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5">
+                              <div
+                                className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm ${
+                                  isInsta
+                                    ? "bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white shadow-xs"
+                                    : "bg-emerald-600 text-white"
+                                }`}
+                              >
+                                {isInsta ? "IG" : "WEB"}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-xs text-stone-900 dark:text-zinc-100">
+                                    {sess.userName || "Visitor"}
+                                  </span>
+                                  <span
+                                    className={`px-2 py-0.2 rounded-md text-[9px] font-extrabold border ${
+                                      isInsta
+                                        ? "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30"
+                                        : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30"
+                                    }`}
+                                  >
+                                    {sess.trafficSource || "Direct"}
+                                  </span>
+                                  {sess.isInstagramInAppBrowser && (
+                                    <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-purple-500/10 text-purple-600 border border-purple-500/30">
+                                      In-App Browser
+                                    </span>
+                                  )}
+                                  <span
+                                    className={`px-2 py-0.2 rounded-md text-[9px] font-bold ${
+                                      isBounced
+                                        ? "bg-amber-500/10 text-amber-600 border border-amber-500/30"
+                                        : isEngaged
+                                        ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30"
+                                        : "bg-blue-500/10 text-blue-600 border border-blue-500/30"
+                                    }`}
+                                  >
+                                    {isBounced ? "⚠️ Quick Bounce (<15s)" : isEngaged ? "🔥 Highly Active" : "👀 Browsing"}
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-stone-500 dark:text-zinc-400 mt-0.5">
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="w-3 h-3 text-emerald-500" />
+                                    {sess.city ? `${sess.city}, ` : ""}{sess.country || "India"}
+                                  </span>
+                                  <span>•</span>
+                                  <span className="font-mono">{sess.deviceType || "Mobile"}</span>
+                                  <span>•</span>
+                                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                                    Duration: {formatDuration(sess.durationSeconds)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-right">
+                              <span className="text-xs font-bold text-stone-800 dark:text-zinc-200">
+                                {sess.totalActions || 1} Actions
+                              </span>
+                              <button
+                                onClick={() => {
+                                  setSelectedSessionVisitor(sess.visitorId);
+                                  setActiveSubTab("activities");
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] cursor-pointer"
+                              >
+                                View Events
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Action Trail & Searches */}
+                          <div className="p-2 rounded-xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 text-[11px] space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-stone-400 font-semibold">Last Action:</span>
+                              <span className="font-medium text-stone-800 dark:text-zinc-200">{sess.lastAction || "Opened App"}</span>
+                            </div>
+
+                            {sess.recentSearches && sess.recentSearches.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                                <span className="text-[10px] font-bold text-blue-500">Searched:</span>
+                                {sess.recentSearches.map((s, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-semibold"
+                                  >
+                                    "{s}"
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {sess.recentProductsViewed && sess.recentProductsViewed.length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                                <span className="text-[10px] font-bold text-emerald-500">Products Inspected:</span>
+                                {sess.recentProductsViewed.map((p, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold"
+                                  >
+                                    {p}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           ) : activeSubTab === "activities" ? (
             /* LIVE ACTIVITY FEED */
@@ -412,7 +946,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     const badge = getEventBadge(act.eventType);
                     const Icon = badge.icon;
                     const timeAgo = act.createdAt ? new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : "Just now";
-                    const isGuest = act.isGuest || !act.userEmail;
+                    const isGuest = !act.isLoggedIn || !act.userEmail;
 
                     return (
                       <div
@@ -432,6 +966,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               <span className={`px-1.5 py-0.2 rounded-md text-[9px] font-bold border uppercase ${badge.bg}`}>
                                 {badge.label}
                               </span>
+                              {act.trafficSource && (
+                                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-pink-500/10 text-pink-600 border border-pink-500/20">
+                                  {act.trafficSource === "Instagram" ? "📸 Instagram" : act.trafficSource}
+                                </span>
+                              )}
+                              {act.city && (
+                                <span className="px-1.5 py-0.2 rounded-md text-[9px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                  📍 {act.city}
+                                </span>
+                              )}
                             </div>
 
                             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-stone-500 dark:text-zinc-400 mt-0.5">
@@ -479,8 +1023,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </h4>
                   <p className="text-stone-600 dark:text-zinc-400 text-[11px]">
                     {isHindi
-                      ? "हर यूजर के कुल विज़िट, ऐप पर बिताया समय और किए गए एक्शन्स की पूरी ट्रैकिंग।"
-                      : "Shows duration spent on app, device platform, total actions, and whether user logged in or browsed as guest."}
+                      ? "हर यूजर के स्रोत (Instagram, Direct), देश/शहर, ऐप पर बिताया समय और किए गए एक्शन्स की पूरी ट्रैकिंग।"
+                      : "Shows visitor acquisition channel, location, time spent on app, and individual journey trails."}
                   </p>
                 </div>
                 <span className="px-3 py-1 rounded-xl bg-emerald-600 text-white font-extrabold text-xs">
@@ -495,8 +1039,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {sessions.map((sess) => {
-                    const durationMin = Math.round((sess.sessionDurationSeconds || 0) / 60);
-                    const isGuest = sess.isGuest || !sess.userEmail;
+                    const isGuest = !sess.isLoggedIn || !sess.userEmail;
 
                     return (
                       <div
@@ -521,11 +1064,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 {isGuest ? "GUEST" : "LOGGED IN"}
                               </span>
                             </div>
-                            {sess.userEmail && (
-                              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
-                                {sess.userEmail}
-                              </p>
-                            )}
+                            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                              {sess.trafficSource && (
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-pink-500/10 text-pink-600 border border-pink-500/20">
+                                  {sess.trafficSource}
+                                </span>
+                              )}
+                              <span className="text-[11px] text-stone-500 dark:text-zinc-400">
+                                📍 {sess.city ? `${sess.city}, ` : ""}{sess.country || "India"}
+                              </span>
+                            </div>
                           </div>
 
                           <div className="text-right">
@@ -533,7 +1081,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               {sess.totalActions || 1} Actions
                             </span>
                             <span className="text-[10px] text-stone-400 font-mono">
-                              {durationMin > 0 ? `${durationMin}m on app` : `${sess.sessionDurationSeconds || 5}s`}
+                              {formatDuration(sess.durationSeconds)}
                             </span>
                           </div>
                         </div>
@@ -953,7 +1501,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Footer */}
         <div className="p-3.5 border-t border-zinc-200 dark:border-zinc-800 bg-stone-50 dark:bg-[#18181B] flex items-center justify-between text-xs text-stone-500">
           <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-            <CheckCircle2 className="w-4 h-4" /> Live Firestore Connected ({activities.length} events active)
+            <CheckCircle2 className="w-4 h-4" /> Live Firestore Connected ({activities.length} events logged)
           </span>
           <button
             onClick={onClose}
