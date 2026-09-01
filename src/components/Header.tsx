@@ -78,6 +78,8 @@ export const Header: React.FC<HeaderProps> = ({
   const isOwner =
     user?.isLoggedIn &&
     (user?.role === "admin" ||
+      user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
+      user?.email?.toLowerCase().includes("sadiquehavari") ||
       user?.email?.toLowerCase().startsWith("admin@"));
 
   // Close menu when clicking outside

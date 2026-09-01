@@ -67,6 +67,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const isOwner =
     user?.isLoggedIn &&
     (user?.role === "admin" ||
+      user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
+      user?.email?.toLowerCase().includes("sadiquehavari") ||
       user?.email?.toLowerCase().startsWith("admin@"));
 
   const [searchQuery, setSearchQuery] = useState("");
