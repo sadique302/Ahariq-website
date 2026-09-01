@@ -550,7 +550,7 @@ export default function App() {
         onClose={() => setIsAdminDashboardOpen(false)}
         language={language}
         isDark={isDark}
-        adminEmail={user.email || "sadiquehavari@gmail.com"}
+        adminEmail={user.email || "admin@ahariq.app"}
       />
 
       {/* PWA Install Modal (Triggered exclusively from Hamburger Menu) */}

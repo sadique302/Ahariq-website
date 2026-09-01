@@ -66,9 +66,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const t = UI_TRANSLATIONS[language] || UI_TRANSLATIONS["en"];
   const isOwner =
     user?.isLoggedIn &&
-    (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
-      user?.email?.toLowerCase().includes("sadiquehavari") ||
-      user?.role === "admin");
+    (user?.role === "admin" ||
+      user?.email?.toLowerCase().startsWith("admin@"));
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");

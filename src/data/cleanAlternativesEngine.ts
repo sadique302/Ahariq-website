@@ -799,6 +799,73 @@ export const DEFAULT_CATEGORY_ALTERNATIVES: Record<string, CategoryAlternativeDo
         tags: ["Pesticide Free", "Unadulterated"]
       }
     ]
+  },
+
+  // 10. ATTA, WHEAT FLOUR, MAIDA, BESAN & GRAINS (Aashirvaad, Fortune, Pillsbury, Maida)
+  refined_atta: {
+    id: "refined_atta",
+    category_id: "refined_atta",
+    category_name: "Atta, Whole Wheat Flour, Maida & Grains",
+    target_products: [
+      "Atta",
+      "Wheat Flour",
+      "Chakki Atta",
+      "Aashirvaad Atta",
+      "Fortune Atta",
+      "Pillsbury",
+      "Maida",
+      "Refined Wheat Flour",
+      "Besan",
+      "Suji",
+      "Sooji",
+      "Rawa",
+      "Multigrain Atta",
+      "Sharbati Atta",
+      "Khapli Wheat",
+      "Emmer Wheat",
+      "Gram Flour"
+    ],
+    alternatives: [
+      {
+        id: "alt_two_brothers_khapli",
+        name: "Two Brothers Organic Khapli (Emmer) Wheat Atta",
+        brand: "Two Brothers / Verified Organic",
+        score: 98,
+        price: "₹120 / kg",
+        priceEst: "₹110-130",
+        benefit: "100% Ancient Khapli Wheat, Low Glycemic Index, 100% Stone-Ground Chakkī with Bran",
+        benefitHi: "100% प्राचीन खापली गेहूं, कम ग्लाइसेमिक इंडेक्स (शुगर नियंत्रण), चोकर युक्त चक्की पिसा",
+        reasonEn: "Ancient non-hybridized Khapli Emmer wheat naturally low in gluten and rich in complex dietary fiber. Stone-milled retaining full germ and bran.",
+        reasonHi: "प्राचीन देसी खापली गेहूं जो प्राकृतिक रूप से कम ग्लूटेन और उच्च फाइबर वाला है। 100% चोकर सहित पारंपरिक चक्की से पिसा हुआ।",
+        tags: ["Ancient Khapli", "Low GI", "Stone-Ground Bran"]
+      },
+      {
+        id: "alt_aashirvaad_select_sharbati",
+        name: "Aashirvaad Select 100% MP Sharbati Whole Wheat Atta",
+        brand: "Aashirvaad Select",
+        score: 93,
+        price: "₹65 / kg",
+        priceEst: "₹60-70",
+        benefit: "100% MP Sharbati Grains, 0% Maida, High Fiber & Soft Rotis",
+        benefitHi: "100% मध्य प्रदेश शरबती गेहूं, 0% मैदा मिलावट, प्राकृतिक उच्च फाइबर",
+        reasonEn: "Single-origin Madhya Pradesh Sharbati whole wheat with zero chemical bleaching, zero maida adulteration, and full natural bran fiber.",
+        reasonHi: "शुद्ध एमपी शरबती गेहूं से तैयार, जिसमें मैदा या ब्लीचिंग एजेंट की बिल्कुल मिलावट नहीं होती।",
+        tags: ["100% Sharbati", "Zero Maida", "High Natural Fiber"]
+      },
+      {
+        id: "alt_slurrp_sprouted_ragi_millet",
+        name: "Slurrp Farm Sprouted Ragi & Multi-Millet Atta",
+        brand: "Slurrp Farm / Organic Tattva",
+        score: 96,
+        price: "₹95 / 500g",
+        priceEst: "₹90-110",
+        benefit: "Sprouted Ragi, Jowar & Bajra, 3x Calcium & High Iron, Gluten-Friendly",
+        benefitHi: "अंकुरित रागी, ज्वार व बाजरा, 3 गुना अधिक कैल्शियम व आयरन, ग्लूटेन-फ्रेंडली",
+        reasonEn: "Sprouting unlocks bioavailable micronutrients and destroys anti-nutrients like phytates. Perfect for diabetic and gut-friendly rotis.",
+        reasonHi: "अंकुरित मोटे अनाज जो पचने में बहुत आसान हैं और शरीर को प्राकृतिक कैल्शियम और आयरन प्रदान करते हैं।",
+        tags: ["Sprouted Millets", "High Calcium", "Gut Friendly"]
+      }
+    ]
   }
 };
 
@@ -920,6 +987,38 @@ export function detectProductCategoryId(input: {
     text.includes("nakpro")
   ) {
     return "whey_protein";
+  }
+
+  // 0.6 ATTA, WHEAT FLOUR, MAIDA, BESAN & GRAINS (High priority before general bakery/snacks)
+  if (
+    text.includes("atta") ||
+    text.includes("aashirvaad") ||
+    text.includes("flour") ||
+    text.includes("chakki") ||
+    text.includes("wheat") ||
+    text.includes("pillsbury") ||
+    text.includes("fortune atta") ||
+    text.includes("maida") ||
+    text.includes("besan") ||
+    text.includes("suji") ||
+    text.includes("sooji") ||
+    text.includes("rawa") ||
+    text.includes("khapli") ||
+    text.includes("multigrain") ||
+    text.includes("sharbati")
+  ) {
+    // Only route to atta if not instant noodles/pasta
+    if (
+      !text.includes("noodle") &&
+      !text.includes("maggi") &&
+      !text.includes("pasta") &&
+      !text.includes("macaroni") &&
+      !text.includes("ramen") &&
+      !text.includes("biscuit") &&
+      !text.includes("cookie")
+    ) {
+      return "refined_atta";
+    }
   }
 
   // 1. SAVORY CRISPY SNACKS & CHIPS & NAMKEEN (Kurkure, Lays, Bingo, Uncle Chipps, Bhujia, Puffs, Namkeen)
@@ -1228,6 +1327,25 @@ export function getSmartCleanerAlternatives(input: {
   }
   if (text.includes("creatine")) {
     return DEFAULT_CATEGORY_ALTERNATIVES.creatine?.alternatives || [];
+  }
+
+  if (
+    text.includes("atta") ||
+    text.includes("flour") ||
+    text.includes("wheat") ||
+    text.includes("chakki") ||
+    text.includes("aashirvaad") ||
+    text.includes("pillsbury") ||
+    text.includes("maida") ||
+    text.includes("besan") ||
+    text.includes("suji") ||
+    text.includes("sooji") ||
+    text.includes("rawa") ||
+    text.includes("khapli")
+  ) {
+    if (!text.includes("noodle") && !text.includes("maggi") && !text.includes("pasta") && !text.includes("ramen")) {
+      return DEFAULT_CATEGORY_ALTERNATIVES.refined_atta?.alternatives || [];
+    }
   }
 
   // If savory snack, chips, namkeen, or Kurkure, return potato_chips / roasted snack alternatives

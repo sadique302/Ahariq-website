@@ -77,9 +77,8 @@ export const Header: React.FC<HeaderProps> = ({
   const activeLang = SUPPORTED_LANGUAGES.find(l => l.code === (language as string)) || SUPPORTED_LANGUAGES[0];
   const isOwner =
     user?.isLoggedIn &&
-    (user?.email?.toLowerCase().trim() === "sadiquehavari@gmail.com" ||
-      user?.email?.toLowerCase().includes("sadiquehavari") ||
-      user?.role === "admin");
+    (user?.role === "admin" ||
+      user?.email?.toLowerCase().startsWith("admin@"));
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -289,7 +288,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </button>
 
-                {/* Secret Founder & Admin Panel (STRICTLY ONLY visible to sadiquehavari@gmail.com) */}
+                {/* Secret Founder & Admin Panel (Visible for Admin Accounts) */}
                 {isOwner && onOpenAdmin && (
                   <button
                     id="menu-owner-admin-btn"

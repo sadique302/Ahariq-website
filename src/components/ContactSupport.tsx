@@ -156,13 +156,13 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
       <div>
         <a
           id="contact-email-btn"
-          href="mailto:sadiquehavari@gmail.com"
+          href="mailto:support@ahariq.app"
           className={`p-4 rounded-2xl border transition-all flex items-center gap-3.5 group cursor-pointer ${
             isDark
               ? "bg-stone-800/60 border-stone-700/80 hover:border-[#22c55e] hover:bg-stone-800"
               : "bg-white border-stone-200 hover:border-[#22c55e] hover:bg-[#F0FDF4] shadow-sm"
           }`}
-          title="Send email to sadiquehavari@gmail.com"
+          title="Send email to support@ahariq.app"
         >
           <div className="w-11 h-11 rounded-2xl bg-[#22c55e]/20 text-[#22c55e] group-hover:bg-[#22c55e] group-hover:text-white transition-all flex items-center justify-center flex-shrink-0 shadow-xs">
             <Mail className="w-5 h-5" />
@@ -175,7 +175,7 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
               className="text-xs sm:text-sm font-semibold text-[#000000] dark:text-stone-100 group-hover:text-[#15803d] dark:group-hover:text-[#22c55e] transition-colors truncate block mt-0.5"
               style={{ fontWeight: 600, color: isDark ? undefined : "#000000" }}
             >
-              sadiquehavari@gmail.com
+              support@ahariq.app
             </span>
             <span className="text-[11px] text-[#22c55e] font-medium block mt-0.5" style={{ fontWeight: 500 }}>
               {isHindi ? "क्लिक करके मेल भेजें →" : "Click to send email →"}

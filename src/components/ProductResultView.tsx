@@ -1253,7 +1253,7 @@ export const ProductResultView: React.FC<ProductResultViewProps> = ({
                   <span>{isHindi ? "स्वस्थ एवं शुद्ध भारतीय विकल्प" : "Cleaner Indian Alternatives"}</span>
                 </h3>
                 <span className="text-xs text-slate-400 font-medium">
-                  {isHindi ? "किराना सुपरमार्केट्स पर उपलब्ध" : "Blinkit / Zepto / Supermarkets"}
+                  {isHindi ? "नज़दीकी किराना स्टोर पर उपलब्ध" : "Available at Nearest Grocery Stores"}
                 </span>
               </div>
 

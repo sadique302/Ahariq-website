@@ -296,11 +296,11 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
 
                 <div className="flex flex-col items-start sm:items-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100 dark:border-stone-700">
                   <a
-                    href="mailto:sadiquehavari@gmail.com"
+                    href="mailto:support@ahariq.app"
                     className="text-xs font-semibold text-[#000000] dark:text-stone-100 hover:text-[#22c55e] dark:hover:text-[#22c55e] flex items-center gap-1.5"
                   >
                     <Mail className="w-3.5 h-3.5 text-[#22c55e]" />
-                    <span>sadiquehavari@gmail.com</span>
+                    <span>support@ahariq.app</span>
                   </a>
                 </div>
               </div>
@@ -596,11 +596,11 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
               Ahariq Support:
             </span>
             <a
-              href="mailto:sadiquehavari@gmail.com"
+              href="mailto:support@ahariq.app"
               className="text-xs font-semibold text-[#111827] dark:text-stone-200 hover:text-[#22c55e] dark:hover:text-[#22c55e] flex items-center gap-1"
             >
               <Mail className="w-3.5 h-3.5 text-[#22c55e]" />
-              <span>sadiquehavari@gmail.com</span>
+              <span>support@ahariq.app</span>
             </a>
           </div>
 
