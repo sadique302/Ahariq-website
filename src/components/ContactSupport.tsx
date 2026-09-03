@@ -7,7 +7,9 @@ import {
   Info,
   Lock,
   Crown,
-  AlertTriangle
+  AlertTriangle,
+  BadgeCheck,
+  Briefcase
 } from "lucide-react";
 import { Language } from "../types";
 
@@ -150,6 +152,79 @@ export const ContactSupport: React.FC<ContactSupportProps> = ({
             <span className="truncate">{isHindi ? "एडमिन पैनल" : "Founder Panel"}</span>
           </button>
         )}
+      </div>
+
+      {/* Founder & Leadership Spotlight */}
+      <div
+        id="founder-leadership-spotlight"
+        className={`p-4 sm:p-4.5 rounded-2xl border transition-all ${
+          isDark
+            ? "bg-gradient-to-r from-stone-800/90 via-stone-800/60 to-stone-900/90 border-stone-700/80"
+            : "bg-gradient-to-r from-emerald-50/60 via-white to-stone-50/70 border-emerald-200/90 shadow-xs"
+        }`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+          <div className="flex items-center gap-3.5">
+            {/* Executive Monogram Avatar */}
+            <div className="relative flex-shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#10B981] to-[#047857] text-white font-extrabold text-sm sm:text-base flex items-center justify-center shadow-md shadow-emerald-500/20 ring-2 ring-emerald-400/30 tracking-wider">
+                SS
+              </div>
+              <div
+                className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-stone-900 flex items-center justify-center shadow-xs"
+                title="Verified Founder & Leadership"
+              >
+                <BadgeCheck className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
+              </div>
+            </div>
+
+            {/* Executive Bio */}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4
+                  className="text-sm sm:text-base font-extrabold text-[#000000] dark:text-stone-100 tracking-tight"
+                  style={{ fontWeight: 800, color: isDark ? undefined : "#000000" }}
+                >
+                  Sadique Samtaan
+                </h4>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-[#059669] dark:text-[#34D399]">
+                  <Briefcase className="w-3 h-3 text-[#10B981]" />
+                  CEO & Co-Founder
+                </span>
+              </div>
+              <p
+                className="text-xs text-[#111827] dark:text-stone-300 font-medium mt-0.5"
+                style={{ fontWeight: 500, color: isDark ? undefined : "#111827" }}
+              >
+                {isHindi
+                  ? "संस्थापक एवं मुख्य कार्यकारी अधिकारी (CEO) • आहार आईक्यू (Ahariq)"
+                  : "Founder & Chief Executive Officer • Ahariq Health"}
+              </p>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 hidden sm:block">
+                {isHindi
+                  ? "भारतीय परिवारों के लिए पारदर्शी, मिलावट-मुक्त और स्वच्छ भोजन जागरूकता का राष्ट्रीय मिशन।"
+                  : "Leading India's consumer movement for clean-label, unadulterated & transparent food."}
+              </p>
+            </div>
+          </div>
+
+          {/* Connect with Founder */}
+          <div className="flex items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200 dark:border-stone-700 self-start sm:self-center">
+            <a
+              id="contact-founder-direct-btn"
+              href="mailto:support@ahariq.app?subject=Founder%20Desk%20-%20To%20Sadique%20Samtaan%20(CEO)"
+              className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                isDark
+                  ? "bg-stone-800 hover:bg-stone-700 border-stone-600 text-stone-200"
+                  : "bg-white hover:bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs"
+              }`}
+              title="Write directly to the Founder's Desk"
+            >
+              <Mail className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+              <span>{isHindi ? "संस्थापक से संपर्क" : "Founder's Desk"}</span>
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Official Support Email Card */}

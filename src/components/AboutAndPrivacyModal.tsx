@@ -14,7 +14,9 @@ import {
   AlertTriangle,
   Flame,
   Activity,
-  HeartPulse
+  HeartPulse,
+  Briefcase,
+  BadgeCheck
 } from "lucide-react";
 import { Language } from "../types";
 
@@ -269,34 +271,58 @@ export const AboutAndPrivacyModal: React.FC<AboutAndPrivacyModalProps> = ({
                 </div>
               </div>
 
-              {/* Company Team & Contact Box */}
+              {/* Company Team & Founder Leadership Box */}
               <div
-                className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 ${
                   isDark
                     ? "bg-stone-800/90 border-stone-700 text-stone-100"
                     : "bg-white border-stone-200 text-[#111827] shadow-sm"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#22c55e]/20 text-[#22c55e] flex items-center justify-center flex-shrink-0">
-                    <Building2 className="w-5 h-5" />
+                <div className="flex items-center gap-3.5">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#10B981] to-[#047857] text-white font-extrabold text-sm sm:text-base flex items-center justify-center shadow-md shadow-emerald-500/20 ring-2 ring-emerald-400/30">
+                      SS
+                    </div>
+                    <div
+                      className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-stone-900 flex items-center justify-center shadow-xs"
+                      title="Verified Founder & Leadership"
+                    >
+                      <BadgeCheck className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
+                    </div>
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#22c55e] block">
-                      FOUNDER & LEADERSHIP
-                    </span>
-                    <h4 className="font-bold text-sm text-[#000000] dark:text-stone-100">
-                      Sadique Samtaan & Ahariq Team
-                    </h4>
-                    <p className="text-[11px] text-[#111827] dark:text-stone-300 font-normal">
-                      Dedicated to Clean & Honest Food Awareness
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4
+                        className="font-extrabold text-sm sm:text-base text-[#000000] dark:text-stone-100 tracking-tight"
+                        style={{ fontWeight: 800, color: isDark ? undefined : "#000000" }}
+                      >
+                        Sadique Samtaan
+                      </h4>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 border border-emerald-500/30 text-[#059669] dark:text-[#34D399]">
+                        <Briefcase className="w-3 h-3 text-[#10B981]" />
+                        CEO & Co-Founder
+                      </span>
+                    </div>
+                    <p
+                      className="text-xs text-[#111827] dark:text-stone-300 font-medium mt-0.5"
+                      style={{ fontWeight: 500, color: isDark ? undefined : "#111827" }}
+                    >
+                      {isHindi
+                        ? "संस्थापक एवं मुख्य कार्यकारी अधिकारी (CEO) • आहार आईक्यू (Ahariq)"
+                        : "Founder & Chief Executive Officer • Ahariq Health"}
+                    </p>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
+                      {isHindi
+                        ? "भारतीय उपभोक्ताओं के लिए स्वच्छ, पारदर्शी और मिलावट-रहित भोजन की वकालत।"
+                        : "Committed to 100% honest food labeling and nutritional awareness."}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-col items-start sm:items-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100 dark:border-stone-700">
                   <a
-                    href="mailto:support@ahariq.app"
+                    href="mailto:support@ahariq.app?subject=Founder%20Desk%20-%20Sadique%20Samtaan%20(CEO)"
                     className="text-xs font-semibold text-[#000000] dark:text-stone-100 hover:text-[#22c55e] dark:hover:text-[#22c55e] flex items-center gap-1.5"
                   >
                     <Mail className="w-3.5 h-3.5 text-[#22c55e]" />

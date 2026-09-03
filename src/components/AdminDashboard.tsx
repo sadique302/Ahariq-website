@@ -32,7 +32,6 @@ import {
   Share2,
   Compass,
   Timer,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import {
@@ -553,7 +552,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <span className="text-xs font-bold uppercase tracking-wider">
                       🎯 Engaged vs Bounced
                     </span>
-                    <Sparkles className="w-4 h-4" />
+                    <TrendingUp className="w-4 h-4" />
                   </div>
                   <div className="mt-2 flex items-baseline gap-1.5">
                     <span className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400">
