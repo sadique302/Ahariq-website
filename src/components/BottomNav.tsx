@@ -1,6 +1,6 @@
 import React from "react";
 import { Language } from "../types";
-import { Home, ScanLine, Bookmark, History, Dumbbell, FlaskConical } from "lucide-react";
+import { Home, ScanLine, ShoppingBag, History, Dumbbell, FlaskConical } from "lucide-react";
 
 interface BottomNavProps {
   currentTab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration";
@@ -28,9 +28,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     },
     {
       id: "saved" as const,
-      labelEn: "Mere List",
-      labelHi: "मेरी लिस्ट",
-      icon: Bookmark,
+      labelEn: "Grocery",
+      labelHi: "किराना लिस्ट",
+      icon: ShoppingBag,
       badge: savedCount > 0 ? savedCount : undefined,
     },
     {

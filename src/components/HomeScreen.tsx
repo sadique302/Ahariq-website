@@ -14,11 +14,13 @@ import {
   Flame,
   Wheat,
   Droplet,
+  ShoppingBag,
 } from "lucide-react";
 import { INDIAN_PRODUCTS_DB } from "../data/indianProducts";
 import { searchProductsFromOpenFoodFacts } from "../services/openFoodFacts";
 import { trackUserActivity } from "../services/analyticsTracker";
 import { ContactSupport } from "./ContactSupport";
+import { DailyFoodTruthCard } from "./DailyFoodTruthCard";
 
 interface HomeScreenProps {
   onOpenScanner: () => void;
@@ -257,6 +259,60 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </div>
             </div>
           </div>
+        )}
+
+        {/* 2b. Smart Grocery & Kitchen Audit Shortcuts (High Daily Value) */}
+        {!searchQuery && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              id="home-shortcut-grocery-btn"
+              onClick={() => onNavigateTab?.("saved")}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
+                isDark
+                  ? "bg-[#161C24] border-slate-800 hover:border-emerald-500/50"
+                  : "bg-white border-slate-200/90 hover:border-emerald-300 shadow-2xs"
+              }`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-[#059669] dark:text-[#34D399] flex items-center justify-center flex-shrink-0">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
+                  {isHindi ? "किराना स्वैप लिस्ट" : "Grocery Swaps"}
+                </h4>
+                <p className="text-[10px] text-slate-400 truncate">
+                  {isHindi ? "बिना पाम ऑयल खरीदारी" : "Clean Shopping Guide"}
+                </p>
+              </div>
+            </button>
+
+            <button
+              id="home-shortcut-audit-btn"
+              onClick={() => onNavigateTab?.("saved")}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
+                isDark
+                  ? "bg-[#161C24] border-slate-800 hover:border-teal-500/50"
+                  : "bg-white border-slate-200/90 hover:border-teal-300 shadow-2xs"
+              }`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
+                  {isHindi ? "2-मिनट रसोई टेस्ट" : "Kitchen Clean Quiz"}
+                </h4>
+                <p className="text-[10px] text-slate-400 truncate">
+                  {isHindi ? "घर का शुद्धता स्कोर" : "Audit Your Pantry"}
+                </p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* 2c. Daily Food Truth / आज का सच (Daily Retentive Habit) */}
+        {!searchQuery && (
+          <DailyFoodTruthCard language={language} isDark={isDark} />
         )}
 
         {/* 3. User Recent Scans Feed (Shown when user has scanned products) */}
