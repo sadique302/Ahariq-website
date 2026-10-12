@@ -14,7 +14,6 @@ import { AuthModal } from "./components/AuthModal";
 import { AboutAndPrivacyModal } from "./components/AboutAndPrivacyModal";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { InstallPwaPrompt } from "./components/InstallPwaPrompt";
-import { NativeAppInstallBanner } from "./components/NativeAppInstallBanner";
 import {
   auth,
   recordScanToCloud,
@@ -429,15 +428,6 @@ export default function App() {
             : "bg-[#F8FAFC] border-slate-200/80 text-[#111827]"
         }`}
       >
-        {/* Direct Mobile App Install Banner */}
-        {!selectedProduct && (
-          <NativeAppInstallBanner
-            language={language}
-            isDark={isDark}
-            onOpenInstallModal={() => setIsInstallPwaOpen(true)}
-          />
-        )}
-
         {/* Top Header (Visible except inside fullscreen Result view) */}
         {!selectedProduct && (
           <Header

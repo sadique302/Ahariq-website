@@ -18,7 +18,6 @@ import {
   FlaskConical,
   Heart,
   ExternalLink,
-  Smartphone,
   Download,
   AlertTriangle
 } from "lucide-react";
@@ -115,21 +114,21 @@ export const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <div className="max-w-4xl mx-auto px-2.5 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-1 sm:gap-2">
-        {/* Brand Logo */}
+        {/* Brand Logo - Fixed so Ahariq is fully visible and never clipped */}
         <button
           id="brand-home-btn"
           onClick={() => onNavigateTab("home")}
-          className="flex items-center gap-1.5 sm:gap-2.5 text-left group cursor-pointer min-w-0 flex-shrink"
+          className="flex items-center gap-2 sm:gap-2.5 text-left group cursor-pointer flex-shrink-0"
         >
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#059669] to-[#10B981] flex items-center justify-center text-white shadow-md shadow-[#10B981]/25 group-hover:scale-105 transition-transform flex-shrink-0">
             <ShieldCheck className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
           </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="font-black text-base sm:text-xl tracking-tight text-[#000000] dark:text-white">
+          <div className="flex-shrink-0 flex flex-col justify-center">
+            <div className="flex items-center gap-1.5 whitespace-nowrap">
+              <span className="font-black text-lg sm:text-xl tracking-tight text-[#000000] dark:text-white leading-tight">
                 Ahariq
               </span>
-              <span className="text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] border border-[#10B981]/30 font-hindi">
+              <span className="text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#059669] dark:text-[#34D399] border border-[#10B981]/30 font-hindi whitespace-nowrap leading-none">
                 आहार IQ
               </span>
             </div>
@@ -146,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="language-toggle-btn"
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
+              className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
                 isDark
                   ? "bg-zinc-800/90 border-zinc-700 hover:bg-zinc-700 text-zinc-100 hover:border-emerald-500/50"
                   : "bg-white border-gray-200 hover:bg-emerald-50/60 text-[#111827] hover:border-emerald-300"
@@ -208,22 +207,6 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
-
-          {/* Direct Install App Button for Mobile & Browser */}
-          {onOpenInstallPwa && (
-            <button
-              id="header-direct-install-app-btn"
-              onClick={() => {
-                triggerHaptic("medium");
-                onOpenInstallPwa();
-              }}
-              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#059669] to-[#10B981] hover:from-[#047857] hover:to-[#059669] text-white text-[11px] font-extrabold shadow-2xs cursor-pointer active:scale-95 transition-transform"
-              title={isHindi ? "फोन होम स्क्रीन पर ऐप जोड़ें" : "Install App on Phone"}
-            >
-              <Smartphone className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="font-bold">{isHindi ? "ऐप" : "App"}</span>
-            </button>
-          )}
 
           {/* Dark Mode Toggle */}
           <button
