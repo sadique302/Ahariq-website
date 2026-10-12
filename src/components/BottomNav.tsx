@@ -1,10 +1,11 @@
 import React from "react";
 import { Language } from "../types";
-import { Home, ScanLine, ShoppingBag, History, Dumbbell, FlaskConical } from "lucide-react";
+import { Home, ScanLine, ShoppingBag, History, FlaskConical } from "lucide-react";
+import { triggerHaptic } from "../utils/haptics";
 
 interface BottomNavProps {
-  currentTab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration";
-  onSelectTab: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
+  currentTab: "home" | "scanner" | "saved" | "history" | "adulteration";
+  onSelectTab: (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => void;
   language: Language;
   isDark: boolean;
   savedCount: number;
@@ -18,6 +19,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   savedCount,
 }) => {
   const isHindi = language === "hi";
+
+  const handleTabClick = (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => {
+    if (tab === "scanner") {
+      triggerHaptic("medium");
+    } else {
+      triggerHaptic("light");
+    }
+    onSelectTab(tab);
+  };
 
   const navItems = [
     {
@@ -47,12 +57,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       icon: History,
     },
     {
-      id: "gym" as const,
-      labelEn: "Gym IQ",
-      labelHi: "Gym IQ",
-      icon: Dumbbell,
-    },
-    {
       id: "adulteration" as const,
       labelEn: "Lab",
       labelHi: "जांच लैब",
@@ -63,13 +67,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   return (
     <nav
       id="bottom-navigation-bar"
-      className={`fixed bottom-0 left-0 right-0 z-40 border-t transition-colors ${
+      className={`fixed bottom-0 left-0 right-0 z-40 border-t transition-colors flex justify-center ${
         isDark
-          ? "bg-[#09090B]/95 border-zinc-800 text-zinc-300 backdrop-blur-lg"
-          : "bg-white/95 border-gray-200 text-gray-700 backdrop-blur-lg shadow-sm"
+          ? "bg-[#09090B]/95 border-zinc-800/90 text-zinc-300 backdrop-blur-xl"
+          : "bg-white/95 border-gray-200/90 text-gray-700 backdrop-blur-xl shadow-lg"
       }`}
     >
-      <div className="max-w-lg mx-auto px-2 py-1.5 flex items-center justify-between">
+      <div className="w-full max-w-md px-2 py-1.5 pb-[max(0.4rem,env(safe-area-inset-bottom,0.4rem))] flex items-center justify-between">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
@@ -80,10 +84,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <button
                 key={item.id}
                 id="bottom-nav-center-scan-btn"
-                onClick={() => onSelectTab(item.id)}
-                className="flex flex-col items-center -mt-6 group focus:outline-none cursor-pointer flex-1 max-w-[70px]"
+                onClick={() => handleTabClick(item.id)}
+                className="flex flex-col items-center -mt-6 group focus:outline-none cursor-pointer flex-1 max-w-[70px] app-pressable"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#059669] via-[#10B981] to-[#34D399] text-white flex items-center justify-center shadow-lg shadow-[#10B981]/35 border-4 border-white dark:border-[#09090B] group-hover:scale-105 active:scale-95 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#059669] via-[#10B981] to-[#34D399] text-white flex items-center justify-center shadow-lg shadow-[#10B981]/35 border-4 border-white dark:border-[#09090B] group-hover:scale-105 active:scale-90 transition-transform">
                   <ScanLine className="w-5 h-5 animate-pulse" />
                 </div>
                 <span className="text-[10px] font-bold mt-0.5 text-[#10B981]">
@@ -97,8 +101,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <button
               key={item.id}
               id={`bottom-nav-${item.id}-btn`}
-              onClick={() => onSelectTab(item.id)}
-              className={`flex flex-col items-center py-1 px-1.5 rounded-xl transition-all relative cursor-pointer flex-1 max-w-[65px] ${
+              onClick={() => handleTabClick(item.id)}
+              className={`flex flex-col items-center py-1 px-1.5 rounded-xl transition-all relative cursor-pointer flex-1 max-w-[65px] app-pressable ${
                 isActive
                   ? isDark
                     ? "text-[#10B981] font-bold"
@@ -107,7 +111,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               }`}
             >
               <div className="relative">
-                <Icon className={`w-4.5 h-4.5 ${isActive ? "scale-110 text-[#10B981]" : ""}`} />
+                <Icon className={`w-4.5 h-4.5 transition-transform ${isActive ? "scale-110 text-[#10B981]" : ""}`} />
                 {item.badge !== undefined && (
                   <span className="absolute -top-1.5 -right-2 bg-[#10B981] text-white text-[8px] font-extrabold px-1 py-0.2 rounded-full min-w-[14px] text-center shadow-xs">
                     {item.badge}
@@ -124,3 +128,4 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     </nav>
   );
 };
+

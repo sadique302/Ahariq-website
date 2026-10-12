@@ -10,11 +10,11 @@ import { ProductResultView } from "./components/ProductResultView";
 import { SavedListScreen } from "./components/SavedListScreen";
 import { HistoryScreen } from "./components/HistoryScreen";
 import { AdulterationGuideScreen } from "./components/AdulterationGuideScreen";
-import { GymIQScreen } from "./components/GymIQScreen";
 import { AuthModal } from "./components/AuthModal";
 import { AboutAndPrivacyModal } from "./components/AboutAndPrivacyModal";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { InstallPwaPrompt } from "./components/InstallPwaPrompt";
+import { NativeAppInstallBanner } from "./components/NativeAppInstallBanner";
 import {
   auth,
   recordScanToCloud,
@@ -71,7 +71,7 @@ export default function App() {
 
   // 3. Navigation & Screen State
   const [currentTab, setCurrentTab] = useState<
-    "home" | "scanner" | "saved" | "history" | "gym" | "adulteration"
+    "home" | "scanner" | "saved" | "history" | "adulteration"
   >("home");
   const [selectedProduct, setSelectedProduct] = useState<FoodProduct | null>(
     null
@@ -391,7 +391,7 @@ export default function App() {
     });
   };
 
-  const handleNavigateTab = (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => {
+  const handleNavigateTab = (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => {
     if (tab === "scanner") {
       handleOpenScanner();
       return;
@@ -415,17 +415,33 @@ export default function App() {
 
   return (
     <div
-      id="ahariq-app-root"
-      className={`min-h-screen w-full max-w-full font-sans antialiased selection:bg-[#10B981] selection:text-white ${
-        isDark
-          ? "dark bg-[#09090B] text-zinc-100"
-          : "bg-[#F8FAFC] text-[#111827]"
+      id="ahariq-app-viewport-wrapper"
+      className={`min-h-screen min-h-[100dvh] w-full flex flex-col items-center justify-start ${
+        isDark ? "bg-[#000000] text-zinc-100" : "bg-[#F1F5F9] text-[#111827]"
       }`}
     >
-      {/* Top Header (Visible except inside fullscreen Result view) */}
-      {!selectedProduct && (
-        <Header
-          language={language}
+      {/* Native App Container: 100% on mobile, polished smartphone frame on desktop/tablet */}
+      <div
+        id="ahariq-app-root"
+        className={`w-full max-w-lg min-h-screen min-h-[100dvh] relative flex flex-col transition-colors shadow-2xl md:border-x ${
+          isDark
+            ? "dark bg-[#09090B] border-zinc-800/80 text-zinc-100"
+            : "bg-[#F8FAFC] border-slate-200/80 text-[#111827]"
+        }`}
+      >
+        {/* Direct Mobile App Install Banner */}
+        {!selectedProduct && (
+          <NativeAppInstallBanner
+            language={language}
+            isDark={isDark}
+            onOpenInstallModal={() => setIsInstallPwaOpen(true)}
+          />
+        )}
+
+        {/* Top Header (Visible except inside fullscreen Result view) */}
+        {!selectedProduct && (
+          <Header
+            language={language}
           onToggleLanguage={handleToggleLanguage}
           onSelectLanguage={handleSelectLanguage}
           isDark={isDark}
@@ -493,13 +509,6 @@ export default function App() {
             user={user}
             onOpenAuth={() => setIsAuthOpen(true)}
           />
-        ) : currentTab === "gym" ? (
-          <GymIQScreen
-            language={language}
-            isDark={isDark}
-            onOpenScanner={handleOpenScanner}
-            onSelectProduct={(p) => handleSelectProduct(p, "gym_iq")}
-          />
         ) : currentTab === "adulteration" ? (
           <AdulterationGuideScreen language={language} isDark={isDark} />
         ) : null}
@@ -563,6 +572,7 @@ export default function App() {
 
       {/* Vercel Web Analytics */}
       <Analytics />
+      </div>
     </div>
   );
 }

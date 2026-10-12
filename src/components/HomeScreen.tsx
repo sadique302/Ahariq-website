@@ -21,6 +21,7 @@ import { searchProductsFromOpenFoodFacts } from "../services/openFoodFacts";
 import { trackUserActivity } from "../services/analyticsTracker";
 import { ContactSupport } from "./ContactSupport";
 import { DailyFoodTruthCard } from "./DailyFoodTruthCard";
+import { triggerHaptic } from "../utils/haptics";
 
 interface HomeScreenProps {
   onOpenScanner: () => void;
@@ -29,7 +30,7 @@ interface HomeScreenProps {
   language: Language;
   isDark: boolean;
   onNavigateCategory: (categoryName: string) => void;
-  onNavigateTab?: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
+  onNavigateTab?: (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => void;
   user?: UserProfile;
   onOpenAuth?: () => void;
   onOpenAbout?: () => void;
@@ -249,8 +250,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <div className="pt-2 flex items-center justify-center sm:justify-start">
                   <button
                     id="hero-scan-product-btn"
-                    onClick={onOpenScanner}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-md shadow-emerald-900/15 hover:scale-[1.02] active:scale-98 transition-all cursor-pointer w-full sm:w-auto"
+                    onClick={() => {
+                      triggerHaptic("medium");
+                      onOpenScanner();
+                    }}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-md shadow-emerald-900/20 app-pressable cursor-pointer w-full sm:w-auto"
                   >
                     <ScanLine className="w-4 h-4" />
                     <span>{t.scanBarcode || (isHindi ? "कैमरा खोलें और स्कैन करें" : "Open Camera & Scan")}</span>
@@ -266,8 +270,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="grid grid-cols-2 gap-2.5">
             <button
               id="home-shortcut-grocery-btn"
-              onClick={() => onNavigateTab?.("saved")}
-              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
+              onClick={() => {
+                triggerHaptic("light");
+                onNavigateTab?.("saved");
+              }}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group app-pressable ${
                 isDark
                   ? "bg-[#161C24] border-slate-800 hover:border-emerald-500/50"
                   : "bg-white border-slate-200/90 hover:border-emerald-300 shadow-2xs"
@@ -288,8 +295,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
             <button
               id="home-shortcut-audit-btn"
-              onClick={() => onNavigateTab?.("saved")}
-              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group hover:scale-[1.01] active:scale-[0.99] ${
+              onClick={() => {
+                triggerHaptic("light");
+                onNavigateTab?.("saved");
+              }}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer group app-pressable ${
                 isDark
                   ? "bg-[#161C24] border-slate-800 hover:border-teal-500/50"
                   : "bg-white border-slate-200/90 hover:border-teal-300 shadow-2xs"

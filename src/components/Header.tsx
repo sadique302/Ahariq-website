@@ -16,13 +16,13 @@ import {
   Lock,
   Headphones,
   FlaskConical,
-  Dumbbell,
   Heart,
   ExternalLink,
   Smartphone,
   Download,
   AlertTriangle
 } from "lucide-react";
+import { triggerHaptic } from "../utils/haptics";
 
 interface HeaderProps {
   language: Language;
@@ -33,7 +33,7 @@ interface HeaderProps {
   onOpenAuth: () => void;
   onOpenScanner: () => void;
   savedCount: number;
-  onNavigateTab: (tab: "home" | "scanner" | "saved" | "history" | "gym" | "adulteration") => void;
+  onNavigateTab: (tab: "home" | "scanner" | "saved" | "history" | "adulteration") => void;
   onOpenAbout: () => void;
   onOpenPrivacy: () => void;
   onOpenDisclaimer?: () => void;
@@ -209,11 +209,30 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
+          {/* Direct Install App Button for Mobile & Browser */}
+          {onOpenInstallPwa && (
+            <button
+              id="header-direct-install-app-btn"
+              onClick={() => {
+                triggerHaptic("medium");
+                onOpenInstallPwa();
+              }}
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#059669] to-[#10B981] hover:from-[#047857] hover:to-[#059669] text-white text-[11px] font-extrabold shadow-2xs cursor-pointer active:scale-95 transition-transform"
+              title={isHindi ? "फोन होम स्क्रीन पर ऐप जोड़ें" : "Install App on Phone"}
+            >
+              <Smartphone className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="font-bold">{isHindi ? "ऐप" : "App"}</span>
+            </button>
+          )}
+
           {/* Dark Mode Toggle */}
           <button
             id="theme-toggle-btn"
-            onClick={onToggleDark}
-            className={`p-1.5 sm:p-2 rounded-xl border transition-colors cursor-pointer ${
+            onClick={() => {
+              triggerHaptic("light");
+              onToggleDark();
+            }}
+            className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer active:scale-95 ${
               isDark
                 ? "bg-zinc-800 border-zinc-700 text-amber-400 hover:bg-zinc-700"
                 : "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200"
@@ -226,8 +245,11 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Profile / OTP Login */}
           <button
             id="user-profile-btn"
-            onClick={onOpenAuth}
-            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all cursor-pointer ${
+            onClick={() => {
+              triggerHaptic("light");
+              onOpenAuth();
+            }}
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all cursor-pointer active:scale-95 ${
               user.isLoggedIn
                 ? isDark
                   ? "bg-emerald-950/60 border-emerald-700/50 text-[#10B981]"
@@ -247,8 +269,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative" ref={menuRef}>
             <button
               id="header-menu-btn"
-              onClick={() => setIsMenuOpen((prev) => !prev)}
-              className={`p-1.5 sm:p-2 rounded-xl border transition-colors cursor-pointer flex items-center justify-center ${
+              onClick={() => {
+                triggerHaptic("light");
+                setIsMenuOpen((prev) => !prev);
+              }}
+              className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center active:scale-95 ${
                 isMenuOpen
                   ? "bg-[#10B981] text-white border-[#10B981]"
                   : isDark
@@ -396,31 +421,6 @@ export const Header: React.FC<HeaderProps> = ({
                     </span>
                     <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
                       Ahariq Team Helpline
-                    </span>
-                  </div>
-                </button>
-
-                {/* Gym IQ Option */}
-                <button
-                  id="menu-gym-iq-btn"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    onNavigateTab("gym");
-                  }}
-                  className="w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 hover:bg-[#10B981]/10 hover:text-[#059669] dark:hover:text-[#10B981] transition-colors text-left cursor-pointer"
-                >
-                  <Dumbbell className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="block font-bold text-[#000000] dark:text-white">
-                        Gym IQ
-                      </span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500 text-white font-bold">
-                        NEW
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-gray-500 dark:text-zinc-400 block">
-                      {isHindi ? "फिटनेस प्रोडक्ट्स व तुलना" : "Fitness Hub & Comparator"}
                     </span>
                   </div>
                 </button>
